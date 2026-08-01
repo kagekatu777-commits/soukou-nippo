@@ -89,6 +89,14 @@ th{
 
 <label>出発時走行距離</label>
 <input type="number" id="start">
+    <label>運転者名</label>
+<input type="text" id="driver">
+
+<label>運行内容</label>
+<input type="text" id="work">
+
+<label>備考</label>
+<input type="text" id="memo">
 
 <label>帰社時走行距離</label>
 <input type="number" id="end">
@@ -100,12 +108,15 @@ th{
 <thead>
 
 <tr>
+
+<tr>
 <th>日付</th>
+<th>運転者</th>
 <th>車番</th>
 <th>出発</th>
 <th>帰社</th>
+<th>走行距離</th>
 </tr>
-
 </thead>
 
 <tbody id="list">
@@ -128,9 +139,11 @@ let end=document.getElementById("end").value;
 let row=`
 <tr>
 <td>${date}</td>
+<td>${driver}</td>
 <td>${car}</td>
 <td>${start}</td>
 <td>${end}</td>
+<td>${distance} km</td>
 </tr>
 `;
 
