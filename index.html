@@ -89,6 +89,8 @@ th{
 
 <label>出発時走行距離</label>
 <input type="number" id="start">
+
+<label>帰社時走行距離</label>
     <label>運転者名</label>
 <input type="text" id="driver">
 
@@ -97,8 +99,6 @@ th{
 
 <label>備考</label>
 <input type="text" id="memo">
-
-<label>帰社時走行距離</label>
 <input type="number" id="end">
 
 <button onclick="save()">保存</button>
@@ -130,7 +130,12 @@ th{
 <script>
 
 function save(){
+    
+let driver=document.getElementById("driver").value;
+let work=document.getElementById("work").value;
+let memo=document.getElementById("memo").value;
 
+let distance = Number(end) - Number(start);
 let date=document.getElementById("date").value;
 let car=document.getElementById("car").value;
 let start=document.getElementById("start").value;
