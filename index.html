@@ -434,7 +434,19 @@ function displayReports(){
 // 保存済みデータを表示
 // ============================
 
+
 displayReports();
+
+
+// ============================
+// ホーム画面アプリ対応
+// ============================
+
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.register("sw.js");
+
+}
 
 </script>
 
