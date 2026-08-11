@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -73,6 +72,19 @@ th{
 .distance{
     background:#eeeeee;
 }
+
+/* 削除ボタン */
+.delete-button{
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:8px 10px;
+    font-size:16px;
+    margin:0;
+    width:auto;
+}
+
 </style>
 
 </head>
@@ -122,6 +134,7 @@ th{
 <th>出発</th>
 <th>帰社</th>
 <th>控除走行距離</th>
+<th>削除</th>
 </tr>
 </thead>
 
@@ -147,8 +160,11 @@ document.getElementById("date").valueAsDate = new Date();
 
 function calculateDistance(){
 
-    let start = Number(document.getElementById("start").value);
-    let end = Number(document.getElementById("returnMileage").value);
+    let start =
+        Number(document.getElementById("start").value);
+
+    let end =
+        Number(document.getElementById("returnMileage").value);
 
     if(end >= start && start > 0){
 
@@ -310,6 +326,47 @@ function save(){
 
 
 // ============================
+// 日報を削除
+// ============================
+
+function deleteReport(index){
+
+    if(!confirm("この日報を削除しますか？")){
+
+        return;
+
+    }
+
+
+    // 保存されているデータを取得
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem("soukouReports")
+        ) || [];
+
+
+    // 指定した日報を1件削除
+
+    reports.splice(index, 1);
+
+
+    // 更新したデータを保存
+
+    localStorage.setItem(
+        "soukouReports",
+        JSON.stringify(reports)
+    );
+
+
+    // 一覧を更新
+
+    displayReports();
+
+}
+
+
+// ============================
 // 保存した日報を表示
 // ============================
 
@@ -328,7 +385,7 @@ function displayReports(){
     list.innerHTML = "";
 
 
-    reports.forEach(function(report){
+    reports.forEach(function(report, index){
 
         let row = `
 
@@ -345,6 +402,14 @@ function displayReports(){
             <td>${report.end}</td>
 
             <td>${report.distance} km</td>
+
+            <td>
+                <button
+                    class="delete-button"
+                    onclick="deleteReport(${index})">
+                    削除
+                </button>
+            </td>
 
         </tr>
 
