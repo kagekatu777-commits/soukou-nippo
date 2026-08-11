@@ -217,7 +217,7 @@ th{
 <input
     type="number"
     id="start"
-    placeholder="出発時の走行距離を入力">
+    placeholder="前日の帰社時走行距離から自動入力">
 
 
 <label>帰社時走行距離</label>
@@ -305,6 +305,30 @@ function getToday(){
 
 
 // =====================================
+// 指定日の前日を取得
+// =====================================
+
+function getPreviousDate(dateString){
+
+    let date = new Date(dateString + "T00:00:00");
+
+    date.setDate(date.getDate() - 1);
+
+    let year =
+        date.getFullYear();
+
+    let month =
+        String(date.getMonth() + 1).padStart(2, "0");
+
+    let day =
+        String(date.getDate()).padStart(2, "0");
+
+    return year + "-" + month + "-" + day;
+
+}
+
+
+// =====================================
 // 今日の日付をセット
 // =====================================
 
@@ -312,6 +336,81 @@ function setToday(){
 
     document.getElementById("date").value =
         getToday();
+
+}
+
+
+// =====================================
+// 前日の帰社時走行距離を取得
+// =====================================
+
+function loadPreviousMileage(){
+
+    let date =
+        document.getElementById("date").value;
+
+    if(!date){
+        return;
+    }
+
+
+    // 現在の出発時走行距離が
+    // すでに入力されている場合は変更しない
+
+    let currentStart =
+        document.getElementById("start").value;
+
+    if(currentStart){
+        return;
+    }
+
+
+    let previousDate =
+        getPreviousDate(date);
+
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem("soukouReports")
+        ) || [];
+
+
+    // 前日の日報を探す
+
+    let previousReports =
+        reports.filter(function(report){
+
+            return report.date === previousDate;
+
+        });
+
+
+    if(previousReports.length === 0){
+
+        // 前日の日報がなければ空欄
+
+        return;
+
+    }
+
+
+    // 前日の日報が複数ある場合は
+    // 最後に保存したものを使用
+
+    let previousReport =
+        previousReports[previousReports.length - 1];
+
+
+    if(previousReport.end){
+
+        document.getElementById("start").value =
+            previousReport.end;
+
+        calculateDistance();
+
+        saveDraft();
+
+    }
 
 }
 
@@ -383,8 +482,6 @@ function saveSettings(){
 
     updateHeader();
 
-
-    // 設定画面を閉じる
 
     document.getElementById("settings").style.display =
         "none";
@@ -549,6 +646,10 @@ function loadDraft(){
 
         setToday();
 
+        // 前日の帰社時走行距離を自動入力
+
+        loadPreviousMileage();
+
         return;
     }
 
@@ -570,6 +671,10 @@ function loadDraft(){
 
         setToday();
 
+        // 前日の帰社時走行距離を自動入力
+
+        loadPreviousMileage();
+
         return;
     }
 
@@ -588,6 +693,16 @@ function loadDraft(){
 
     document.getElementById("memo").value =
         draft.memo || "";
+
+
+    // 出発時走行距離が空欄なら
+    // 前日の帰社時走行距離を使用
+
+    if(!draft.start){
+
+        loadPreviousMileage();
+
+    }
 
 
     calculateDistance();
@@ -627,8 +742,21 @@ document.getElementById("memo")
 .addEventListener("input", saveDraft);
 
 
+// =====================================
+// 日付変更時
+// =====================================
+
 document.getElementById("date")
-.addEventListener("change", saveDraft);
+.addEventListener("change", function(){
+
+    saveDraft();
+
+    // 出発時が空欄なら
+    // 選択した日の前日の帰社時を自動入力
+
+    loadPreviousMileage();
+
+});
 
 
 // =====================================
@@ -640,8 +768,6 @@ function save(){
     let settingsData =
         localStorage.getItem("soukouSettings");
 
-
-    // 基本情報が未設定なら設定を促す
 
     if(!settingsData){
 
@@ -845,83 +971,4 @@ function displayReports(){
     list.innerHTML = "";
 
 
-    reports.forEach(function(report, index){
-
-        let row = `
-
-        <tr>
-
-            <td>${report.date}</td>
-
-            <td>${report.driver}</td>
-
-            <td>${report.car}</td>
-
-            <td>${report.start}</td>
-
-            <td>${report.end}</td>
-
-            <td>${report.distance} km</td>
-
-            <td>
-
-                <button
-                    class="delete-button"
-                    onclick="deleteReport(${index})">
-
-                    削除
-
-                </button>
-
-            </td>
-
-        </tr>
-
-        `;
-
-
-        list.innerHTML += row;
-
-    });
-
-}
-
-
-// =====================================
-// アプリ起動時
-// =====================================
-
-// 基本情報をヘッダーに表示
-
-updateHeader();
-
-
-// 基本情報入力欄にも読み込み
-
-loadSettings();
-
-
-// 今日の日付・途中データ
-
-loadDraft();
-
-
-// 保存済みデータ
-
-displayReports();
-
-
-// =====================================
-// ホーム画面アプリ対応
-// =====================================
-
-if("serviceWorker" in navigator){
-
-    navigator.serviceWorker.register("sw.js");
-
-}
-
-</script>
-
-</body>
-</html>
+    reports.forEach(function
