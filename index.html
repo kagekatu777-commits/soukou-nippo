@@ -8,13 +8,15 @@
 
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>走行日報</title>
 
 <style>
+
+*{
+    box-sizing:border-box;
+}
 
 body{
     font-family:sans-serif;
@@ -89,7 +91,6 @@ input{
     width:100%;
     padding:12px;
     font-size:20px;
-    box-sizing:border-box;
     border-radius:8px;
     border:1px solid #ccc;
 }
@@ -134,13 +135,30 @@ button{
     background:#757575;
 }
 
+.monthly-print{
+    margin-top:25px;
+    padding:15px;
+    background:#e3f2fd;
+    border-radius:10px;
+}
+
+.monthly-print h2{
+    margin-top:0;
+    color:#1565c0;
+}
+
+.monthly-print button{
+    background:#1565c0;
+}
+
 table{
     width:100%;
     margin-top:20px;
     border-collapse:collapse;
 }
 
-th,td{
+th,
+td{
     border:1px solid #ccc;
     padding:8px;
     text-align:center;
@@ -177,9 +195,51 @@ th{
     white-space:nowrap;
 }
 
+
+/* ========================= */
+/* 月間一覧 */
+/* ========================= */
+
+.monthly-list{
+    margin-top:25px;
+    display:none;
+}
+
+.monthly-list h2{
+    color:#1565c0;
+}
+
+.monthly-summary{
+    background:#eeeeee;
+    padding:12px;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+
+/* ========================= */
+/* スマホ用 */
+/* ========================= */
+
+@media(max-width:600px){
+
+    table{
+        font-size:12px;
+    }
+
+    th,
+    td{
+        padding:5px;
+    }
+
+}
+
 </style>
 
 </head>
+
 
 <body>
 
@@ -240,13 +300,10 @@ onclick="toggleSettings()">
 class="settings"
 id="settings">
 
-    <h2>
-        基本情報設定
-    </h2>
+    <h2>基本情報設定</h2>
 
-    <label>
-        会社名
-    </label>
+
+    <label>会社名</label>
 
     <input
     type="text"
@@ -254,9 +311,7 @@ id="settings">
     placeholder="会社名を入力">
 
 
-    <label>
-        車番
-    </label>
+    <label>車番</label>
 
     <input
     type="text"
@@ -264,9 +319,7 @@ id="settings">
     placeholder="車番を入力">
 
 
-    <label>
-        運転者名
-    </label>
+    <label>運転者名</label>
 
     <input
     type="text"
@@ -303,18 +356,14 @@ style="display:none;">
 <!-- 日報入力 -->
 <!-- ========================= -->
 
-<label>
-    日付
-</label>
+<label>日付</label>
 
 <input
 type="date"
 id="date">
 
 
-<label>
-    出発時走行距離
-</label>
+<label>出発時走行距離</label>
 
 <input
 type="number"
@@ -328,9 +377,7 @@ placeholder="前日の帰社時走行距離から自動入力">
 </div>
 
 
-<label>
-    帰社時走行距離
-</label>
+<label>帰社時走行距離</label>
 
 <input
 type="number"
@@ -338,9 +385,7 @@ id="returnMileage"
 placeholder="帰社時の走行距離を入力">
 
 
-<label>
-    控除走行距離
-</label>
+<label>控除走行距離</label>
 
 <input
 type="text"
@@ -350,9 +395,7 @@ readonly
 placeholder="自動計算">
 
 
-<label>
-    運行内容
-</label>
+<label>運行内容</label>
 
 <input
 type="text"
@@ -360,9 +403,7 @@ id="work"
 placeholder="運行内容を入力">
 
 
-<label>
-    備考
-</label>
+<label>備考</label>
 
 <input
 type="text"
@@ -391,8 +432,85 @@ style="display:none;">
 
 
 <!-- ========================= -->
+<!-- 月間A4 PDF -->
+<!-- ========================= -->
+
+<div class="monthly-print">
+
+    <h2>📄 月間A4 PDF</h2>
+
+    <label>印刷する月</label>
+
+    <input
+    type="month"
+    id="printMonth">
+
+
+    <button
+    onclick="openMonthlyPrint()">
+
+        🖨️ A4 PDFプレビュー
+
+    </button>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- 月間一覧 -->
+<!-- ========================= -->
+
+<div
+class="monthly-list"
+id="monthlyList">
+
+    <h2>
+        📅 月間日報一覧
+    </h2>
+
+    <div
+    class="monthly-summary"
+    id="monthlySummary">
+
+    </div>
+
+    <table>
+
+    <thead>
+
+    <tr>
+
+        <th>日付</th>
+        <th>運転者</th>
+        <th>車番</th>
+        <th>出発</th>
+        <th>帰社</th>
+        <th>距離</th>
+        <th>運行内容</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody id="monthlyListBody">
+    </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- ========================= -->
 <!-- 保存済み一覧 -->
 <!-- ========================= -->
+
+<h2
+style="color:#1565c0;margin-top:30px;">
+
+    📋 保存済み日報
+
+</h2>
+
 
 <table>
 
@@ -465,7 +583,7 @@ function getToday(){
 
 
 // =====================================
-// 指定日の前日を取得
+// 指定日の前日
 // =====================================
 
 function getPreviousDate(dateString){
@@ -504,7 +622,7 @@ function getPreviousDate(dateString){
 
 
 // =====================================
-// 今日の日付
+// 今日の日付をセット
 // =====================================
 
 function setToday(){
@@ -528,13 +646,11 @@ function loadPreviousMileage(){
         return;
     }
 
-    // 編集中は自動変更しない
 
     if(editingIndex !== -1){
         return;
     }
 
-    // すでに入力されていれば変更しない
 
     let currentStart =
         document.getElementById("start").value;
@@ -542,6 +658,7 @@ function loadPreviousMileage(){
     if(currentStart){
         return;
     }
+
 
     let previousDate =
         getPreviousDate(date);
@@ -552,9 +669,11 @@ function loadPreviousMileage(){
             "soukouSettings"
         );
 
+
     if(!settingsData){
         return;
     }
+
 
     let settings =
         JSON.parse(settingsData);
@@ -615,7 +734,7 @@ function loadPreviousMileage(){
 
 
 // =====================================
-// 基本情報設定
+// 基本情報設定 開閉
 // =====================================
 
 function toggleSettings(){
@@ -877,12 +996,10 @@ function calculateDistance(){
 
 
 // =====================================
-// 途中保存
+// 入力途中の自動保存
 // =====================================
 
 function saveDraft(){
-
-    // 編集中は途中保存しない
 
     if(editingIndex !== -1){
         return;
@@ -928,7 +1045,7 @@ function saveDraft(){
 
 
 // =====================================
-// 途中データ復元
+// 入力途中データ復元
 // =====================================
 
 function loadDraft(){
@@ -1016,7 +1133,7 @@ function loadDraft(){
 
 
 // =====================================
-// 編集モード開始
+// 編集開始
 // =====================================
 
 function editReport(index){
@@ -1040,8 +1157,6 @@ function editReport(index){
 
     editingIndex = index;
 
-
-    // 入力欄にデータを入れる
 
     document.getElementById(
         "date"
@@ -1076,8 +1191,6 @@ function editReport(index){
     calculateDistance();
 
 
-    // 編集表示
-
     document.getElementById(
         "editMode"
     ).style.display =
@@ -1095,8 +1208,6 @@ function editReport(index){
     ).style.display =
         "block";
 
-
-    // 入力欄の位置まで移動
 
     window.scrollTo({
         top:0,
@@ -1178,7 +1289,7 @@ function clearInputs(){
 
 
 // =====================================
-// 入力変更時
+// 入力イベント
 // =====================================
 
 document.getElementById(
@@ -1213,11 +1324,7 @@ document.getElementById(
     "work"
 ).addEventListener(
     "input",
-    function(){
-
-        saveDraft();
-
-    }
+    saveDraft
 );
 
 
@@ -1225,11 +1332,7 @@ document.getElementById(
     "memo"
 ).addEventListener(
     "input",
-    function(){
-
-        saveDraft();
-
-    }
+    saveDraft
 );
 
 
@@ -1335,8 +1438,6 @@ function save(){
         ).value;
 
 
-    // 入力チェック
-
     if(
         !date ||
         !start ||
@@ -1351,9 +1452,7 @@ function save(){
     }
 
 
-    if(
-        end < start
-    ){
+    if(end < start){
 
         alert(
             "帰社時走行距離は、出発時走行距離以上にしてください"
@@ -1376,7 +1475,7 @@ function save(){
 
 
     // =================================
-    // 編集中
+    // 編集保存
     // =================================
 
     if(editingIndex !== -1){
@@ -1458,7 +1557,6 @@ function save(){
 
 
         return;
-
     }
 
 
@@ -1498,9 +1596,7 @@ function save(){
     };
 
 
-    reports.push(
-        report
-    );
+    reports.push(report);
 
 
     localStorage.setItem(
@@ -1526,6 +1622,9 @@ function save(){
 
 
     setToday();
+
+
+    loadPreviousMileage();
 
 }
 
@@ -1606,29 +1705,17 @@ function displayReports(){
 
             <tr>
 
-                <td>
-                    ${report.date}
-                </td>
+                <td>${report.date}</td>
 
-                <td>
-                    ${report.driver}
-                </td>
+                <td>${report.driver || ""}</td>
 
-                <td>
-                    ${report.car}
-                </td>
+                <td>${report.car || ""}</td>
 
-                <td>
-                    ${report.start}
-                </td>
+                <td>${report.start || ""}</td>
 
-                <td>
-                    ${report.end}
-                </td>
+                <td>${report.end || ""}</td>
 
-                <td>
-                    ${report.distance} km
-                </td>
+                <td>${report.distance || 0} km</td>
 
                 <td class="action-cell">
 
@@ -1666,6 +1753,548 @@ function displayReports(){
 
 
 // =====================================
+// 月間一覧を表示
+// =====================================
+
+function showMonthlyList(){
+
+    let month =
+        document.getElementById(
+            "printMonth"
+        ).value;
+
+
+    if(!month){
+
+        document.getElementById(
+            "monthlyList"
+        ).style.display =
+            "none";
+
+        return;
+    }
+
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+
+    let monthlyReports =
+        reports.filter(
+            function(report){
+
+                return report.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+
+    monthlyReports.sort(
+        function(a,b){
+
+            return a.date.localeCompare(
+                b.date
+            );
+
+        }
+    );
+
+
+    let total = 0;
+
+
+    let body =
+        document.getElementById(
+            "monthlyListBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    monthlyReports.forEach(
+        function(report){
+
+            total +=
+                Number(report.distance) || 0;
+
+
+            body.innerHTML += `
+
+            <tr>
+
+                <td>${report.date}</td>
+
+                <td>${report.driver || ""}</td>
+
+                <td>${report.car || ""}</td>
+
+                <td>${report.start || ""}</td>
+
+                <td>${report.end || ""}</td>
+
+                <td>${report.distance || 0} km</td>
+
+                <td>${report.work || ""}</td>
+
+            </tr>
+
+            `;
+
+        }
+    );
+
+
+    if(monthlyReports.length === 0){
+
+        body.innerHTML = `
+
+        <tr>
+
+            <td colspan="7">
+
+                この月の日報はありません
+
+            </td>
+
+        </tr>
+
+        `;
+
+    }
+
+
+    document.getElementById(
+        "monthlySummary"
+    ).textContent =
+        "月間走行距離合計：" +
+        total +
+        " km";
+
+
+    document.getElementById(
+        "monthlyList"
+    ).style.display =
+        "block";
+
+}
+
+
+// =====================================
+// A4 PDFプレビュー
+// =====================================
+
+function openMonthlyPrint(){
+
+    let month =
+        document.getElementById(
+            "printMonth"
+        ).value;
+
+
+    if(!month){
+
+        alert(
+            "印刷する月を選択してください"
+        );
+
+        return;
+    }
+
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+
+    let monthlyReports =
+        reports.filter(
+            function(report){
+
+                return report.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+
+    monthlyReports.sort(
+        function(a,b){
+
+            return a.date.localeCompare(
+                b.date
+            );
+
+        }
+    );
+
+
+    let settingsData =
+        localStorage.getItem(
+            "soukouSettings"
+        );
+
+
+    let settings =
+        settingsData
+        ? JSON.parse(settingsData)
+        : {
+            company:"会社名未設定",
+            car:"未設定",
+            driver:"未設定"
+        };
+
+
+    let totalDistance = 0;
+
+
+    monthlyReports.forEach(
+        function(report){
+
+            totalDistance +=
+                Number(report.distance) || 0;
+
+        }
+    );
+
+
+    let year =
+        month.substring(0,4);
+
+
+    let monthNumber =
+        Number(
+            month.substring(5,7)
+        );
+
+
+    let rows = "";
+
+
+    monthlyReports.forEach(
+        function(report){
+
+            rows += `
+
+            <tr>
+
+                <td>${report.date}</td>
+
+                <td>${report.driver || ""}</td>
+
+                <td>${report.car || ""}</td>
+
+                <td>${report.start || ""}</td>
+
+                <td>${report.end || ""}</td>
+
+                <td>${report.distance || 0} km</td>
+
+                <td class="left">
+                    ${report.work || ""}
+                </td>
+
+                <td class="left">
+                    ${report.memo || ""}
+                </td>
+
+            </tr>
+
+            `;
+
+        }
+    );
+
+
+    if(monthlyReports.length === 0){
+
+        rows = `
+
+        <tr>
+
+            <td colspan="8">
+
+                この月の日報はありません
+
+            </td>
+
+        </tr>
+
+        `;
+
+    }
+
+
+    let printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    if(!printWindow){
+
+        alert(
+            "ポップアップがブロックされています。\n" +
+            "ブラウザのポップアップを許可してください。"
+        );
+
+        return;
+    }
+
+
+    printWindow.document.write(`
+
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+${year}年${monthNumber}月 走行日報
+</title>
+
+<style>
+
+@page{
+    size:A4 portrait;
+    margin:10mm;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:sans-serif;
+    margin:0;
+    color:#000;
+}
+
+h1{
+    text-align:center;
+    font-size:22px;
+    margin:0 0 12px 0;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    border:1px solid #000;
+    padding:8px;
+    margin-bottom:12px;
+    font-size:12px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:8px;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:4px;
+    text-align:center;
+}
+
+th{
+    background:#eeeeee;
+}
+
+.left{
+    text-align:left;
+}
+
+.total{
+    margin-top:12px;
+    text-align:right;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.buttons{
+    text-align:center;
+    margin-top:20px;
+}
+
+button{
+    padding:12px 25px;
+    font-size:18px;
+    margin:5px;
+}
+
+@media print{
+
+    .buttons{
+        display:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+${year}年${monthNumber}月　走行日報
+</h1>
+
+
+<div class="info">
+
+    <div>
+        会社名：
+        ${settings.company || ""}
+    </div>
+
+    <div>
+        車番：
+        ${settings.car || ""}
+    </div>
+
+    <div>
+        運転者：
+        ${settings.driver || ""}
+    </div>
+
+</div>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>日付</th>
+<th>運転者</th>
+<th>車番</th>
+<th>出発</th>
+<th>帰社</th>
+<th>走行距離</th>
+<th>運行内容</th>
+<th>備考</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+
+<div class="total">
+
+月間走行距離合計：
+${totalDistance} km
+
+</div>
+
+
+<div class="buttons">
+
+<button onclick="window.print()">
+A4 PDFプレビュー
+</button>
+
+<button onclick="window.close()">
+閉じる
+</button>
+
+</div>
+
+
+<script>
+
+window.onload = function(){
+
+    setTimeout(function(){
+
+        window.print();
+
+    },500);
+
+};
+
+<\/script>
+
+
+</body>
+
+</html>
+
+`);
+
+
+    printWindow.document.close();
+
+}
+
+
+// =====================================
+// 月選択時
+// =====================================
+
+document.getElementById(
+    "printMonth"
+).addEventListener(
+    "change",
+    showMonthlyList
+);
+
+
+// =====================================
+// 今月を初期選択
+// =====================================
+
+function setPrintMonth(){
+
+    let today =
+        new Date();
+
+
+    let year =
+        today.getFullYear();
+
+
+    let month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2,"0");
+
+
+    document.getElementById(
+        "printMonth"
+    ).value =
+        year + "-" + month;
+
+}
+
+
+// =====================================
 // アプリ起動
 // =====================================
 
@@ -1677,22 +2306,17 @@ loadDraft();
 
 displayReports();
 
+setPrintMonth();
+
+showMonthlyList();
+
 
 // =====================================
-// PWA対応
+// PWA
 // =====================================
 
 if(
     "serviceWorker" in navigator
 ){
 
-    navigator.serviceWorker.register(
-        "sw.js"
-    );
-
-}
-
-</script>
-
-</body>
-</html>
+   
