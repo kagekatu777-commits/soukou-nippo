@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1976d2">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>走行日報</title>
+    <meta name="theme-color" content="#1976d2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>走行日報</title>
 
 <style>
 body{
@@ -148,16 +148,38 @@ th{
 
 <script>
 
-// ============================
+// =====================================
+// 今日の日付を取得
+// =====================================
+
+function getToday(){
+
+    let today = new Date();
+
+    let year = today.getFullYear();
+
+    let month = String(today.getMonth() + 1).padStart(2, "0");
+
+    let day = String(today.getDate()).padStart(2, "0");
+
+    return year + "-" + month + "-" + day;
+}
+
+
+// =====================================
 // 日付を今日にする
-// ============================
+// =====================================
 
-document.getElementById("date").valueAsDate = new Date();
+function setToday(){
+
+    document.getElementById("date").value = getToday();
+
+}
 
 
-// ============================
+// =====================================
 // 控除走行距離を自動計算
-// ============================
+// =====================================
 
 function calculateDistance(){
 
@@ -181,21 +203,175 @@ function calculateDistance(){
         document.getElementById("distance").value = "";
 
     }
+
 }
 
 
+// =====================================
+// 入力途中の日報を自動保存
+// =====================================
+
+function saveDraft(){
+
+    let draft = {
+
+        company:
+            document.getElementById("company").value,
+
+        car:
+            document.getElementById("car").value,
+
+        date:
+            document.getElementById("date").value,
+
+        start:
+            document.getElementById("start").value,
+
+        returnMileage:
+            document.getElementById("returnMileage").value,
+
+        driver:
+            document.getElementById("driver").value,
+
+        work:
+            document.getElementById("work").value,
+
+        memo:
+            document.getElementById("memo").value
+
+    };
+
+
+    localStorage.setItem(
+        "soukouDraft",
+        JSON.stringify(draft)
+    );
+
+}
+
+
+// =====================================
+// 入力途中の日報を復元
+// =====================================
+
+function loadDraft(){
+
+    let saved =
+        localStorage.getItem("soukouDraft");
+
+    if(!saved){
+
+        setToday();
+
+        return;
+    }
+
+
+    let draft =
+        JSON.parse(saved);
+
+
+    let today = getToday();
+
+
+    // 昨日以前の途中データなら破棄
+    if(draft.date !== today){
+
+        localStorage.removeItem("soukouDraft");
+
+        setToday();
+
+        return;
+    }
+
+
+    // 今日の途中データなら復元
+
+    document.getElementById("company").value =
+        draft.company || "";
+
+    document.getElementById("car").value =
+        draft.car || "";
+
+    document.getElementById("date").value =
+        draft.date || today;
+
+    document.getElementById("start").value =
+        draft.start || "";
+
+    document.getElementById("returnMileage").value =
+        draft.returnMileage || "";
+
+    document.getElementById("driver").value =
+        draft.driver || "";
+
+    document.getElementById("work").value =
+        draft.work || "";
+
+    document.getElementById("memo").value =
+        draft.memo || "";
+
+
+    calculateDistance();
+
+}
+
+
+// =====================================
 // 出発時・帰社時の入力が変わったら計算
+// =====================================
 
 document.getElementById("start")
-.addEventListener("input", calculateDistance);
+.addEventListener("input", function(){
+
+    calculateDistance();
+
+    saveDraft();
+
+});
+
 
 document.getElementById("returnMileage")
-.addEventListener("input", calculateDistance);
+.addEventListener("input", function(){
+
+    calculateDistance();
+
+    saveDraft();
+
+});
 
 
-// ============================
+// =====================================
+// その他の入力も自動保存
+// =====================================
+
+document.getElementById("company")
+.addEventListener("input", saveDraft);
+
+document.getElementById("car")
+.addEventListener("input", saveDraft);
+
+document.getElementById("driver")
+.addEventListener("input", saveDraft);
+
+document.getElementById("work")
+.addEventListener("input", saveDraft);
+
+document.getElementById("memo")
+.addEventListener("input", saveDraft);
+
+
+// =====================================
+// 日付が変更された場合も保存
+// =====================================
+
+document.getElementById("date")
+.addEventListener("change", saveDraft);
+
+
+// =====================================
 // 保存
-// ============================
+// =====================================
 
 function save(){
 
@@ -251,9 +427,7 @@ function save(){
     let distance = end - start;
 
 
-    // ============================
     // 保存するデータ
-    // ============================
 
     let report = {
 
@@ -291,12 +465,17 @@ function save(){
     reports.push(report);
 
 
-    // スマホのブラウザに保存
+    // 保存
 
     localStorage.setItem(
         "soukouReports",
         JSON.stringify(reports)
     );
+
+
+    // ★正式保存したので途中データを削除
+
+    localStorage.removeItem("soukouDraft");
 
 
     // 一覧を更新
@@ -325,12 +504,17 @@ function save(){
 
     document.getElementById("memo").value = "";
 
+
+    // 日付は今日のまま
+
+    setToday();
+
 }
 
 
-// ============================
+// =====================================
 // 日報を削除
-// ============================
+// =====================================
 
 function deleteReport(index){
 
@@ -341,28 +525,20 @@ function deleteReport(index){
     }
 
 
-    // 保存データを取得
-
     let reports =
         JSON.parse(
             localStorage.getItem("soukouReports")
         ) || [];
 
 
-    // 指定した日報を削除
-
     reports.splice(index, 1);
 
-
-    // 更新したデータを保存
 
     localStorage.setItem(
         "soukouReports",
         JSON.stringify(reports)
     );
 
-
-    // 一覧を更新
 
     displayReports();
 
@@ -372,9 +548,9 @@ function deleteReport(index){
 }
 
 
-// ============================
+// =====================================
 // 保存した日報を表示
-// ============================
+// =====================================
 
 function displayReports(){
 
@@ -429,18 +605,23 @@ function displayReports(){
 }
 
 
-// ============================
-// ページを開いたときに
-// 保存済みデータを表示
-// ============================
+// =====================================
+// アプリを開いたとき
+// =====================================
 
+// 今日の日付・途中データを確認
+
+loadDraft();
+
+
+// 保存済みデータを表示
 
 displayReports();
 
 
-// ============================
+// =====================================
 // ホーム画面アプリ対応
-// ============================
+// =====================================
 
 if ("serviceWorker" in navigator) {
 
