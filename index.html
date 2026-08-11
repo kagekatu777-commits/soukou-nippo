@@ -3,17 +3,16 @@
 
 <head>
 
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1976d2">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1976d2">
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <title>走行日報</title>
-
+<title>走行日報</title>
 
 <style>
 
@@ -114,6 +113,27 @@ button{
     background:#eeeeee;
 }
 
+.auto-info{
+    font-size:14px;
+    color:#555;
+    margin-top:5px;
+}
+
+.edit-mode{
+    background:#fff3cd;
+    border:2px solid #ff9800;
+    border-radius:10px;
+    padding:10px;
+    margin-top:15px;
+    color:#795548;
+    font-weight:bold;
+    text-align:center;
+}
+
+.cancel-button{
+    background:#757575;
+}
+
 table{
     width:100%;
     margin-top:20px;
@@ -131,6 +151,17 @@ th{
     color:white;
 }
 
+.edit-button{
+    background:#2e7d32;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:8px 10px;
+    margin:0 0 5px 0;
+    width:auto;
+    font-size:14px;
+}
+
 .delete-button{
     background:#d32f2f;
     color:white;
@@ -142,22 +173,17 @@ th{
     font-size:14px;
 }
 
-.auto-info{
-    font-size:14px;
-    color:#555;
-    margin-top:5px;
+.action-cell{
+    white-space:nowrap;
 }
 
 </style>
 
 </head>
 
-
 <body>
 
-
 <div class="card">
-
 
 <h1>🚚走行日報</h1>
 
@@ -169,13 +195,12 @@ th{
 <div class="header-info">
 
     <div
-        class="header-company"
-        id="headerCompany">
+    class="header-company"
+    id="headerCompany">
 
         会社名未設定
 
     </div>
-
 
     <div class="header-row">
 
@@ -185,7 +210,6 @@ th{
         </span>
 
     </div>
-
 
     <div class="header-row">
 
@@ -199,14 +223,13 @@ th{
 </div>
 
 
-
 <!-- ========================= -->
 <!-- 基本情報設定 -->
 <!-- ========================= -->
 
 <button
-    class="settings-button"
-    onclick="toggleSettings()">
+class="settings-button"
+onclick="toggleSettings()">
 
     ⚙ 基本情報を変更
 
@@ -214,23 +237,21 @@ th{
 
 
 <div
-    class="settings"
-    id="settings">
-
+class="settings"
+id="settings">
 
     <h2>
         基本情報設定
     </h2>
-
 
     <label>
         会社名
     </label>
 
     <input
-        type="text"
-        id="settingCompany"
-        placeholder="会社名を入力">
+    type="text"
+    id="settingCompany"
+    placeholder="会社名を入力">
 
 
     <label>
@@ -238,9 +259,9 @@ th{
     </label>
 
     <input
-        type="text"
-        id="settingCar"
-        placeholder="車番を入力">
+    type="text"
+    id="settingCar"
+    placeholder="車番を入力">
 
 
     <label>
@@ -248,22 +269,34 @@ th{
     </label>
 
     <input
-        type="text"
-        id="settingDriver"
-        placeholder="運転者名を入力">
+    type="text"
+    id="settingDriver"
+    placeholder="運転者名を入力">
 
 
     <button
-        class="settings-save"
-        onclick="saveSettings()">
+    class="settings-save"
+    onclick="saveSettings()">
 
         基本情報を保存
 
     </button>
 
-
 </div>
 
+
+<!-- ========================= -->
+<!-- 編集中表示 -->
+<!-- ========================= -->
+
+<div
+id="editMode"
+class="edit-mode"
+style="display:none;">
+
+    ✏️ 日報を編集中です
+
+</div>
 
 
 <!-- ========================= -->
@@ -275,9 +308,8 @@ th{
 </label>
 
 <input
-    type="date"
-    id="date">
-
+type="date"
+id="date">
 
 
 <label>
@@ -285,14 +317,15 @@ th{
 </label>
 
 <input
-    type="number"
-    id="start"
-    placeholder="前日の帰社時走行距離から自動入力">
+type="number"
+id="start"
+placeholder="前日の帰社時走行距離から自動入力">
 
 <div class="auto-info">
-    ※前日の日報が保存されている場合、自動入力されます
-</div>
 
+    ※前日の日報が保存されている場合、自動入力されます
+
+</div>
 
 
 <label>
@@ -300,10 +333,9 @@ th{
 </label>
 
 <input
-    type="number"
-    id="returnMileage"
-    placeholder="帰社時の走行距離を入力">
-
+type="number"
+id="returnMileage"
+placeholder="帰社時の走行距離を入力">
 
 
 <label>
@@ -311,12 +343,11 @@ th{
 </label>
 
 <input
-    type="text"
-    id="distance"
-    class="distance"
-    readonly
-    placeholder="自動計算">
-
+type="text"
+id="distance"
+class="distance"
+readonly
+placeholder="自動計算">
 
 
 <label>
@@ -324,10 +355,9 @@ th{
 </label>
 
 <input
-    type="text"
-    id="work"
-    placeholder="運行内容を入力">
-
+type="text"
+id="work"
+placeholder="運行内容を入力">
 
 
 <label>
@@ -335,19 +365,29 @@ th{
 </label>
 
 <input
-    type="text"
-    id="memo"
-    placeholder="備考を入力">
-
+type="text"
+id="memo"
+placeholder="備考を入力">
 
 
 <button
-    onclick="save()">
+id="saveButton"
+onclick="save()">
 
     日報を保存
 
 </button>
 
+
+<button
+id="cancelEditButton"
+class="cancel-button"
+onclick="cancelEdit()"
+style="display:none;">
+
+    編集をキャンセル
+
+</button>
 
 
 <!-- ========================= -->
@@ -366,7 +406,7 @@ th{
 <th>出発</th>
 <th>帰社</th>
 <th>控除走行距離</th>
-<th>削除</th>
+<th>操作</th>
 
 </tr>
 
@@ -376,15 +416,20 @@ th{
 <tbody id="list">
 </tbody>
 
-
 </table>
 
 
 </div>
 
 
-
 <script>
+
+
+// =====================================
+// 編集中の日報番号
+// =====================================
+
+let editingIndex = -1;
 
 
 // =====================================
@@ -393,25 +438,20 @@ th{
 
 function getToday(){
 
-    let today =
-        new Date();
-
+    let today = new Date();
 
     let year =
         today.getFullYear();
-
 
     let month =
         String(
             today.getMonth() + 1
         ).padStart(2,"0");
 
-
     let day =
         String(
             today.getDate()
         ).padStart(2,"0");
-
 
     return (
         year +
@@ -422,7 +462,6 @@ function getToday(){
     );
 
 }
-
 
 
 // =====================================
@@ -436,27 +475,22 @@ function getPreviousDate(dateString){
             dateString + "T00:00:00"
         );
 
-
     date.setDate(
         date.getDate() - 1
     );
 
-
     let year =
         date.getFullYear();
-
 
     let month =
         String(
             date.getMonth() + 1
         ).padStart(2,"0");
 
-
     let day =
         String(
             date.getDate()
         ).padStart(2,"0");
-
 
     return (
         year +
@@ -469,9 +503,8 @@ function getPreviousDate(dateString){
 }
 
 
-
 // =====================================
-// 今日の日付をセット
+// 今日の日付
 // =====================================
 
 function setToday(){
@@ -482,9 +515,8 @@ function setToday(){
 }
 
 
-
 // =====================================
-// 前日の帰社時走行距離を取得
+// 前日の帰社時走行距離
 // =====================================
 
 function loadPreviousMileage(){
@@ -492,54 +524,41 @@ function loadPreviousMileage(){
     let date =
         document.getElementById("date").value;
 
-
     if(!date){
-
         return;
-
     }
 
+    // 編集中は自動変更しない
 
-    // すでに出発距離が入力されていれば
-    // 自動変更しない
+    if(editingIndex !== -1){
+        return;
+    }
+
+    // すでに入力されていれば変更しない
 
     let currentStart =
         document.getElementById("start").value;
 
-
     if(currentStart){
-
         return;
-
     }
-
 
     let previousDate =
         getPreviousDate(date);
 
-
-    // 基本情報を取得
 
     let settingsData =
         localStorage.getItem(
             "soukouSettings"
         );
 
-
     if(!settingsData){
-
         return;
-
     }
 
-
     let settings =
-        JSON.parse(
-            settingsData
-        );
+        JSON.parse(settingsData);
 
-
-    // 保存済み日報を取得
 
     let reports =
         JSON.parse(
@@ -548,8 +567,6 @@ function loadPreviousMileage(){
             )
         ) || [];
 
-
-    // 前日 ＋ 同じ車番の日報を探す
 
     let previousReports =
         reports.filter(
@@ -564,19 +581,12 @@ function loadPreviousMileage(){
         );
 
 
-    // 前日のデータがなければ何もしない
-
     if(
         previousReports.length === 0
     ){
-
         return;
-
     }
 
-
-    // 複数ある場合は
-    // 最後に保存したものを使用
 
     let previousReport =
         previousReports[
@@ -590,12 +600,12 @@ function loadPreviousMileage(){
         previousReport.end !== ""
     ){
 
-        document.getElementById("start").value =
+        document.getElementById(
+            "start"
+        ).value =
             previousReport.end;
 
-
         calculateDistance();
-
 
         saveDraft();
 
@@ -604,9 +614,8 @@ function loadPreviousMileage(){
 }
 
 
-
 // =====================================
-// 基本情報設定を開閉
+// 基本情報設定
 // =====================================
 
 function toggleSettings(){
@@ -630,7 +639,6 @@ function toggleSettings(){
         settings.style.display =
             "block";
 
-
         loadSettings();
 
     }
@@ -638,9 +646,8 @@ function toggleSettings(){
 }
 
 
-
 // =====================================
-// 基本情報を保存
+// 基本情報保存
 // =====================================
 
 function saveSettings(){
@@ -674,20 +681,14 @@ function saveSettings(){
         );
 
         return;
-
     }
 
 
     let settings = {
 
-        company:
-            company,
-
-        car:
-            car,
-
-        driver:
-            driver
+        company:company,
+        car:car,
+        driver:driver
 
     };
 
@@ -701,11 +702,10 @@ function saveSettings(){
     updateHeader();
 
 
-    // 設定画面を閉じる
-
     document.getElementById(
         "settings"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
 
     alert(
@@ -713,17 +713,13 @@ function saveSettings(){
     );
 
 
-    // 車番を変更した場合なども考えて
-    // 出発距離が空欄なら再確認
-
     loadPreviousMileage();
 
 }
 
 
-
 // =====================================
-// 基本情報を読み込む
+// 基本情報読み込み
 // =====================================
 
 function loadSettings(){
@@ -740,19 +736,15 @@ function loadSettings(){
             "settingCompany"
         ).value = "";
 
-
         document.getElementById(
             "settingCar"
         ).value = "";
-
 
         document.getElementById(
             "settingDriver"
         ).value = "";
 
-
         return;
-
     }
 
 
@@ -780,9 +772,8 @@ function loadSettings(){
 }
 
 
-
 // =====================================
-// ヘッダーを更新
+// ヘッダー更新
 // =====================================
 
 function updateHeader(){
@@ -800,21 +791,17 @@ function updateHeader(){
         ).textContent =
             "会社名未設定";
 
-
         document.getElementById(
             "headerCar"
         ).textContent =
             "未設定";
-
 
         document.getElementById(
             "headerDriver"
         ).textContent =
             "未設定";
 
-
         return;
-
     }
 
 
@@ -845,7 +832,6 @@ function updateHeader(){
 }
 
 
-
 // =====================================
 // 控除走行距離計算
 // =====================================
@@ -873,14 +859,10 @@ function calculateDistance(){
         start > 0
     ){
 
-        let distance =
-            end - start;
-
-
         document.getElementById(
             "distance"
         ).value =
-            distance + " km";
+            (end - start) + " km";
 
     }
     else{
@@ -894,12 +876,18 @@ function calculateDistance(){
 }
 
 
-
 // =====================================
-// 入力途中の日報を自動保存
+// 途中保存
 // =====================================
 
 function saveDraft(){
+
+    // 編集中は途中保存しない
+
+    if(editingIndex !== -1){
+        return;
+    }
+
 
     let draft = {
 
@@ -939,9 +927,8 @@ function saveDraft(){
 }
 
 
-
 // =====================================
-// 入力途中の日報を復元
+// 途中データ復元
 // =====================================
 
 function loadDraft(){
@@ -952,21 +939,13 @@ function loadDraft(){
         );
 
 
-    // 途中データがなければ
-    // 今日の日付を設定
-
     if(!saved){
 
         setToday();
 
-
-        // 前日の帰社距離を取得
-
         loadPreviousMileage();
 
-
         return;
-
     }
 
 
@@ -978,9 +957,6 @@ function loadDraft(){
         getToday();
 
 
-    // 日付が変わっていたら
-    // 古い途中データを削除
-
     if(
         draft.date !== today
     ){
@@ -989,21 +965,13 @@ function loadDraft(){
             "soukouDraft"
         );
 
-
         setToday();
-
-
-        // 前日の帰社距離を取得
 
         loadPreviousMileage();
 
-
         return;
-
     }
 
-
-    // 途中データを復元
 
     document.getElementById(
         "date"
@@ -1035,9 +1003,6 @@ function loadDraft(){
         draft.memo || "";
 
 
-    // 出発距離が空なら
-    // 前日の帰社距離を取得
-
     if(!draft.start){
 
         loadPreviousMileage();
@@ -1050,9 +1015,170 @@ function loadDraft(){
 }
 
 
+// =====================================
+// 編集モード開始
+// =====================================
+
+function editReport(index){
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+
+    let report =
+        reports[index];
+
+
+    if(!report){
+        return;
+    }
+
+
+    editingIndex = index;
+
+
+    // 入力欄にデータを入れる
+
+    document.getElementById(
+        "date"
+    ).value =
+        report.date;
+
+
+    document.getElementById(
+        "start"
+    ).value =
+        report.start;
+
+
+    document.getElementById(
+        "returnMileage"
+    ).value =
+        report.end;
+
+
+    document.getElementById(
+        "work"
+    ).value =
+        report.work || "";
+
+
+    document.getElementById(
+        "memo"
+    ).value =
+        report.memo || "";
+
+
+    calculateDistance();
+
+
+    // 編集表示
+
+    document.getElementById(
+        "editMode"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "saveButton"
+    ).textContent =
+        "変更を保存";
+
+
+    document.getElementById(
+        "cancelEditButton"
+    ).style.display =
+        "block";
+
+
+    // 入力欄の位置まで移動
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
 
 // =====================================
-// 入力変更時に自動保存
+// 編集キャンセル
+// =====================================
+
+function cancelEdit(){
+
+    editingIndex = -1;
+
+
+    document.getElementById(
+        "editMode"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "saveButton"
+    ).textContent =
+        "日報を保存";
+
+
+    document.getElementById(
+        "cancelEditButton"
+    ).style.display =
+        "none";
+
+
+    clearInputs();
+
+
+    setToday();
+
+
+    loadPreviousMileage();
+
+}
+
+
+// =====================================
+// 入力欄クリア
+// =====================================
+
+function clearInputs(){
+
+    document.getElementById(
+        "start"
+    ).value = "";
+
+
+    document.getElementById(
+        "returnMileage"
+    ).value = "";
+
+
+    document.getElementById(
+        "distance"
+    ).value = "";
+
+
+    document.getElementById(
+        "work"
+    ).value = "";
+
+
+    document.getElementById(
+        "memo"
+    ).value = "";
+
+}
+
+
+// =====================================
+// 入力変更時
 // =====================================
 
 document.getElementById(
@@ -1069,7 +1195,6 @@ document.getElementById(
 );
 
 
-
 document.getElementById(
     "returnMileage"
 ).addEventListener(
@@ -1084,7 +1209,6 @@ document.getElementById(
 );
 
 
-
 document.getElementById(
     "work"
 ).addEventListener(
@@ -1095,7 +1219,6 @@ document.getElementById(
 
     }
 );
-
 
 
 document.getElementById(
@@ -1110,9 +1233,8 @@ document.getElementById(
 );
 
 
-
 // =====================================
-// 日付変更時
+// 日付変更
 // =====================================
 
 document.getElementById(
@@ -1121,8 +1243,10 @@ document.getElementById(
     "change",
     function(){
 
-        // 日付を変更したら
-        // 出発距離を一旦空にする
+        if(editingIndex !== -1){
+            return;
+        }
+
 
         document.getElementById(
             "start"
@@ -1137,14 +1261,10 @@ document.getElementById(
         saveDraft();
 
 
-        // 選択した日の前日の
-        // 帰社距離を取得
-
         loadPreviousMileage();
 
     }
 );
-
 
 
 // =====================================
@@ -1158,8 +1278,6 @@ function save(){
             "soukouSettings"
         );
 
-
-    // 基本情報チェック
 
     if(!settingsData){
 
@@ -1176,14 +1294,11 @@ function save(){
 
 
         return;
-
     }
 
 
     let settings =
-        JSON.parse(
-            settingsData
-        );
+        JSON.parse(settingsData);
 
 
     let date =
@@ -1220,7 +1335,6 @@ function save(){
         ).value;
 
 
-
     // 入力チェック
 
     if(
@@ -1233,14 +1347,9 @@ function save(){
             "日付・出発時走行距離・帰社時走行距離を入力してください"
         );
 
-
         return;
-
     }
 
-
-
-    // 走行距離チェック
 
     if(
         end < start
@@ -1250,19 +1359,112 @@ function save(){
             "帰社時走行距離は、出発時走行距離以上にしてください"
         );
 
-
         return;
-
     }
-
 
 
     let distance =
         end - start;
 
 
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
 
-    // 保存データ
+
+    // =================================
+    // 編集中
+    // =================================
+
+    if(editingIndex !== -1){
+
+        reports[editingIndex] = {
+
+            company:
+                settings.company,
+
+            date:
+                date,
+
+            car:
+                settings.car,
+
+            start:
+                start,
+
+            end:
+                end,
+
+            distance:
+                distance,
+
+            driver:
+                settings.driver,
+
+            work:
+                work,
+
+            memo:
+                memo
+
+        };
+
+
+        localStorage.setItem(
+            "soukouReports",
+            JSON.stringify(reports)
+        );
+
+
+        alert(
+            "日報を変更しました！"
+        );
+
+
+        editingIndex = -1;
+
+
+        document.getElementById(
+            "editMode"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "saveButton"
+        ).textContent =
+            "日報を保存";
+
+
+        document.getElementById(
+            "cancelEditButton"
+        ).style.display =
+            "none";
+
+
+        clearInputs();
+
+
+        setToday();
+
+
+        displayReports();
+
+
+        loadPreviousMileage();
+
+
+        return;
+
+    }
+
+
+    // =================================
+    // 新規保存
+    // =================================
 
     let report = {
 
@@ -1296,23 +1498,10 @@ function save(){
     };
 
 
+    reports.push(
+        report
+    );
 
-    // 保存済みデータ取得
-
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
-
-
-
-    reports.push(report);
-
-
-
-    // 保存
 
     localStorage.setItem(
         "soukouReports",
@@ -1320,19 +1509,12 @@ function save(){
     );
 
 
-
-    // 途中データを削除
-
     localStorage.removeItem(
         "soukouDraft"
     );
 
 
-
-    // 一覧更新
-
     displayReports();
-
 
 
     alert(
@@ -1340,46 +1522,12 @@ function save(){
     );
 
 
+    clearInputs();
 
-    // 入力欄をクリア
-
-    document.getElementById(
-        "start"
-    ).value = "";
-
-
-    document.getElementById(
-        "returnMileage"
-    ).value = "";
-
-
-    document.getElementById(
-        "distance"
-    ).value = "";
-
-
-    document.getElementById(
-        "work"
-    ).value = "";
-
-
-    document.getElementById(
-        "memo"
-    ).value = "";
-
-
-
-    // 日付は今日
 
     setToday();
 
-
-    // 次回起動時には
-    // 今日の帰社距離を
-    // 翌日の出発距離として利用
-
 }
-
 
 
 // =====================================
@@ -1395,7 +1543,6 @@ function deleteReport(index){
     ){
 
         return;
-
     }
 
 
@@ -1429,9 +1576,8 @@ function deleteReport(index){
 }
 
 
-
 // =====================================
-// 保存済み日報を表示
+// 保存済み日報表示
 // =====================================
 
 function displayReports(){
@@ -1451,7 +1597,6 @@ function displayReports(){
 
 
     list.innerHTML = "";
-
 
 
     reports.forEach(
@@ -1485,11 +1630,21 @@ function displayReports(){
                     ${report.distance} km
                 </td>
 
-                <td>
+                <td class="action-cell">
 
                     <button
-                        class="delete-button"
-                        onclick="deleteReport(${index})">
+                    class="edit-button"
+                    onclick="editReport(${index})">
+
+                        編集
+
+                    </button>
+
+                    <br>
+
+                    <button
+                    class="delete-button"
+                    onclick="deleteReport(${index})">
 
                         削除
 
@@ -1510,34 +1665,21 @@ function displayReports(){
 }
 
 
-
 // =====================================
-// アプリ起動時
+// アプリ起動
 // =====================================
-
-// ヘッダー表示
 
 updateHeader();
 
-
-// 基本情報読み込み
-
 loadSettings();
 
-
-// 日報入力状態を読み込み
-
 loadDraft();
-
-
-// 保存済み日報を表示
 
 displayReports();
 
 
-
 // =====================================
-// ホーム画面アプリ対応
+// PWA対応
 // =====================================
 
 if(
@@ -1550,9 +1692,7 @@ if(
 
 }
 
-
 </script>
-
 
 </body>
 </html>
