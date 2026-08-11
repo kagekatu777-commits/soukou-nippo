@@ -140,24 +140,202 @@ let distance = Number(end) - Number(start);
 let date=document.getElementById("date").value;
 let car=document.getElementById("car").value;
 let start=document.getElementById("start").value;
-let end=document.getElementById("end").value;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>走行日報</title>
 
-let row=`
-<tr>
-<td>${date}</td>
-<td>${driver}</td>
-<td>${car}</td>
-<td>${start}</td>
-<td>${end}</td>
-<td>${distance} km</td>
-</tr>
-`;
-
-document.getElementById("list").innerHTML+=row;
-
+<style>
+body{
+    font-family:sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:15px;
 }
 
-document.getElementById("date").valueAsDate=new Date();
+.card{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+h1{
+    text-align:center;
+    color:#1565c0;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
+    font-size:18px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    font-size:20px;
+    box-sizing:border-box;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    font-size:22px;
+    background:#1565c0;
+    color:white;
+    border:none;
+    border-radius:10px;
+}
+
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
+}
+
+th{
+    background:#1565c0;
+    color:white;
+}
+
+.distance{
+    background:#eeeeee;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🚚走行日報</h1>
+
+<label>会社名</label>
+<input type="text" id="company">
+
+<label>車番</label>
+<input type="text" id="car">
+
+<label>日付</label>
+<input type="date" id="date">
+
+<label>出発時走行距離</label>
+<input type="number" id="start" placeholder="出発時の走行距離を入力">
+
+<label>帰社時走行距離</label>
+<input type="number" id="returnMileage" placeholder="帰社時の走行距離を入力">
+
+<label>走行距離</label>
+<input type="text" id="distance" class="distance" readonly placeholder="自動計算">
+
+<label>運転者名</label>
+<input type="text" id="driver">
+
+<label>運行内容</label>
+<input type="text" id="work">
+
+<label>備考</label>
+<input type="text" id="memo">
+
+<button onclick="save()">保存</button>
+
+<table>
+
+<thead>
+<tr>
+<th>日付</th>
+<th>運転者</th>
+<th>車番</th>
+<th>出発</th>
+<th>帰社</th>
+<th>走行距離</th>
+</tr>
+</thead>
+
+<tbody id="list">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+// 日付を今日にする
+document.getElementById("date").valueAsDate = new Date();
+
+// 走行距離を自動計算
+function calculateDistance(){
+
+    let start = Number(document.getElementById("start").value);
+    let end = Number(document.getElementById("returnMileage").value);
+
+    if(end >= start && start > 0){
+        let distance = end - start;
+        document.getElementById("distance").value = distance + " km";
+    }else{
+        document.getElementById("distance").value = "";
+    }
+}
+
+// 出発時・帰社時の入力が変わったら計算
+document.getElementById("start").addEventListener("input", calculateDistance);
+document.getElementById("returnMileage").addEventListener("input", calculateDistance);
+
+
+// 保存
+function save(){
+
+    let driver = document.getElementById("driver").value;
+    let work = document.getElementById("work").value;
+    let memo = document.getElementById("memo").value;
+
+    let date = document.getElementById("date").value;
+    let car = document.getElementById("car").value;
+
+    let start = Number(document.getElementById("start").value);
+    let end = Number(document.getElementById("returnMileage").value);
+
+    let distance = end - start;
+
+    if(!date || !car || !driver || !start || !end){
+        alert("必要な項目を入力してください");
+        return;
+    }
+
+    if(end < start){
+        alert("帰社時走行距離は、出発時走行距離以上にしてください");
+        return;
+    }
+
+    let row = `
+    <tr>
+        <td>${date}</td>
+        <td>${driver}</td>
+        <td>${car}</td>
+        <td>${start}</td>
+        <td>${end}</td>
+        <td>${distance} km</td>
+    </tr>
+    `;
+
+    document.getElementById("list").innerHTML += row;
+
+}
 
 </script>
 
