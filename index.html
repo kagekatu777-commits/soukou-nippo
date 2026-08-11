@@ -80,11 +80,10 @@ th{
     border:none;
     border-radius:6px;
     padding:8px 10px;
-    font-size:16px;
     margin:0;
     width:auto;
+    font-size:14px;
 }
-
 </style>
 
 </head>
@@ -160,11 +159,13 @@ document.getElementById("date").valueAsDate = new Date();
 
 function calculateDistance(){
 
-    let start =
-        Number(document.getElementById("start").value);
+    let start = Number(
+        document.getElementById("start").value
+    );
 
-    let end =
-        Number(document.getElementById("returnMileage").value);
+    let end = Number(
+        document.getElementById("returnMileage").value
+    );
 
     if(end >= start && start > 0){
 
@@ -338,7 +339,7 @@ function deleteReport(index){
     }
 
 
-    // 保存されているデータを取得
+    // 保存データを取得
 
     let reports =
         JSON.parse(
@@ -346,7 +347,7 @@ function deleteReport(index){
         ) || [];
 
 
-    // 指定した日報を1件削除
+    // 指定した日報を削除
 
     reports.splice(index, 1);
 
@@ -362,6 +363,9 @@ function deleteReport(index){
     // 一覧を更新
 
     displayReports();
+
+
+    alert("日報を削除しました");
 
 }
 
