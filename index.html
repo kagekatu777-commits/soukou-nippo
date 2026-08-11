@@ -134,67 +134,236 @@ th{
 
 <script>
 
+// ============================
 // 日付を今日にする
+// ============================
+
 document.getElementById("date").valueAsDate = new Date();
 
+
+// ============================
 // 控除走行距離を自動計算
+// ============================
+
 function calculateDistance(){
 
     let start = Number(document.getElementById("start").value);
     let end = Number(document.getElementById("returnMileage").value);
 
     if(end >= start && start > 0){
+
         let distance = end - start;
-        document.getElementById("distance").value = distance + " km";
+
+        document.getElementById("distance").value =
+            distance + " km";
+
     }else{
+
         document.getElementById("distance").value = "";
+
     }
 }
 
+
 // 出発時・帰社時の入力が変わったら計算
-document.getElementById("start").addEventListener("input", calculateDistance);
-document.getElementById("returnMileage").addEventListener("input", calculateDistance);
+
+document.getElementById("start")
+.addEventListener("input", calculateDistance);
+
+document.getElementById("returnMileage")
+.addEventListener("input", calculateDistance);
 
 
+// ============================
 // 保存
+// ============================
+
 function save(){
 
-    let driver = document.getElementById("driver").value;
-    let work = document.getElementById("work").value;
-    let memo = document.getElementById("memo").value;
+    let company =
+        document.getElementById("company").value;
 
-    let date = document.getElementById("date").value;
-    let car = document.getElementById("car").value;
+    let date =
+        document.getElementById("date").value;
 
-    let start = Number(document.getElementById("start").value);
-    let end = Number(document.getElementById("returnMileage").value);
+    let car =
+        document.getElementById("car").value;
+
+    let start =
+        Number(document.getElementById("start").value);
+
+    let end =
+        Number(document.getElementById("returnMileage").value);
+
+    let driver =
+        document.getElementById("driver").value;
+
+    let work =
+        document.getElementById("work").value;
+
+    let memo =
+        document.getElementById("memo").value;
+
+
+    // 入力チェック
+
+    if(!date || !car || !driver || !start || !end){
+
+        alert("必要な項目を入力してください");
+
+        return;
+    }
+
+
+    // 走行距離チェック
+
+    if(end < start){
+
+        alert(
+            "帰社時走行距離は、出発時走行距離以上にしてください"
+        );
+
+        return;
+    }
+
+
+    // 控除走行距離
 
     let distance = end - start;
 
-    if(!date || !car || !driver || !start || !end){
-        alert("必要な項目を入力してください");
-        return;
-    }
 
-    if(end < start){
-        alert("帰社時走行距離は、出発時走行距離以上にしてください");
-        return;
-    }
+    // ============================
+    // 保存するデータ
+    // ============================
 
-    let row = `
-    <tr>
-        <td>${date}</td>
-        <td>${driver}</td>
-        <td>${car}</td>
-        <td>${start}</td>
-        <td>${end}</td>
-        <td>${distance} km</td>
-    </tr>
-    `;
+    let report = {
 
-    document.getElementById("list").innerHTML += row;
+        company: company,
+
+        date: date,
+
+        car: car,
+
+        start: start,
+
+        end: end,
+
+        distance: distance,
+
+        driver: driver,
+
+        work: work,
+
+        memo: memo
+
+    };
+
+
+    // 今までの保存データを取得
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem("soukouReports")
+        ) || [];
+
+
+    // 新しい日報を追加
+
+    reports.push(report);
+
+
+    // スマホのブラウザに保存
+
+    localStorage.setItem(
+        "soukouReports",
+        JSON.stringify(reports)
+    );
+
+
+    // 一覧を更新
+
+    displayReports();
+
+
+    // 保存完了
+
+    alert("日報を保存しました！");
+
+
+    // 入力欄をクリア
+
+    document.getElementById("car").value = "";
+
+    document.getElementById("start").value = "";
+
+    document.getElementById("returnMileage").value = "";
+
+    document.getElementById("distance").value = "";
+
+    document.getElementById("driver").value = "";
+
+    document.getElementById("work").value = "";
+
+    document.getElementById("memo").value = "";
 
 }
+
+
+// ============================
+// 保存した日報を表示
+// ============================
+
+function displayReports(){
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem("soukouReports")
+        ) || [];
+
+
+    let list =
+        document.getElementById("list");
+
+
+    list.innerHTML = "";
+
+
+    reports.forEach(function(report){
+
+        let row = `
+
+        <tr>
+
+            <td>${report.date}</td>
+
+            <td>${report.driver}</td>
+
+            <td>${report.car}</td>
+
+            <td>${report.start}</td>
+
+            <td>${report.end}</td>
+
+            <td>${report.distance} km</td>
+
+        </tr>
+
+        `;
+
+
+        list.innerHTML += row;
+
+    });
+
+}
+
+
+// ============================
+// ページを開いたときに
+// 保存済みデータを表示
+// ============================
+
+displayReports();
 
 </script>
 
