@@ -1389,3 +1389,20 @@ function save(){
         JSON.parse(
             localStorage.getItem(
                 "soukou
+                    navigator.serviceWorker.register("sw.js")
+    .catch(function(error){
+
+        console.log(
+            "Service Worker登録エラー：",
+            error
+        );
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>
