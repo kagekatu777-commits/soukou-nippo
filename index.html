@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#1976d2">
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>走行日報</title>
@@ -147,8 +146,22 @@ button{
     color:#1565c0;
 }
 
-.monthly-print button{
-    background:#1565c0;
+.monthly-list{
+    margin-top:25px;
+    display:none;
+}
+
+.monthly-list h2{
+    color:#1565c0;
+}
+
+.monthly-summary{
+    background:#eeeeee;
+    padding:12px;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
 }
 
 table{
@@ -195,24 +208,6 @@ th{
     white-space:nowrap;
 }
 
-.monthly-list{
-    margin-top:25px;
-    display:none;
-}
-
-.monthly-list h2{
-    color:#1565c0;
-}
-
-.monthly-summary{
-    background:#eeeeee;
-    padding:12px;
-    border-radius:8px;
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
 @media(max-width:600px){
 
     table{
@@ -238,50 +233,36 @@ th{
 <h1>🚚走行日報</h1>
 
 
-<!-- ========================= -->
-<!-- ヘッダー基本情報 -->
-<!-- ========================= -->
+<!-- 基本情報表示 -->
 
 <div class="header-info">
 
     <div
     class="header-company"
     id="headerCompany">
-
         会社名未設定
-
     </div>
 
     <div class="header-row">
-
         車番：
-        <span id="headerCar">
-            未設定
-        </span>
-
+        <span id="headerCar">未設定</span>
     </div>
 
     <div class="header-row">
-
         運転者：
-        <span id="headerDriver">
-            未設定
-        </span>
-
+        <span id="headerDriver">未設定</span>
     </div>
 
 </div>
 
 
-<!-- ========================= -->
 <!-- 基本情報設定 -->
-<!-- ========================= -->
 
 <button
 class="settings-button"
 onclick="toggleSettings()">
 
-    ⚙ 基本情報を変更
+⚙ 基本情報を変更
 
 </button>
 
@@ -290,60 +271,56 @@ onclick="toggleSettings()">
 class="settings"
 id="settings">
 
-    <h2>基本情報設定</h2>
+<h2>基本情報設定</h2>
 
-    <label>会社名</label>
+<label>会社名</label>
 
-    <input
-    type="text"
-    id="settingCompany"
-    placeholder="会社名を入力">
-
-
-    <label>車番</label>
-
-    <input
-    type="text"
-    id="settingCar"
-    placeholder="車番を入力">
+<input
+type="text"
+id="settingCompany"
+placeholder="会社名を入力">
 
 
-    <label>運転者名</label>
+<label>車番</label>
 
-    <input
-    type="text"
-    id="settingDriver"
-    placeholder="運転者名を入力">
+<input
+type="text"
+id="settingCar"
+placeholder="車番を入力">
 
 
-    <button
-    class="settings-save"
-    onclick="saveSettings()">
+<label>運転者名</label>
 
-        基本情報を保存
+<input
+type="text"
+id="settingDriver"
+placeholder="運転者名を入力">
 
-    </button>
+
+<button
+class="settings-save"
+onclick="saveSettings()">
+
+基本情報を保存
+
+</button>
 
 </div>
 
 
-<!-- ========================= -->
 <!-- 編集中 -->
-<!-- ========================= -->
 
 <div
 id="editMode"
 class="edit-mode"
 style="display:none;">
 
-    ✏️ 日報を編集中です
+✏️ 日報を編集中です
 
 </div>
 
 
-<!-- ========================= -->
 <!-- 日報入力 -->
-<!-- ========================= -->
 
 <label>日付</label>
 
@@ -361,7 +338,7 @@ placeholder="前日の帰社時走行距離から自動入力">
 
 <div class="auto-info">
 
-    ※前日の日報が保存されている場合、自動入力されます
+※前日の日報が保存されている場合、自動入力されます
 
 </div>
 
@@ -404,7 +381,7 @@ placeholder="備考を入力">
 id="saveButton"
 onclick="save()">
 
-    日報を保存
+日報を保存
 
 </button>
 
@@ -415,87 +392,80 @@ class="cancel-button"
 onclick="cancelEdit()"
 style="display:none;">
 
-    編集をキャンセル
+編集をキャンセル
 
 </button>
 
 
-<!-- ========================= -->
-<!-- 月間A4 PDF -->
-<!-- ========================= -->
+<!-- 月間印刷 -->
 
 <div class="monthly-print">
 
-    <h2>📄 月間A4 PDF</h2>
+<h2>📄 月間A4 PDF</h2>
 
-    <label>印刷する月</label>
+<label>印刷する月</label>
 
-    <input
-    type="month"
-    id="printMonth">
+<input
+type="month"
+id="printMonth">
 
 
-    <button
-    onclick="openMonthlyPrint()">
+<button
+onclick="openMonthlyPrint()">
 
-        🖨️ A4 PDFプレビュー
+🖨️ A4 PDFプレビュー
 
-    </button>
+</button>
 
 </div>
 
 
-<!-- ========================= -->
 <!-- 月間一覧 -->
-<!-- ========================= -->
 
 <div
 class="monthly-list"
 id="monthlyList">
 
-    <h2>
-        📅 月間日報一覧
-    </h2>
+<h2>📅 月間日報一覧</h2>
 
-    <div
-    class="monthly-summary"
-    id="monthlySummary">
-    </div>
+<div
+class="monthly-summary"
+id="monthlySummary">
+</div>
 
-    <table>
 
-    <thead>
+<table>
 
-    <tr>
+<thead>
 
-        <th>日付</th>
-        <th>運転者</th>
-        <th>車番</th>
-        <th>出発</th>
-        <th>帰社</th>
-        <th>距離</th>
-        <th>運行内容</th>
+<tr>
 
-    </tr>
+<th>日付</th>
+<th>運転者</th>
+<th>車番</th>
+<th>出発</th>
+<th>帰社</th>
+<th>距離</th>
+<th>運行内容</th>
 
-    </thead>
+</tr>
 
-    <tbody id="monthlyListBody">
-    </tbody>
+</thead>
 
-    </table>
+<tbody id="monthlyListBody">
+</tbody>
+
+</table>
 
 </div>
 
 
-<!-- ========================= -->
-<!-- 保存済み一覧 -->
-<!-- ========================= -->
+<!-- 保存済み日報 -->
 
 <h2
 style="color:#1565c0;margin-top:30px;">
 
-    📋 保存済み日報
+📋 保存済み日報
 
 </h2>
 
@@ -511,7 +481,7 @@ style="color:#1565c0;margin-top:30px;">
 <th>車番</th>
 <th>出発</th>
 <th>帰社</th>
-<th>控除走行距離</th>
+<th>距離</th>
 <th>操作</th>
 
 </tr>
@@ -528,6 +498,7 @@ style="color:#1565c0;margin-top:30px;">
 
 
 <script>
+
 
 // =====================================
 // 編集中の日報番号
@@ -561,7 +532,7 @@ function getToday(){
 
 
 // =====================================
-// 指定日の前日
+// 前日の日付
 // =====================================
 
 function getPreviousDate(dateString){
@@ -602,7 +573,7 @@ function setToday(){
 
 
 // =====================================
-// 前日の帰社時走行距離を自動入力
+// 前日の帰社距離を自動入力
 // =====================================
 
 function loadPreviousMileage(){
@@ -614,15 +585,9 @@ function loadPreviousMileage(){
         return;
     }
 
-
-    // 編集中は自動変更しない
-
     if(editingIndex !== -1){
         return;
     }
-
-
-    // すでに出発距離があれば変更しない
 
     let currentStart =
         document.getElementById("start").value;
@@ -631,7 +596,6 @@ function loadPreviousMileage(){
         return;
     }
 
-
     let settingsData =
         localStorage.getItem("soukouSettings");
 
@@ -639,22 +603,16 @@ function loadPreviousMileage(){
         return;
     }
 
-
     let settings =
         JSON.parse(settingsData);
-
 
     let reports =
         JSON.parse(
             localStorage.getItem("soukouReports")
         ) || [];
 
-
     let previousDate =
         getPreviousDate(date);
-
-
-    // 前日の同じ車番の日報を探す
 
     let previousReports =
         reports.filter(function(report){
@@ -666,21 +624,14 @@ function loadPreviousMileage(){
 
         });
 
-
     if(previousReports.length === 0){
-
         return;
-
     }
-
-
-    // 複数ある場合は最後に保存したもの
 
     let previousReport =
         previousReports[
             previousReports.length - 1
         ];
-
 
     if(
         previousReport.end !== undefined &&
@@ -701,14 +652,13 @@ function loadPreviousMileage(){
 
 
 // =====================================
-// 基本情報設定 開閉
+// 設定画面
 // =====================================
 
 function toggleSettings(){
 
     let settings =
         document.getElementById("settings");
-
 
     if(settings.style.display === "block"){
 
@@ -736,18 +686,15 @@ function saveSettings(){
             "settingCompany"
         ).value.trim();
 
-
     let car =
         document.getElementById(
             "settingCar"
         ).value.trim();
 
-
     let driver =
         document.getElementById(
             "settingDriver"
         ).value.trim();
-
 
     if(!company || !car || !driver){
 
@@ -759,42 +706,32 @@ function saveSettings(){
 
     }
 
-
     let settings = {
 
-        company: company,
-
-        car: car,
-
-        driver: driver
+        company:company,
+        car:car,
+        driver:driver
 
     };
-
 
     localStorage.setItem(
         "soukouSettings",
         JSON.stringify(settings)
     );
 
-
     updateHeader();
-
 
     document.getElementById(
         "settings"
     ).style.display = "none";
 
+    document.getElementById("start").value = "";
+
+    loadPreviousMileage();
 
     alert(
         "基本情報を保存しました！"
     );
-
-
-    // 車番変更後も前日の距離を確認
-
-    document.getElementById("start").value = "";
-
-    loadPreviousMileage();
 
 }
 
@@ -807,7 +744,6 @@ function loadSettings(){
 
     let saved =
         localStorage.getItem("soukouSettings");
-
 
     if(!saved){
 
@@ -827,22 +763,18 @@ function loadSettings(){
 
     }
 
-
     let settings =
         JSON.parse(saved);
-
 
     document.getElementById(
         "settingCompany"
     ).value =
         settings.company || "";
 
-
     document.getElementById(
         "settingCar"
     ).value =
         settings.car || "";
-
 
     document.getElementById(
         "settingDriver"
@@ -860,7 +792,6 @@ function updateHeader(){
 
     let saved =
         localStorage.getItem("soukouSettings");
-
 
     if(!saved){
 
@@ -883,10 +814,8 @@ function updateHeader(){
 
     }
 
-
     let settings =
         JSON.parse(saved);
-
 
     document.getElementById(
         "headerCompany"
@@ -894,13 +823,11 @@ function updateHeader(){
         settings.company ||
         "会社名未設定";
 
-
     document.getElementById(
         "headerCar"
     ).textContent =
         settings.car ||
         "未設定";
-
 
     document.getElementById(
         "headerDriver"
@@ -912,7 +839,7 @@ function updateHeader(){
 
 
 // =====================================
-// 控除走行距離計算
+// 走行距離計算
 // =====================================
 
 function calculateDistance(){
@@ -924,14 +851,12 @@ function calculateDistance(){
             ).value
         );
 
-
     let end =
         Number(
             document.getElementById(
                 "returnMileage"
             ).value
         );
-
 
     if(
         end >= start &&
@@ -955,7 +880,7 @@ function calculateDistance(){
 
 
 // =====================================
-// 入力途中の自動保存
+// 下書き保存
 // =====================================
 
 function saveDraft(){
@@ -963,7 +888,6 @@ function saveDraft(){
     if(editingIndex !== -1){
         return;
     }
-
 
     let draft = {
 
@@ -986,7 +910,6 @@ function saveDraft(){
 
     };
 
-
     localStorage.setItem(
         "soukouDraft",
         JSON.stringify(draft)
@@ -996,14 +919,13 @@ function saveDraft(){
 
 
 // =====================================
-// 入力途中データ復元
+// 下書き復元
 // =====================================
 
 function loadDraft(){
 
     let saved =
         localStorage.getItem("soukouDraft");
-
 
     if(!saved){
 
@@ -1015,17 +937,11 @@ function loadDraft(){
 
     }
 
-
     let draft =
         JSON.parse(saved);
 
-
     let today =
         getToday();
-
-
-    // 日付が変わっていたら
-    // 昨日の途中データは破棄
 
     if(draft.date !== today){
 
@@ -1041,30 +957,22 @@ function loadDraft(){
 
     }
 
-
     document.getElementById("date").value =
         draft.date || today;
 
-
     document.getElementById("start").value =
         draft.start || "";
-
 
     document.getElementById(
         "returnMileage"
     ).value =
         draft.returnMileage || "";
 
-
     document.getElementById("work").value =
         draft.work || "";
 
-
     document.getElementById("memo").value =
         draft.memo || "";
-
-
-    // 出発距離が空なら前日から取得
 
     if(!draft.start){
 
@@ -1072,14 +980,13 @@ function loadDraft(){
 
     }
 
-
     calculateDistance();
 
 }
 
 
 // =====================================
-// 編集開始
+// 編集
 // =====================================
 
 function editReport(index){
@@ -1091,67 +998,51 @@ function editReport(index){
             )
         ) || [];
 
-
     let report =
         reports[index];
-
 
     if(!report){
         return;
     }
 
-
     editingIndex = index;
-
 
     document.getElementById("date").value =
         report.date;
 
-
     document.getElementById("start").value =
         report.start;
-
 
     document.getElementById(
         "returnMileage"
     ).value =
         report.end;
 
-
     document.getElementById("work").value =
         report.work || "";
-
 
     document.getElementById("memo").value =
         report.memo || "";
 
-
     calculateDistance();
-
 
     document.getElementById(
         "editMode"
     ).style.display = "block";
-
 
     document.getElementById(
         "saveButton"
     ).textContent =
         "変更を保存";
 
-
     document.getElementById(
         "cancelEditButton"
     ).style.display =
         "block";
 
-
     window.scrollTo({
-
         top:0,
-
         behavior:"smooth"
-
     });
 
 }
@@ -1165,29 +1056,24 @@ function cancelEdit(){
 
     editingIndex = -1;
 
-
     document.getElementById(
         "editMode"
-    ).style.display = "none";
-
+    ).style.display =
+        "none";
 
     document.getElementById(
         "saveButton"
     ).textContent =
         "日報を保存";
 
-
     document.getElementById(
         "cancelEditButton"
     ).style.display =
         "none";
 
-
     clearInputs();
 
-
     setToday();
-
 
     loadPreviousMileage();
 
@@ -1195,7 +1081,7 @@ function cancelEdit(){
 
 
 // =====================================
-// 入力欄クリア
+// 入力クリア
 // =====================================
 
 function clearInputs(){
@@ -1274,19 +1160,19 @@ document.getElementById("date")
             return;
         }
 
-
         document.getElementById(
             "start"
         ).value = "";
 
+        document.getElementById(
+            "returnMileage"
+        ).value = "";
 
         document.getElementById(
             "distance"
         ).value = "";
 
-
         saveDraft();
-
 
         loadPreviousMileage();
 
@@ -1305,7 +1191,6 @@ function save(){
             "soukouSettings"
         );
 
-
     if(!settingsData){
 
         alert(
@@ -1313,31 +1198,27 @@ function save(){
             "会社名・車番・運転者名を設定してください"
         );
 
-
         document.getElementById(
             "settings"
         ).style.display =
             "block";
 
+        loadSettings();
 
         return;
 
     }
 
-
     let settings =
         JSON.parse(settingsData);
 
-
     let date =
         document.getElementById("date").value;
-
 
     let start =
         Number(
             document.getElementById("start").value
         );
-
 
     let end =
         Number(
@@ -1346,14 +1227,11 @@ function save(){
             ).value
         );
 
-
     let work =
         document.getElementById("work").value;
 
-
     let memo =
         document.getElementById("memo").value;
-
 
     if(
         !date ||
@@ -1369,7 +1247,6 @@ function save(){
 
     }
 
-
     if(end < start){
 
         alert(
@@ -1380,24 +1257,824 @@ function save(){
 
     }
 
-
     let distance =
         end - start;
-
 
     let reports =
         JSON.parse(
             localStorage.getItem(
-                "soukou
-                    navigator.serviceWorker.register("sw.js")
-    .catch(function(error){
+                "soukouReports"
+            )
+        ) || [];
 
-        console.log(
-            "Service Worker登録エラー：",
-            error
+
+    // 編集保存
+
+    if(editingIndex !== -1){
+
+        reports[editingIndex] = {
+
+            company:
+                settings.company,
+
+            date:
+                date,
+
+            car:
+                settings.car,
+
+            start:
+                start,
+
+            end:
+                end,
+
+            distance:
+                distance,
+
+            driver:
+                settings.driver,
+
+            work:
+                work,
+
+            memo:
+                memo
+
+        };
+
+        localStorage.setItem(
+            "soukouReports",
+            JSON.stringify(reports)
         );
 
-    });
+        alert(
+            "日報を変更しました！"
+        );
+
+        editingIndex = -1;
+
+        document.getElementById(
+            "editMode"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "saveButton"
+        ).textContent =
+            "日報を保存";
+
+        document.getElementById(
+            "cancelEditButton"
+        ).style.display =
+            "none";
+
+        clearInputs();
+
+        localStorage.removeItem(
+            "soukouDraft"
+        );
+
+        setToday();
+
+        displayReports();
+
+        loadPreviousMileage();
+
+        return;
+
+    }
+
+
+    // 新規保存
+
+    let report = {
+
+        company:
+            settings.company,
+
+        date:
+            date,
+
+        car:
+            settings.car,
+
+        start:
+            start,
+
+        end:
+            end,
+
+        distance:
+            distance,
+
+        driver:
+            settings.driver,
+
+        work:
+            work,
+
+        memo:
+            memo
+
+    };
+
+    reports.push(report);
+
+    localStorage.setItem(
+        "soukouReports",
+        JSON.stringify(reports)
+    );
+
+    localStorage.removeItem(
+        "soukouDraft"
+    );
+
+    displayReports();
+
+    alert(
+        "日報を保存しました！"
+    );
+
+    clearInputs();
+
+    setToday();
+
+    loadPreviousMileage();
+
+}
+
+
+// =====================================
+// 日報削除
+// =====================================
+
+function deleteReport(index){
+
+    if(
+        !confirm(
+            "この日報を削除しますか？"
+        )
+    ){
+
+        return;
+
+    }
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+    reports.splice(
+        index,
+        1
+    );
+
+    localStorage.setItem(
+        "soukouReports",
+        JSON.stringify(reports)
+    );
+
+    displayReports();
+
+    showMonthlyList();
+
+    alert(
+        "日報を削除しました"
+    );
+
+}
+
+
+// =====================================
+// 保存済み日報表示
+// =====================================
+
+function displayReports(){
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+    let list =
+        document.getElementById("list");
+
+    list.innerHTML = "";
+
+    reports.forEach(
+        function(report,index){
+
+            let row = `
+
+<tr>
+
+<td>${report.date}</td>
+
+<td>${report.driver || ""}</td>
+
+<td>${report.car || ""}</td>
+
+<td>${report.start || ""}</td>
+
+<td>${report.end || ""}</td>
+
+<td>${report.distance || 0} km</td>
+
+<td class="action-cell">
+
+<button
+class="edit-button"
+onclick="editReport(${index})">
+
+編集
+
+</button>
+
+<br>
+
+<button
+class="delete-button"
+onclick="deleteReport(${index})">
+
+削除
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+            list.innerHTML += row;
+
+        }
+    );
+
+}
+
+
+// =====================================
+// 月間一覧
+// =====================================
+
+function showMonthlyList(){
+
+    let month =
+        document.getElementById(
+            "printMonth"
+        ).value;
+
+    if(!month){
+
+        document.getElementById(
+            "monthlyList"
+        ).style.display =
+            "none";
+
+        return;
+
+    }
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+    let monthlyReports =
+        reports.filter(
+            function(report){
+
+                return report.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+    monthlyReports.sort(
+        function(a,b){
+
+            return a.date.localeCompare(
+                b.date
+            );
+
+        }
+    );
+
+    let total = 0;
+
+    let body =
+        document.getElementById(
+            "monthlyListBody"
+        );
+
+    body.innerHTML = "";
+
+    monthlyReports.forEach(
+        function(report){
+
+            total +=
+                Number(report.distance) || 0;
+
+            body.innerHTML += `
+
+<tr>
+
+<td>${report.date}</td>
+
+<td>${report.driver || ""}</td>
+
+<td>${report.car || ""}</td>
+
+<td>${report.start || ""}</td>
+
+<td>${report.end || ""}</td>
+
+<td>${report.distance || 0} km</td>
+
+<td>${report.work || ""}</td>
+
+</tr>
+
+`;
+
+        }
+    );
+
+    if(monthlyReports.length === 0){
+
+        body.innerHTML = `
+
+<tr>
+
+<td colspan="7">
+
+この月の日報はありません
+
+</td>
+
+</tr>
+
+`;
+
+    }
+
+    document.getElementById(
+        "monthlySummary"
+    ).textContent =
+        "月間走行距離合計：" +
+        total +
+        " km";
+
+    document.getElementById(
+        "monthlyList"
+    ).style.display =
+        "block";
+
+}
+
+
+// =====================================
+// A4 PDF
+// =====================================
+
+function openMonthlyPrint(){
+
+    let month =
+        document.getElementById(
+            "printMonth"
+        ).value;
+
+    if(!month){
+
+        alert(
+            "印刷する月を選択してください"
+        );
+
+        return;
+
+    }
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+    let monthlyReports =
+        reports.filter(
+            function(report){
+
+                return report.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+    monthlyReports.sort(
+        function(a,b){
+
+            return a.date.localeCompare(
+                b.date
+            );
+
+        }
+    );
+
+    let settingsData =
+        localStorage.getItem(
+            "soukouSettings"
+        );
+
+    let settings =
+        settingsData
+        ? JSON.parse(settingsData)
+        : {
+            company:"会社名未設定",
+            car:"未設定",
+            driver:"未設定"
+        };
+
+    let totalDistance = 0;
+
+    monthlyReports.forEach(
+        function(report){
+
+            totalDistance +=
+                Number(report.distance) || 0;
+
+        }
+    );
+
+    let year =
+        month.substring(0,4);
+
+    let monthNumber =
+        Number(
+            month.substring(5,7)
+        );
+
+    let rows = "";
+
+    monthlyReports.forEach(
+        function(report){
+
+            rows += `
+
+<tr>
+
+<td>${report.date}</td>
+
+<td>${report.driver || ""}</td>
+
+<td>${report.car || ""}</td>
+
+<td>${report.start || ""}</td>
+
+<td>${report.end || ""}</td>
+
+<td>${report.distance || 0} km</td>
+
+<td class="left">
+${report.work || ""}
+</td>
+
+<td class="left">
+${report.memo || ""}
+</td>
+
+</tr>
+
+`;
+
+        }
+    );
+
+    if(monthlyReports.length === 0){
+
+        rows = `
+
+<tr>
+
+<td colspan="8">
+
+この月の日報はありません
+
+</td>
+
+</tr>
+
+`;
+
+    }
+
+    let printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+    if(!printWindow){
+
+        alert(
+            "ポップアップがブロックされています。\n" +
+            "ブラウザのポップアップを許可してください。"
+        );
+
+        return;
+
+    }
+
+    printWindow.document.write(`
+
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+${year}年${monthNumber}月 走行日報
+</title>
+
+<style>
+
+@page{
+    size:A4 portrait;
+    margin:10mm;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:sans-serif;
+    margin:0;
+    color:#000;
+}
+
+h1{
+    text-align:center;
+    font-size:22px;
+    margin:0 0 12px 0;
+}
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    border:1px solid #000;
+    padding:8px;
+    margin-bottom:12px;
+    font-size:12px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:8px;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:4px;
+    text-align:center;
+}
+
+th{
+    background:#eeeeee;
+}
+
+.left{
+    text-align:left;
+}
+
+.total{
+    margin-top:12px;
+    text-align:right;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.buttons{
+    text-align:center;
+    margin-top:20px;
+}
+
+button{
+    padding:12px 25px;
+    font-size:18px;
+    margin:5px;
+}
+
+@media print{
+
+    .buttons{
+        display:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+${year}年${monthNumber}月　走行日報
+</h1>
+
+<div class="info">
+
+<div>
+会社名：
+${settings.company || ""}
+</div>
+
+<div>
+車番：
+${settings.car || ""}
+</div>
+
+<div>
+運転者：
+${settings.driver || ""}
+</div>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>日付</th>
+<th>運転者</th>
+<th>車番</th>
+<th>出発</th>
+<th>帰社</th>
+<th>走行距離</th>
+<th>運行内容</th>
+<th>備考</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+<div class="total">
+
+月間走行距離合計：
+${totalDistance} km
+
+</div>
+
+<div class="buttons">
+
+<button onclick="window.print()">
+A4 PDFプレビュー
+</button>
+
+<button onclick="window.close()">
+閉じる
+</button>
+
+</div>
+
+<script>
+
+window.onload = function(){
+
+    setTimeout(function(){
+
+        window.print();
+
+    },500);
+
+};
+
+<\/script>
+
+</body>
+
+</html>
+
+`);
+
+    printWindow.document.close();
+
+}
+
+
+// =====================================
+// 月変更
+// =====================================
+
+document.getElementById(
+    "printMonth"
+).addEventListener(
+    "change",
+    showMonthlyList
+);
+
+
+// =====================================
+// 今月を選択
+// =====================================
+
+function setPrintMonth(){
+
+    let today =
+        new Date();
+
+    let year =
+        today.getFullYear();
+
+    let month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2,"0");
+
+    document.getElementById(
+        "printMonth"
+    ).value =
+        year + "-" + month;
+
+}
+
+
+// =====================================
+// 起動時
+// =====================================
+
+updateHeader();
+
+loadSettings();
+
+loadDraft();
+
+displayReports();
+
+setPrintMonth();
+
+showMonthlyList();
+
+
+// =====================================
+// PWA Service Worker
+// =====================================
+
+if(
+    "serviceWorker" in navigator
+){
+
+    window.addEventListener(
+        "load",
+        function(){
+
+            navigator.serviceWorker
+            .register("sw.js")
+            .then(function(){
+
+                console.log(
+                    "Service Worker登録成功"
+                );
+
+            })
+            .catch(function(error){
+
+                console.log(
+                    "Service Worker登録エラー：",
+                    error
+                );
+
+            });
+
+        }
+    );
 
 }
 
