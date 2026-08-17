@@ -260,7 +260,7 @@ th{
 
 <button
 class="settings-button"
-onclick="toggleSettings()">
+onclick="toggleSettings">
 
 ⚙ 基本情報を変更
 
@@ -418,6 +418,17 @@ onclick="openMonthlyPrint()">
 </button>
 
 </div>
+
+
+<!-- 月間一覧を見るボタン -->
+
+<button
+id="monthlyListButton"
+onclick="toggleMonthlyList()">
+
+📅 月間日報一覧を見る
+
+</button>
 
 
 <!-- 月間一覧 -->
@@ -1533,11 +1544,6 @@ function showMonthlyList(){
 
     if(!month){
 
-        document.getElementById(
-            "monthlyList"
-        ).style.display =
-            "none";
-
         return;
 
     }
@@ -1635,10 +1641,42 @@ function showMonthlyList(){
         total +
         " km";
 
-    document.getElementById(
-        "monthlyList"
-    ).style.display =
-        "block";
+}
+
+
+// =====================================
+// 月間一覧 開閉
+// =====================================
+
+function toggleMonthlyList(){
+
+    let list =
+        document.getElementById(
+            "monthlyList"
+        );
+
+    let button =
+        document.getElementById(
+            "monthlyListButton"
+        );
+
+    if(list.style.display === "block"){
+
+        list.style.display = "none";
+
+        button.textContent =
+            "📅 月間日報一覧を見る";
+
+    }else{
+
+        showMonthlyList();
+
+        list.style.display = "block";
+
+        button.textContent =
+            "📕 月間日報一覧を閉じる";
+
+    }
 
 }
 
@@ -1997,7 +2035,11 @@ document.getElementById(
     "printMonth"
 ).addEventListener(
     "change",
-    showMonthlyList
+    function(){
+
+        showMonthlyList();
+
+    }
 );
 
 
@@ -2040,7 +2082,18 @@ displayReports();
 
 setPrintMonth();
 
-showMonthlyList();
+
+// 月間一覧は起動時には閉じる
+
+document.getElementById(
+    "monthlyList"
+).style.display =
+    "none";
+
+document.getElementById(
+    "monthlyListButton"
+).textContent =
+    "📅 月間日報一覧を見る";
 
 
 // =====================================
