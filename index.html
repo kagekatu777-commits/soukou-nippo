@@ -164,6 +164,77 @@ button{
     margin-bottom:10px;
 }
 
+/* =========================
+   オイル交換管理
+========================= */
+
+.oil-management{
+    margin-top:25px;
+    padding:15px;
+    background:#fff8e1;
+    border-radius:10px;
+    border:2px solid #ffb300;
+}
+
+.oil-management h2{
+    margin-top:0;
+    color:#e65100;
+}
+
+.oil-current{
+    background:white;
+    border-radius:8px;
+    padding:12px;
+    margin-top:10px;
+    font-size:18px;
+    line-height:1.8;
+}
+
+.oil-next{
+    font-size:22px;
+    font-weight:bold;
+    color:#e65100;
+}
+
+.oil-warning{
+    background:#ffebee;
+    border:2px solid #e53935;
+    color:#c62828;
+    padding:12px;
+    border-radius:8px;
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    display:none;
+}
+
+.oil-ok{
+    background:#e8f5e9;
+    border:2px solid #43a047;
+    color:#2e7d32;
+    padding:12px;
+    border-radius:8px;
+    margin-top:10px;
+    font-size:16px;
+    font-weight:bold;
+    display:none;
+}
+
+.oil-save{
+    background:#ef6c00;
+}
+
+.oil-delete{
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:7px 10px;
+    margin:0;
+    width:auto;
+    font-size:13px;
+}
+
 table{
     width:100%;
     margin-top:20px;
@@ -208,76 +279,9 @@ th{
     white-space:nowrap;
 }
 
-/* =====================================
-   オイル交換管理
-===================================== */
-
-.oil-button{
-    background:#ef6c00;
-}
-
-.oil-management{
-    display:none;
-    margin-top:15px;
-    background:#fff3e0;
-    border-radius:10px;
-    padding:15px;
-    border:2px solid #ff9800;
-}
-
-.oil-management h2{
-    margin-top:0;
-    color:#e65100;
-}
-
-.oil-info{
-    background:white;
-    border-radius:8px;
-    padding:12px;
-    margin-top:10px;
-    font-size:18px;
-    line-height:1.8;
-}
-
-.oil-current{
-    font-weight:bold;
-}
-
-.oil-next{
+.oil-mark{
     font-weight:bold;
     color:#e65100;
-}
-
-.oil-warning{
-    display:none;
-    background:#d32f2f;
-    color:white;
-    padding:12px;
-    border-radius:8px;
-    margin-top:12px;
-    text-align:center;
-    font-weight:bold;
-    font-size:18px;
-}
-
-.oil-safe{
-    display:none;
-    background:#e8f5e9;
-    color:#2e7d32;
-    padding:10px;
-    border-radius:8px;
-    margin-top:12px;
-    font-weight:bold;
-}
-
-.oil-save{
-    background:#ef6c00;
-}
-
-.oil-clear{
-    background:#757575;
-    font-size:16px;
-    padding:10px;
 }
 
 @media(max-width:600px){
@@ -380,106 +384,6 @@ onclick="saveSettings()">
 </div>
 
 
-<!-- =====================================
-     オイル交換管理ボタン
-===================================== -->
-
-<button
-class="oil-button"
-onclick="toggleOilManagement()">
-
-🛢️ オイル交換管理
-
-</button>
-
-
-<!-- =====================================
-     オイル交換管理
-===================================== -->
-
-<div
-class="oil-management"
-id="oilManagement">
-
-<h2>🛢️ オイル交換管理</h2>
-
-<div class="oil-info">
-
-<div class="oil-current">
-現在の走行距離：
-<span id="oilCurrentMileage">---</span> km
-</div>
-
-<div>
-オイル交換時の走行距離：
-<span id="oilChangeMileageDisplay">未設定</span>
-</div>
-
-<div class="oil-next">
-次回オイル交換：
-<span id="oilNextMileage">未設定</span>
-</div>
-
-</div>
-
-
-<label>
-オイル交換時の走行距離
-</label>
-
-<input
-type="number"
-id="oilChangeMileage"
-placeholder="例：124761"
-inputmode="numeric">
-
-
-<div class="auto-info">
-
-※入力した距離に＋4,000kmして次回交換距離を自動計算します
-
-</div>
-
-
-<button
-class="oil-save"
-onclick="saveOilChange()">
-
-🛢️ オイル交換距離を保存
-
-</button>
-
-
-<div
-id="oilWarning"
-class="oil-warning">
-
-⚠️ オイル交換が近づいています！<br>
-次回交換まで500km未満です。
-
-</div>
-
-
-<div
-id="oilSafe"
-class="oil-safe">
-
-✅ オイル交換までまだ余裕があります。
-
-</div>
-
-
-<button
-class="oil-clear"
-onclick="closeOilManagement()">
-
-閉じる
-
-</button>
-
-</div>
-
-
 <!-- 編集中 -->
 
 <div
@@ -569,6 +473,77 @@ style="display:none;">
 </button>
 
 
+<!-- =========================
+     オイル交換管理
+========================= -->
+
+<div class="oil-management">
+
+<h2>🛢️ オイル交換管理</h2>
+
+<div class="oil-current">
+
+現在の走行距離：
+<strong id="oilCurrentMileage">---</strong> km
+
+<br>
+
+次回オイル交換：
+<span
+class="oil-next"
+id="oilNextMileage">
+未登録
+</span>
+
+</div>
+
+
+<div
+class="oil-warning"
+id="oilWarning">
+</div>
+
+
+<div
+class="oil-ok"
+id="oilOk">
+</div>
+
+
+<label>
+オイル交換時の走行距離
+</label>
+
+<input
+type="number"
+id="oilChangeMileage"
+placeholder="例：124761">
+
+
+<div class="auto-info">
+
+※次回交換距離は「交換時の走行距離＋4,000km」です
+
+</div>
+
+
+<button
+class="oil-save"
+onclick="saveOilChange()">
+
+🛢️ オイル交換を記録
+
+</button>
+
+
+<div
+id="oilHistory"
+style="margin-top:15px;">
+</div>
+
+</div>
+
+
 <!-- 月間印刷 -->
 
 <div class="monthly-print">
@@ -630,6 +605,7 @@ id="monthlySummary">
 <th>帰社</th>
 <th>距離</th>
 <th>運行内容</th>
+<th>オイル交換</th>
 
 </tr>
 
@@ -1372,6 +1348,8 @@ document.getElementById("start")
 
         saveDraft();
 
+        updateOilManagement();
+
     }
 );
 
@@ -1384,6 +1362,8 @@ document.getElementById("returnMileage")
         calculateDistance();
 
         saveDraft();
+
+        updateOilManagement();
 
     }
 );
@@ -1650,8 +1630,6 @@ function save(){
 
     displayReports();
 
-    updateOilManagement();
-
     alert(
         "日報を保存しました！"
     );
@@ -1661,6 +1639,8 @@ function save(){
     setToday();
 
     loadPreviousMileage();
+
+    updateOilManagement();
 
 }
 
@@ -1783,6 +1763,504 @@ onclick="deleteReport(${index})">
 
 
 // =====================================
+// オイル交換記録取得
+// =====================================
+
+function getOilRecords(){
+
+    return JSON.parse(
+        localStorage.getItem(
+            "soukouOilRecords"
+        )
+    ) || [];
+
+}
+
+
+// =====================================
+// オイル交換記録保存
+// =====================================
+
+function saveOilChange(){
+
+    let mileage =
+        Number(
+            document.getElementById(
+                "oilChangeMileage"
+            ).value
+        );
+
+    if(!mileage || mileage <= 0){
+
+        alert(
+            "オイル交換時の走行距離を入力してください"
+        );
+
+        return;
+
+    }
+
+    let settingsData =
+        localStorage.getItem(
+            "soukouSettings"
+        );
+
+    if(!settingsData){
+
+        alert(
+            "先に基本情報を設定してください"
+        );
+
+        return;
+
+    }
+
+    let settings =
+        JSON.parse(settingsData);
+
+    let date =
+        document.getElementById(
+            "date"
+        ).value || getToday();
+
+    let nextMileage =
+        mileage + 4000;
+
+    let records =
+        getOilRecords();
+
+    records.push({
+
+        date:date,
+
+        mileage:mileage,
+
+        nextMileage:nextMileage,
+
+        car:settings.car,
+
+        driver:settings.driver
+
+    });
+
+    localStorage.setItem(
+        "soukouOilRecords",
+        JSON.stringify(records)
+    );
+
+    document.getElementById(
+        "oilChangeMileage"
+    ).value = "";
+
+    updateOilManagement();
+
+    showMonthlyList();
+
+    alert(
+        "オイル交換を記録しました！\n\n" +
+        "交換時：" +
+        mileage.toLocaleString() +
+        " km\n" +
+        "次回交換：" +
+        nextMileage.toLocaleString() +
+        " km"
+    );
+
+}
+
+
+// =====================================
+// オイル交換記録削除
+// =====================================
+
+function deleteOilRecord(index){
+
+    if(
+        !confirm(
+            "このオイル交換記録を削除しますか？"
+        )
+    ){
+
+        return;
+
+    }
+
+    let records =
+        getOilRecords();
+
+    records.splice(
+        index,
+        1
+    );
+
+    localStorage.setItem(
+        "soukouOilRecords",
+        JSON.stringify(records)
+    );
+
+    updateOilManagement();
+
+    showMonthlyList();
+
+}
+
+
+// =====================================
+// 現在の走行距離取得
+// =====================================
+
+function getCurrentMileage(){
+
+    let reports =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouReports"
+            )
+        ) || [];
+
+    let settingsData =
+        localStorage.getItem(
+            "soukouSettings"
+        );
+
+    if(!settingsData){
+        return 0;
+    }
+
+    let settings =
+        JSON.parse(settingsData);
+
+    let carReports =
+        reports.filter(
+            function(report){
+
+                return (
+                    report.car === settings.car &&
+                    report.end !== undefined &&
+                    report.end !== null &&
+                    report.end !== ""
+                );
+
+            }
+        );
+
+    if(carReports.length === 0){
+
+        let currentInput =
+            Number(
+                document.getElementById(
+                    "returnMileage"
+                ).value
+            );
+
+        return currentInput || 0;
+
+    }
+
+    carReports.sort(
+        function(a,b){
+
+            if(a.date !== b.date){
+
+                return a.date.localeCompare(
+                    b.date
+                );
+
+            }
+
+            return (
+                Number(a.end) -
+                Number(b.end)
+            );
+
+        }
+    );
+
+    return Number(
+        carReports[
+            carReports.length - 1
+        ].end
+    ) || 0;
+
+}
+
+
+// =====================================
+// オイル交換管理表示
+// =====================================
+
+function updateOilManagement(){
+
+    let currentMileage =
+        getCurrentMileage();
+
+    let currentElement =
+        document.getElementById(
+            "oilCurrentMileage"
+        );
+
+    if(currentMileage > 0){
+
+        currentElement.textContent =
+            currentMileage.toLocaleString();
+
+    }else{
+
+        currentElement.textContent =
+            "---";
+
+    }
+
+    let records =
+        getOilRecords();
+
+    let nextElement =
+        document.getElementById(
+            "oilNextMileage"
+        );
+
+    let warningElement =
+        document.getElementById(
+            "oilWarning"
+        );
+
+    let okElement =
+        document.getElementById(
+            "oilOk"
+        );
+
+    warningElement.style.display =
+        "none";
+
+    okElement.style.display =
+        "none";
+
+    if(records.length === 0){
+
+        nextElement.textContent =
+            "未登録";
+
+        document.getElementById(
+            "oilHistory"
+        ).innerHTML = "";
+
+        return;
+
+    }
+
+    let settingsData =
+        localStorage.getItem(
+            "soukouSettings"
+        );
+
+    let settings =
+        settingsData
+        ? JSON.parse(settingsData)
+        : {};
+
+    let carRecords =
+        records.filter(
+            function(record){
+
+                return (
+                    !record.car ||
+                    !settings.car ||
+                    record.car === settings.car
+                );
+
+            }
+        );
+
+    if(carRecords.length === 0){
+
+        nextElement.textContent =
+            "未登録";
+
+        return;
+
+    }
+
+    carRecords.sort(
+        function(a,b){
+
+            return (
+                a.date.localeCompare(b.date)
+            );
+
+        }
+    );
+
+    let latest =
+        carRecords[
+            carRecords.length - 1
+        ];
+
+    let nextMileage =
+        Number(latest.nextMileage);
+
+    nextElement.textContent =
+        nextMileage.toLocaleString() +
+        " km";
+
+    if(currentMileage > 0){
+
+        let remaining =
+            nextMileage -
+            currentMileage;
+
+        if(remaining <= 0){
+
+            warningElement.style.display =
+                "block";
+
+            warningElement.textContent =
+                "🚨 オイル交換時期を超えています！ " +
+                Math.abs(remaining).toLocaleString() +
+                " km 超過";
+
+        }else if(remaining <= 500){
+
+            warningElement.style.display =
+                "block";
+
+            warningElement.textContent =
+                "⚠️ オイル交換まであと " +
+                remaining.toLocaleString() +
+                " km です！";
+
+        }else{
+
+            okElement.style.display =
+                "block";
+
+            okElement.textContent =
+                "オイル交換まであと " +
+                remaining.toLocaleString() +
+                " km";
+
+        }
+
+    }
+
+
+    // オイル交換履歴
+
+    let historyHtml = `
+
+<h3 style="color:#e65100;">
+🛢️ オイル交換履歴
+</h3>
+
+`;
+
+    carRecords
+    .slice()
+    .reverse()
+    .forEach(
+        function(record,index){
+
+            let originalIndex =
+                records.indexOf(record);
+
+            historyHtml += `
+
+<div
+style="
+background:white;
+border:1px solid #ddd;
+border-radius:8px;
+padding:10px;
+margin-top:8px;
+">
+
+${formatDateWithDay(record.date)}
+
+<br>
+
+交換時：
+<strong>
+${Number(record.mileage).toLocaleString()} km
+</strong>
+
+<br>
+
+次回：
+<strong>
+${Number(record.nextMileage).toLocaleString()} km
+</strong>
+
+<br>
+
+<button
+class="oil-delete"
+onclick="deleteOilRecord(${originalIndex})">
+
+削除
+
+</button>
+
+</div>
+
+`;
+
+        }
+    );
+
+    document.getElementById(
+        "oilHistory"
+    ).innerHTML =
+        historyHtml;
+
+}
+
+
+// =====================================
+// オイル交換表示判定
+// =====================================
+
+function getOilText(date){
+
+    let records =
+        getOilRecords();
+
+    let matching =
+        records.filter(
+            function(record){
+
+                return record.date === date;
+
+            }
+        );
+
+    if(matching.length === 0){
+        return "";
+    }
+
+    let text = "";
+
+    matching.forEach(
+        function(record){
+
+            if(text){
+                text += "<br>";
+            }
+
+            text +=
+                "🛢️ " +
+                Number(
+                    record.mileage
+                ).toLocaleString() +
+                "km";
+
+        }
+    );
+
+    return text;
+
+}
+
+
+// =====================================
 // 月間一覧
 // =====================================
 
@@ -1842,6 +2320,9 @@ function showMonthlyList(){
             total +=
                 Number(report.distance) || 0;
 
+            let oilText =
+                getOilText(report.date);
+
             body.innerHTML += `
 
 <tr>
@@ -1860,6 +2341,10 @@ function showMonthlyList(){
 
 <td>${report.work || ""}</td>
 
+<td class="oil-mark">
+${oilText}
+</td>
+
 </tr>
 
 `;
@@ -1867,13 +2352,72 @@ function showMonthlyList(){
         }
     );
 
-    if(monthlyReports.length === 0){
+
+    // 日報がない月でもオイル交換記録を表示
+
+    let oilRecords =
+        getOilRecords();
+
+    let monthlyOilRecords =
+        oilRecords.filter(
+            function(record){
+
+                return record.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+    if(
+        monthlyReports.length === 0 &&
+        monthlyOilRecords.length > 0
+    ){
+
+        monthlyOilRecords.forEach(
+            function(record){
+
+                body.innerHTML += `
+
+<tr>
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver || ""}</td>
+
+<td>${record.car || ""}</td>
+
+<td colspan="4">
+</td>
+
+<td class="oil-mark">
+
+🛢️ ${Number(
+    record.mileage
+).toLocaleString()} km
+
+</td>
+
+</tr>
+
+`;
+
+            }
+        );
+
+    }
+
+
+    if(
+        monthlyReports.length === 0 &&
+        monthlyOilRecords.length === 0
+    ){
 
         body.innerHTML = `
 
 <tr>
 
-<td colspan="7">
+<td colspan="8">
 
 この月の日報はありません
 
@@ -2019,11 +2563,14 @@ function openMonthlyPrint(){
     monthlyReports.forEach(
         function(report){
 
+            let oilText =
+                getOilText(report.date);
+
             rows += `
 
 <tr>
 
-<td>${report.date}</td>
+<td>${formatDateWithDay(report.date)}</td>
 
 <td>${report.driver || ""}</td>
 
@@ -2043,20 +2590,91 @@ ${report.work || ""}
 ${report.memo || ""}
 </td>
 
+<td class="oil">
+${oilText}
+</td>
+
 </tr>
 
 `;
 
         }
+
     );
 
-    if(monthlyReports.length === 0){
+
+    // 日報がない月のオイル交換
+
+    let oilRecords =
+        getOilRecords();
+
+    let monthlyOilRecords =
+        oilRecords.filter(
+            function(record){
+
+                return record.date.startsWith(
+                    month
+                );
+
+            }
+        );
+
+    if(
+        monthlyReports.length === 0 &&
+        monthlyOilRecords.length > 0
+    ){
+
+        monthlyOilRecords.forEach(
+            function(record){
+
+                rows += `
+
+<tr>
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver || ""}</td>
+
+<td>${record.car || ""}</td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td class="oil">
+
+🛢️ ${Number(
+    record.mileage
+).toLocaleString()} km
+
+</td>
+
+</tr>
+
+`;
+
+            }
+        );
+
+    }
+
+
+    if(
+        monthlyReports.length === 0 &&
+        monthlyOilRecords.length === 0
+    ){
 
         rows = `
 
 <tr>
 
-<td colspan="8">
+<td colspan="9">
 
 この月の日報はありません
 
@@ -2103,7 +2721,7 @@ ${year}年${monthNumber}月 走行日報
 
 @page{
     size:A4 portrait;
-    margin:10mm;
+    margin:8mm;
 }
 
 *{
@@ -2134,13 +2752,13 @@ h1{
 table{
     width:100%;
     border-collapse:collapse;
-    font-size:8px;
+    font-size:7px;
 }
 
 th,
 td{
     border:1px solid #000;
-    padding:4px;
+    padding:3px;
     text-align:center;
 }
 
@@ -2150,6 +2768,10 @@ th{
 
 .left{
     text-align:left;
+}
+
+.oil{
+    font-weight:bold;
 }
 
 .total{
@@ -2221,6 +2843,7 @@ ${settings.driver || ""}
 <th>走行距離</th>
 <th>運行内容</th>
 <th>備考</th>
+<th>オイル交換</th>
 
 </tr>
 
@@ -2315,351 +2938,6 @@ function setPrintMonth(){
         "printMonth"
     ).value =
         year + "-" + month;
-
-}
-
-
-// =====================================
-// 🛢️ オイル交換管理
-// =====================================
-
-
-// オイル交換管理の開閉
-
-function toggleOilManagement(){
-
-    let area =
-        document.getElementById(
-            "oilManagement"
-        );
-
-    if(area.style.display === "block"){
-
-        area.style.display = "none";
-
-    }else{
-
-        area.style.display = "block";
-
-        updateOilManagement();
-
-    }
-
-}
-
-
-// オイル交換管理を閉じる
-
-function closeOilManagement(){
-
-    document.getElementById(
-        "oilManagement"
-    ).style.display = "none";
-
-}
-
-
-// 最新の帰社時走行距離を取得
-
-function getCurrentMileage(){
-
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
-
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
-
-    if(!settingsData){
-
-        return null;
-
-    }
-
-    let settings =
-        JSON.parse(settingsData);
-
-    let car =
-        settings.car;
-
-    let carReports =
-        reports.filter(function(report){
-
-            return (
-                report.car === car &&
-                report.end !== undefined &&
-                report.end !== null &&
-                report.end !== ""
-            );
-
-        });
-
-    if(carReports.length === 0){
-
-        return null;
-
-    }
-
-    carReports.sort(function(a,b){
-
-        if(a.date === b.date){
-
-            return Number(a.end) -
-                   Number(b.end);
-
-        }
-
-        return a.date.localeCompare(
-            b.date
-        );
-
-    });
-
-    let latest =
-        carReports[
-            carReports.length - 1
-        ];
-
-    return Number(latest.end);
-
-}
-
-
-// オイル交換管理表示更新
-
-function updateOilManagement(){
-
-    let currentMileage =
-        getCurrentMileage();
-
-    let currentElement =
-        document.getElementById(
-            "oilCurrentMileage"
-        );
-
-    let changeElement =
-        document.getElementById(
-            "oilChangeMileageDisplay"
-        );
-
-    let nextElement =
-        document.getElementById(
-            "oilNextMileage"
-        );
-
-    let warningElement =
-        document.getElementById(
-            "oilWarning"
-        );
-
-    let safeElement =
-        document.getElementById(
-            "oilSafe"
-        );
-
-
-    // 現在の走行距離
-
-    if(currentMileage !== null){
-
-        currentElement.textContent =
-            currentMileage.toLocaleString();
-
-    }else{
-
-        currentElement.textContent =
-            "---";
-
-    }
-
-
-    // 保存されたオイル交換情報
-
-    let oilData =
-        localStorage.getItem(
-            "soukouOilChange"
-        );
-
-    if(!oilData){
-
-        changeElement.textContent =
-            "未設定";
-
-        nextElement.textContent =
-            "未設定";
-
-        warningElement.style.display =
-            "none";
-
-        safeElement.style.display =
-            "none";
-
-        return;
-
-    }
-
-    let oil =
-        JSON.parse(oilData);
-
-    let changeMileage =
-        Number(
-            oil.changeMileage
-        );
-
-    let nextMileage =
-        changeMileage + 4000;
-
-
-    changeElement.textContent =
-        changeMileage.toLocaleString() +
-        " km";
-
-    nextElement.textContent =
-        nextMileage.toLocaleString() +
-        " km";
-
-
-    // 現在距離と次回交換距離の差
-
-    if(currentMileage !== null){
-
-        let remaining =
-            nextMileage -
-            currentMileage;
-
-
-        // すでに交換距離を超えている
-
-        if(remaining <= 0){
-
-            warningElement.innerHTML =
-                "🚨 オイル交換時期を過ぎています！<br>" +
-                "すぐにオイル交換してください。";
-
-            warningElement.style.display =
-                "block";
-
-            safeElement.style.display =
-                "none";
-
-        }
-
-        // 500km未満
-
-        else if(remaining < 500){
-
-            warningElement.innerHTML =
-                "⚠️ オイル交換が近づいています！<br>" +
-                "あと " +
-                remaining.toLocaleString() +
-                " km です。";
-
-            warningElement.style.display =
-                "block";
-
-            safeElement.style.display =
-                "none";
-
-        }
-
-        // 500km以上
-
-        else{
-
-            warningElement.style.display =
-                "none";
-
-            safeElement.innerHTML =
-                "✅ 次回オイル交換まであと " +
-                remaining.toLocaleString() +
-                " km です。";
-
-            safeElement.style.display =
-                "block";
-
-        }
-
-    }else{
-
-        warningElement.style.display =
-            "none";
-
-        safeElement.style.display =
-            "none";
-
-    }
-
-}
-
-
-// オイル交換時の距離を保存
-
-function saveOilChange(){
-
-    let input =
-        document.getElementById(
-            "oilChangeMileage"
-        );
-
-    let mileage =
-        Number(input.value);
-
-
-    if(!mileage || mileage <= 0){
-
-        alert(
-            "オイル交換時の走行距離を入力してください"
-        );
-
-        return;
-
-    }
-
-
-    let nextMileage =
-        mileage + 4000;
-
-
-    let oilData = {
-
-        changeMileage:
-            mileage,
-
-        nextMileage:
-            nextMileage,
-
-        savedDate:
-            getToday()
-
-    };
-
-
-    localStorage.setItem(
-        "soukouOilChange",
-        JSON.stringify(oilData)
-    );
-
-
-    input.value = "";
-
-
-    updateOilManagement();
-
-
-    alert(
-        "オイル交換距離を保存しました！\n\n" +
-        "交換時：" +
-        mileage.toLocaleString() +
-        " km\n" +
-        "次回交換：" +
-        nextMileage.toLocaleString() +
-        " km"
-    );
 
 }
 
