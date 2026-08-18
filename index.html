@@ -260,7 +260,7 @@ th{
 
 <button
 class="settings-button"
-onclick="toggleSettings">
+onclick="toggleSettings()">
 
 ⚙ 基本情報を変更
 
@@ -538,6 +538,77 @@ function getToday(){
         .padStart(2,"0");
 
     return year + "-" + month + "-" + day;
+
+}
+
+
+// =====================================
+// 曜日を取得
+// =====================================
+
+function getDayOfWeek(dateString){
+
+    if(!dateString){
+        return "";
+    }
+
+    let date =
+        new Date(dateString + "T00:00:00");
+
+    let days = [
+        "日",
+        "月",
+        "火",
+        "水",
+        "木",
+        "金",
+        "土"
+    ];
+
+    return days[date.getDay()];
+
+}
+
+
+// =====================================
+// 日付＋曜日表示
+// =====================================
+
+function formatDateWithDay(dateString){
+
+    if(!dateString){
+        return "";
+    }
+
+    let parts =
+        dateString.split("-");
+
+    if(parts.length !== 3){
+        return dateString;
+    }
+
+    let year =
+        parts[0];
+
+    let month =
+        parts[1];
+
+    let day =
+        parts[2];
+
+    let dayOfWeek =
+        getDayOfWeek(dateString);
+
+    return (
+        year +
+        "/" +
+        month +
+        "/" +
+        day +
+        "（" +
+        dayOfWeek +
+        "）"
+    );
 
 }
 
@@ -1485,7 +1556,7 @@ function displayReports(){
 
 <tr>
 
-<td>${report.date}</td>
+<td>${formatDateWithDay(report.date)}</td>
 
 <td>${report.driver || ""}</td>
 
@@ -1595,7 +1666,7 @@ function showMonthlyList(){
 
 <tr>
 
-<td>${report.date}</td>
+<td>${formatDateWithDay(report.date)}</td>
 
 <td>${report.driver || ""}</td>
 
