@@ -136,15 +136,22 @@ button{
 
 
 /* =====================================
-   オイル交換
+   オイル交換管理
 ===================================== */
 
+.oil-toggle-button{
+    background:#ef6c00;
+    font-size:20px;
+    margin-top:15px;
+}
+
 .oil-section{
+    display:none;
     background:#fff8e1;
     border:2px solid #ffb300;
     border-radius:10px;
     padding:12px;
-    margin-top:15px;
+    margin-top:10px;
     margin-bottom:15px;
 }
 
@@ -380,10 +387,25 @@ onclick="saveSettings()">
 
 
 <!-- =====================================
+     オイル交換管理ボタン
+===================================== -->
+
+<button
+class="oil-toggle-button"
+onclick="toggleOilSection()">
+
+🛢️ オイル交換管理
+
+</button>
+
+
+<!-- =====================================
      オイル交換管理
 ===================================== -->
 
-<div class="oil-section">
+<div
+class="oil-section"
+id="oilSection">
 
 <h2>🛢️ オイル交換管理</h2>
 
@@ -397,6 +419,7 @@ onclick="saveSettings()">
 type="number"
 id="oilNextMileage"
 placeholder="例：50000">
+
 
 <button
 class="oil-save-button"
@@ -560,7 +583,7 @@ onclick="openMonthlyPrint()">
 
 
 <!-- =====================================
-     月間一覧を見る
+     月間一覧を見るボタン
 ===================================== -->
 
 <button
@@ -1063,6 +1086,43 @@ function updateHeader(){
     ).textContent =
         settings.driver ||
         "未設定";
+
+}
+
+
+// =====================================
+// オイル交換管理 開閉
+// =====================================
+
+function toggleOilSection(){
+
+    let section =
+        document.getElementById(
+            "oilSection"
+        );
+
+    let button =
+        document.querySelector(
+            ".oil-toggle-button"
+        );
+
+    if(section.style.display === "block"){
+
+        section.style.display = "none";
+
+        button.textContent =
+            "🛢️ オイル交換管理";
+
+    }else{
+
+        section.style.display = "block";
+
+        button.textContent =
+            "📕 オイル交換管理を閉じる";
+
+        loadOilSetting();
+
+    }
 
 }
 
@@ -2878,6 +2938,14 @@ document.getElementById(
     "monthlyListButton"
 ).textContent =
     "📅 月間日報一覧を見る";
+
+
+// オイル交換管理も起動時は閉じる
+
+document.getElementById(
+    "oilSection"
+).style.display =
+    "none";
 
 
 // =====================================
