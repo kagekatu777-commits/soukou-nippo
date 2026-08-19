@@ -1,625 +1,165 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1976d2">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>走行日報</title>
 
 <style>
+*{box-sizing:border-box}
+body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:15px}
+.card{background:white;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+h1{text-align:center;color:#1565c0;margin-bottom:10px}
+.header-info{background:#e3f2fd;border-radius:10px;padding:12px;margin-bottom:15px;font-size:17px;line-height:1.7}
+.header-company{font-size:20px;font-weight:bold}
+.header-row{font-weight:bold}
+.settings-button{width:100%;margin-top:10px;padding:10px;font-size:16px;background:#757575;color:white;border:none;border-radius:8px}
+.settings{display:none;background:#f5f5f5;border-radius:10px;padding:12px;margin-bottom:15px}
+.settings h2{margin-top:0;color:#1565c0}
+label{display:block;margin-top:15px;font-weight:bold;font-size:18px}
+input{width:100%;padding:12px;font-size:20px;border-radius:8px;border:1px solid #ccc}
+button{width:100%;margin-top:20px;padding:15px;font-size:22px;background:#1565c0;color:white;border:none;border-radius:10px}
+.settings-save{background:#2e7d32}
+.distance{background:#eeeeee}
+.auto-info{font-size:14px;color:#555;margin-top:5px}
+.edit-mode{background:#fff3cd;border:2px solid #ff9800;border-radius:10px;padding:10px;margin-top:15px;color:#795548;font-weight:bold;text-align:center}
+.cancel-button{background:#757575}
+.monthly-print{margin-top:25px;padding:15px;background:#e3f2fd;border-radius:10px}
+.monthly-print h2{margin-top:0;color:#1565c0}
+.monthly-list{margin-top:25px;display:none}
+.monthly-list h2{color:#1565c0}
+.monthly-summary{background:#eeeeee;padding:12px;border-radius:8px;font-size:18px;font-weight:bold;margin-bottom:10px}
 
-*{
-    box-sizing:border-box;
-}
-
-body{
-    font-family:sans-serif;
-    background:#f5f5f5;
-    margin:0;
-    padding:15px;
-}
-
-.card{
-    background:white;
-    border-radius:12px;
-    padding:15px;
-    box-shadow:0 2px 8px rgba(0,0,0,.15);
-}
-
-h1{
-    text-align:center;
-    color:#1565c0;
-    margin-bottom:10px;
-}
-
-.header-info{
-    background:#e3f2fd;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:15px;
-    font-size:17px;
-    line-height:1.7;
-}
-
-.header-company{
-    font-size:20px;
-    font-weight:bold;
-}
-
-.header-row{
-    font-weight:bold;
-}
-
-.settings-button{
-    width:100%;
-    margin-top:10px;
-    padding:10px;
-    font-size:16px;
-    background:#757575;
-    color:white;
-    border:none;
-    border-radius:8px;
-}
-
-.settings{
-    display:none;
-    background:#f5f5f5;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:15px;
-}
-
-.settings h2{
-    margin-top:0;
-    color:#1565c0;
-}
-
-label{
-    display:block;
-    margin-top:15px;
-    font-weight:bold;
-    font-size:18px;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    font-size:20px;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
-
-button{
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-    font-size:22px;
-    background:#1565c0;
-    color:white;
-    border:none;
-    border-radius:10px;
-}
-
-.settings-save{
-    background:#2e7d32;
-}
-
-.distance{
-    background:#eeeeee;
-}
-
-.auto-info{
-    font-size:14px;
-    color:#555;
-    margin-top:5px;
-}
-
-.edit-mode{
-    background:#fff3cd;
-    border:2px solid #ff9800;
-    border-radius:10px;
-    padding:10px;
-    margin-top:15px;
-    color:#795548;
-    font-weight:bold;
-    text-align:center;
-}
-
-.cancel-button{
-    background:#757575;
-}
-
-.monthly-print{
-    margin-top:25px;
-    padding:15px;
-    background:#e3f2fd;
-    border-radius:10px;
-}
-
-.monthly-print h2{
-    margin-top:0;
-    color:#1565c0;
-}
-
-.monthly-list{
-    margin-top:25px;
-    display:none;
-}
-
-.monthly-list h2{
-    color:#1565c0;
-}
-
-.monthly-summary{
-    background:#eeeeee;
-    padding:12px;
-    border-radius:8px;
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-/* =========================
-   オイル交換管理
-========================= */
-
-.oil-toggle-button{
-    margin-top:25px;
-    background:#ef6c00;
-}
-
-.oil-management{
-    display:none;
-    margin-top:15px;
-    padding:15px;
-    background:#fff8e1;
-    border-radius:10px;
-    border:2px solid #ffb300;
-}
-
-.oil-management h2{
-    margin-top:0;
-    color:#e65100;
-}
-
-.oil-current{
-    background:white;
-    border-radius:8px;
-    padding:12px;
-    margin-top:10px;
-    font-size:18px;
-    line-height:1.8;
-}
-
-.oil-next{
-    font-size:22px;
-    font-weight:bold;
-    color:#e65100;
-}
-
-.oil-warning{
-    background:#ffebee;
-    border:2px solid #e53935;
-    color:#c62828;
-    padding:12px;
-    border-radius:8px;
-    margin-top:10px;
-    font-size:18px;
-    font-weight:bold;
-    display:none;
-}
-
-.oil-ok{
-    background:#e8f5e9;
-    border:2px solid #43a047;
-    color:#2e7d32;
-    padding:12px;
-    border-radius:8px;
-    margin-top:10px;
-    font-size:16px;
-    font-weight:bold;
-    display:none;
-}
-
-.oil-save{
-    background:#ef6c00;
-}
-
-.oil-delete{
-    background:#d32f2f;
-    color:white;
-    border:none;
-    border-radius:6px;
-    padding:7px 10px;
-    margin:0;
-    width:auto;
-    font-size:13px;
-}
-
-table{
-    width:100%;
-    margin-top:20px;
-    border-collapse:collapse;
-}
-
-th,
-td{
-    border:1px solid #ccc;
-    padding:8px;
-    text-align:center;
-}
-
-th{
-    background:#1565c0;
-    color:white;
-}
-
-.edit-button{
-    background:#2e7d32;
-    color:white;
-    border:none;
-    border-radius:6px;
-    padding:8px 10px;
-    margin:0 0 5px 0;
-    width:auto;
-    font-size:14px;
-}
-
-.delete-button{
-    background:#d32f2f;
-    color:white;
-    border:none;
-    border-radius:6px;
-    padding:8px 10px;
-    margin:0;
-    width:auto;
-    font-size:14px;
-}
-
-.action-cell{
-    white-space:nowrap;
-}
-
-.oil-mark{
-    font-weight:bold;
-    color:#e65100;
-}
-
+/* オイル交換 */
+.oil-toggle-button{margin-top:25px;background:#ef6c00}
+.oil-management{display:none;margin-top:15px;padding:15px;background:#fff8e1;border-radius:10px;border:2px solid #ffb300}
+.oil-management h2{margin-top:0;color:#e65100}
+.oil-current{background:white;border-radius:8px;padding:12px;margin-top:10px;font-size:18px;line-height:1.8}
+.oil-next{font-size:22px;font-weight:bold;color:#e65100}
+.oil-warning{background:#ffebee;border:2px solid #e53935;color:#c62828;padding:12px;border-radius:8px;margin-top:10px;font-size:18px;font-weight:bold;display:none}
+.oil-ok{background:#e8f5e9;border:2px solid #43a047;color:#2e7d32;padding:12px;border-radius:8px;margin-top:10px;font-size:16px;font-weight:bold;display:none}
+.oil-save{background:#ef6c00}
+.oil-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
+table{width:100%;margin-top:20px;border-collapse:collapse}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+th{background:#1565c0;color:white}
+.edit-button{background:#2e7d32;color:white;border:none;border-radius:6px;padding:8px 10px;margin:0 0 5px 0;width:auto;font-size:14px}
+.delete-button{background:#d32f2f;color:white;border:none;border-radius:6px;padding:8px 10px;margin:0;width:auto;font-size:14px}
+.action-cell{white-space:nowrap}
+.oil-mark{font-weight:bold;color:#e65100}
+.oil-row{background:#fff8e1}
 @media(max-width:600px){
-
-    table{
-        font-size:12px;
-    }
-
-    th,
-    td{
-        padding:5px;
-    }
-
+table{font-size:12px}
+th,td{padding:5px}
 }
-
 </style>
-
 </head>
 
-
 <body>
-
 <div class="card">
 
 <h1>🚚走行日報</h1>
 
-
-<!-- 基本情報表示 -->
-
 <div class="header-info">
-
-    <div
-    class="header-company"
-    id="headerCompany">
-        会社名未設定
-    </div>
-
-    <div class="header-row">
-        車番：
-        <span id="headerCar">未設定</span>
-    </div>
-
-    <div class="header-row">
-        運転者：
-        <span id="headerDriver">未設定</span>
-    </div>
-
+<div class="header-company" id="headerCompany">会社名未設定</div>
+<div class="header-row">車番：<span id="headerCar">未設定</span></div>
+<div class="header-row">運転者：<span id="headerDriver">未設定</span></div>
 </div>
 
+<button class="settings-button" onclick="toggleSettings()">⚙ 基本情報を変更</button>
 
-<!-- 基本情報設定 -->
-
-<button
-class="settings-button"
-onclick="toggleSettings()">
-
-⚙ 基本情報を変更
-
-</button>
-
-
-<div
-class="settings"
-id="settings">
-
+<div class="settings" id="settings">
 <h2>基本情報設定</h2>
 
 <label>会社名</label>
-
-<input
-type="text"
-id="settingCompany"
-placeholder="会社名を入力">
-
+<input type="text" id="settingCompany" placeholder="会社名を入力">
 
 <label>車番</label>
-
-<input
-type="text"
-id="settingCar"
-placeholder="車番を入力">
-
+<input type="text" id="settingCar" placeholder="車番を入力">
 
 <label>運転者名</label>
+<input type="text" id="settingDriver" placeholder="運転者名を入力">
 
-<input
-type="text"
-id="settingDriver"
-placeholder="運転者名を入力">
-
-
-<button
-class="settings-save"
-onclick="saveSettings()">
-
-基本情報を保存
-
-</button>
-
+<button class="settings-save" onclick="saveSettings()">基本情報を保存</button>
 </div>
 
-
-<!-- 編集中 -->
-
-<div
-id="editMode"
-class="edit-mode"
-style="display:none;">
-
-✏️ 日報を編集中です
-
-</div>
-
-
-<!-- 日報入力 -->
+<div id="editMode" class="edit-mode" style="display:none;">✏️ 日報を編集中です</div>
 
 <label>日付</label>
-
-<input
-type="date"
-id="date">
-
+<input type="date" id="date">
 
 <label>出発時走行距離</label>
-
-<input
-type="number"
-id="start"
-placeholder="前日の帰社時走行距離から自動入力">
-
-<div class="auto-info">
-
-※前日の日報が保存されている場合、自動入力されます
-
-</div>
-
+<input type="number" id="start" placeholder="前日の帰社時走行距離から自動入力">
+<div class="auto-info">※前日の日報が保存されている場合、自動入力されます</div>
 
 <label>帰社時走行距離</label>
-
-<input
-type="number"
-id="returnMileage"
-placeholder="帰社時の走行距離を入力">
-
+<input type="number" id="returnMileage" placeholder="帰社時の走行距離を入力">
 
 <label>控除走行距離</label>
-
-<input
-type="text"
-id="distance"
-class="distance"
-readonly
-placeholder="自動計算">
-
+<input type="text" id="distance" class="distance" readonly placeholder="自動計算">
 
 <label>運行内容</label>
-
-<input
-type="text"
-id="work"
-placeholder="運行内容を入力">
-
+<input type="text" id="work" placeholder="運行内容を入力">
 
 <label>備考</label>
+<input type="text" id="memo" placeholder="備考を入力">
 
-<input
-type="text"
-id="memo"
-placeholder="備考を入力">
+<button id="saveButton" onclick="save()">日報を保存</button>
 
+<button id="cancelEditButton" class="cancel-button" onclick="cancelEdit()" style="display:none;">編集をキャンセル</button>
 
-<button
-id="saveButton"
-onclick="save()">
+<!-- オイル交換 -->
+<button id="oilToggleButton" class="oil-toggle-button" onclick="toggleOilManagement()">🛢️ オイル交換管理を見る</button>
 
-日報を保存
-
-</button>
-
-
-<button
-id="cancelEditButton"
-class="cancel-button"
-onclick="cancelEdit()"
-style="display:none;">
-
-編集をキャンセル
-
-</button>
-
-
-<!-- =========================
-     オイル交換管理 開閉ボタン
-========================= -->
-
-<button
-id="oilToggleButton"
-class="oil-toggle-button"
-onclick="toggleOilManagement()">
-
-🛢️ オイル交換管理を見る
-
-</button>
-
-
-<!-- =========================
-     オイル交換管理
-========================= -->
-
-<div
-class="oil-management"
-id="oilManagement">
+<div class="oil-management" id="oilManagement">
 
 <h2>🛢️ オイル交換管理</h2>
 
 <div class="oil-current">
-
 現在の走行距離：
 <strong id="oilCurrentMileage">---</strong> km
-
 <br>
-
 次回オイル交換：
-<span
-class="oil-next"
-id="oilNextMileage">
-未登録
-</span>
-
+<span class="oil-next" id="oilNextMileage">未登録</span>
 </div>
 
+<div class="oil-warning" id="oilWarning"></div>
+<div class="oil-ok" id="oilOk"></div>
 
-<div
-class="oil-warning"
-id="oilWarning">
-</div>
+<label>オイル交換時の走行距離</label>
+<input type="number" id="oilChangeMileage" placeholder="例：124761">
 
+<div class="auto-info">※次回交換距離は「交換時の走行距離＋4,000km」です</div>
 
-<div
-class="oil-ok"
-id="oilOk">
-</div>
+<button class="oil-save" onclick="saveOilChange()">🛢️ オイル交換を記録</button>
 
-
-<label>
-オイル交換時の走行距離
-</label>
-
-<input
-type="number"
-id="oilChangeMileage"
-placeholder="例：124761">
-
-
-<div class="auto-info">
-
-※次回交換距離は「交換時の走行距離＋4,000km」です
+<div id="oilHistory" style="margin-top:15px;"></div>
 
 </div>
-
-
-<button
-class="oil-save"
-onclick="saveOilChange()">
-
-🛢️ オイル交換を記録
-
-</button>
-
-
-<div
-id="oilHistory"
-style="margin-top:15px;">
-</div>
-
-</div>
-
 
 <!-- 月間印刷 -->
-
 <div class="monthly-print">
-
 <h2>📄 月間A4 PDF</h2>
 
 <label>印刷する月</label>
+<input type="month" id="printMonth">
 
-<input
-type="month"
-id="printMonth">
-
-
-<button
-onclick="openMonthlyPrint()">
-
-🖨️ A4 PDFプレビュー
-
-</button>
-
+<button onclick="openMonthlyPrint()">🖨️ A4 PDFプレビュー</button>
 </div>
 
+<button id="monthlyListButton" onclick="toggleMonthlyList()">📅 月間日報一覧を見る</button>
 
-<!-- 月間一覧を見るボタン -->
-
-<button
-id="monthlyListButton"
-onclick="toggleMonthlyList()">
-
-📅 月間日報一覧を見る
-
-</button>
-
-
-<!-- 月間一覧 -->
-
-<div
-class="monthly-list"
-id="monthlyList">
+<div class="monthly-list" id="monthlyList">
 
 <h2>📅 月間日報一覧</h2>
 
-<div
-class="monthly-summary"
-id="monthlySummary">
-</div>
-
+<div class="monthly-summary" id="monthlySummary"></div>
 
 <table>
-
 <thead>
-
 <tr>
-
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -628,35 +168,18 @@ id="monthlySummary">
 <th>距離</th>
 <th>運行内容</th>
 <th>オイル交換</th>
-
 </tr>
-
 </thead>
-
-<tbody id="monthlyListBody">
-</tbody>
-
+<tbody id="monthlyListBody"></tbody>
 </table>
 
 </div>
 
-
-<!-- 保存済み日報 -->
-
-<h2
-style="color:#1565c0;margin-top:30px;">
-
-📋 保存済み日報
-
-</h2>
-
+<h2 style="color:#1565c0;margin-top:30px;">📋 保存済み日報</h2>
 
 <table>
-
 <thead>
-
 <tr>
-
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -664,1716 +187,673 @@ style="color:#1565c0;margin-top:30px;">
 <th>帰社</th>
 <th>距離</th>
 <th>操作</th>
-
 </tr>
-
 </thead>
-
-<tbody id="list">
-</tbody>
-
+<tbody id="list"></tbody>
 </table>
-
 
 </div>
 
-
 <script>
 
-
-// =====================================
-// 編集中の日報番号
-// =====================================
-
-let editingIndex = -1;
-
-
-// =====================================
-// 今日の日付
-// =====================================
+let editingIndex=-1;
 
 function getToday(){
-
-    let today = new Date();
-
-    let year =
-        today.getFullYear();
-
-    let month =
-        String(today.getMonth() + 1)
-        .padStart(2,"0");
-
-    let day =
-        String(today.getDate())
-        .padStart(2,"0");
-
-    return year + "-" + month + "-" + day;
-
+let today=new Date();
+return today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
 }
-
-
-// =====================================
-// 曜日を取得
-// =====================================
 
 function getDayOfWeek(dateString){
-
-    if(!dateString){
-        return "";
-    }
-
-    let date =
-        new Date(dateString + "T00:00:00");
-
-    let days = [
-        "日",
-        "月",
-        "火",
-        "水",
-        "木",
-        "金",
-        "土"
-    ];
-
-    return days[date.getDay()];
-
+if(!dateString)return "";
+let date=new Date(dateString+"T00:00:00");
+return ["日","月","火","水","木","金","土"][date.getDay()];
 }
-
-
-// =====================================
-// 日付＋曜日表示
-// =====================================
 
 function formatDateWithDay(dateString){
-
-    if(!dateString){
-        return "";
-    }
-
-    let parts =
-        dateString.split("-");
-
-    if(parts.length !== 3){
-        return dateString;
-    }
-
-    let year =
-        parts[0];
-
-    let month =
-        parts[1];
-
-    let day =
-        parts[2];
-
-    let dayOfWeek =
-        getDayOfWeek(dateString);
-
-    return (
-        year +
-        "/" +
-        month +
-        "/" +
-        day +
-        "（" +
-        dayOfWeek +
-        "）"
-    );
-
+if(!dateString)return "";
+let parts=dateString.split("-");
+if(parts.length!==3)return dateString;
+return parts[0]+"/"+parts[1]+"/"+parts[2]+"（"+getDayOfWeek(dateString)+"）";
 }
-
-
-// =====================================
-// 前日の日付
-// =====================================
 
 function getPreviousDate(dateString){
-
-    let date =
-        new Date(dateString + "T00:00:00");
-
-    date.setDate(
-        date.getDate() - 1
-    );
-
-    let year =
-        date.getFullYear();
-
-    let month =
-        String(date.getMonth() + 1)
-        .padStart(2,"0");
-
-    let day =
-        String(date.getDate())
-        .padStart(2,"0");
-
-    return year + "-" + month + "-" + day;
-
+let date=new Date(dateString+"T00:00:00");
+date.setDate(date.getDate()-1);
+return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
 }
-
-
-// =====================================
-// 今日の日付をセット
-// =====================================
 
 function setToday(){
-
-    document.getElementById("date").value =
-        getToday();
-
+document.getElementById("date").value=getToday();
 }
-
-
-// =====================================
-// 前日の帰社距離を自動入力
-// =====================================
 
 function loadPreviousMileage(){
 
-    let date =
-        document.getElementById("date").value;
+if(editingIndex!==-1)return;
 
-    if(!date){
-        return;
-    }
+let date=document.getElementById("date").value;
+if(!date)return;
 
-    if(editingIndex !== -1){
-        return;
-    }
+let currentStart=document.getElementById("start").value;
+if(currentStart)return;
 
-    let currentStart =
-        document.getElementById("start").value;
+let settingsData=localStorage.getItem("soukouSettings");
+if(!settingsData)return;
 
-    if(currentStart){
-        return;
-    }
+let settings=JSON.parse(settingsData);
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-    let settingsData =
-        localStorage.getItem("soukouSettings");
+let previousDate=getPreviousDate(date);
 
-    if(!settingsData){
-        return;
-    }
+let previousReports=reports.filter(function(report){
+return report.date===previousDate && report.car===settings.car;
+});
 
-    let settings =
-        JSON.parse(settingsData);
+if(previousReports.length===0)return;
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem("soukouReports")
-        ) || [];
+previousReports.sort(function(a,b){
+return Number(a.end)-Number(b.end);
+});
 
-    let previousDate =
-        getPreviousDate(date);
+let previousReport=previousReports[previousReports.length-1];
 
-    let previousReports =
-        reports.filter(function(report){
-
-            return (
-                report.date === previousDate &&
-                report.car === settings.car
-            );
-
-        });
-
-    if(previousReports.length === 0){
-        return;
-    }
-
-    let previousReport =
-        previousReports[
-            previousReports.length - 1
-        ];
-
-    if(
-        previousReport.end !== undefined &&
-        previousReport.end !== null &&
-        previousReport.end !== ""
-    ){
-
-        document.getElementById("start").value =
-            previousReport.end;
-
-        calculateDistance();
-
-        saveDraft();
-
-    }
-
+if(previousReport.end!==undefined && previousReport.end!==null && previousReport.end!==""){
+document.getElementById("start").value=previousReport.end;
+calculateDistance();
+saveDraft();
 }
 
-
-// =====================================
-// 設定画面
-// =====================================
+}
 
 function toggleSettings(){
+let settings=document.getElementById("settings");
 
-    let settings =
-        document.getElementById("settings");
-
-    if(settings.style.display === "block"){
-
-        settings.style.display = "none";
-
-    }else{
-
-        settings.style.display = "block";
-
-        loadSettings();
-
-    }
-
+if(settings.style.display==="block"){
+settings.style.display="none";
+}else{
+settings.style.display="block";
+loadSettings();
 }
-
-
-// =====================================
-// 基本情報保存
-// =====================================
+}
 
 function saveSettings(){
 
-    let company =
-        document.getElementById(
-            "settingCompany"
-        ).value.trim();
+let company=document.getElementById("settingCompany").value.trim();
+let car=document.getElementById("settingCar").value.trim();
+let driver=document.getElementById("settingDriver").value.trim();
 
-    let car =
-        document.getElementById(
-            "settingCar"
-        ).value.trim();
-
-    let driver =
-        document.getElementById(
-            "settingDriver"
-        ).value.trim();
-
-    if(!company || !car || !driver){
-
-        alert(
-            "会社名・車番・運転者名を入力してください"
-        );
-
-        return;
-
-    }
-
-    let settings = {
-
-        company:company,
-        car:car,
-        driver:driver
-
-    };
-
-    localStorage.setItem(
-        "soukouSettings",
-        JSON.stringify(settings)
-    );
-
-    updateHeader();
-
-    document.getElementById(
-        "settings"
-    ).style.display = "none";
-
-    document.getElementById("start").value = "";
-
-    loadPreviousMileage();
-
-    updateOilManagement();
-
-    alert(
-        "基本情報を保存しました！"
-    );
-
+if(!company||!car||!driver){
+alert("会社名・車番・運転者名を入力してください");
+return;
 }
 
+localStorage.setItem("soukouSettings",JSON.stringify({
+company:company,
+car:car,
+driver:driver
+}));
 
-// =====================================
-// 基本情報読み込み
-// =====================================
+updateHeader();
+
+document.getElementById("settings").style.display="none";
+document.getElementById("start").value="";
+
+loadPreviousMileage();
+updateOilManagement();
+
+alert("基本情報を保存しました！");
+}
 
 function loadSettings(){
 
-    let saved =
-        localStorage.getItem("soukouSettings");
+let saved=localStorage.getItem("soukouSettings");
 
-    if(!saved){
-
-        document.getElementById(
-            "settingCompany"
-        ).value = "";
-
-        document.getElementById(
-            "settingCar"
-        ).value = "";
-
-        document.getElementById(
-            "settingDriver"
-        ).value = "";
-
-        return;
-
-    }
-
-    let settings =
-        JSON.parse(saved);
-
-    document.getElementById(
-        "settingCompany"
-    ).value =
-        settings.company || "";
-
-    document.getElementById(
-        "settingCar"
-    ).value =
-        settings.car || "";
-
-    document.getElementById(
-        "settingDriver"
-    ).value =
-        settings.driver || "";
-
+if(!saved){
+document.getElementById("settingCompany").value="";
+document.getElementById("settingCar").value="";
+document.getElementById("settingDriver").value="";
+return;
 }
 
+let settings=JSON.parse(saved);
 
-// =====================================
-// ヘッダー更新
-// =====================================
+document.getElementById("settingCompany").value=settings.company||"";
+document.getElementById("settingCar").value=settings.car||"";
+document.getElementById("settingDriver").value=settings.driver||"";
+}
 
 function updateHeader(){
 
-    let saved =
-        localStorage.getItem("soukouSettings");
+let saved=localStorage.getItem("soukouSettings");
 
-    if(!saved){
-
-        document.getElementById(
-            "headerCompany"
-        ).textContent =
-            "会社名未設定";
-
-        document.getElementById(
-            "headerCar"
-        ).textContent =
-            "未設定";
-
-        document.getElementById(
-            "headerDriver"
-        ).textContent =
-            "未設定";
-
-        return;
-
-    }
-
-    let settings =
-        JSON.parse(saved);
-
-    document.getElementById(
-        "headerCompany"
-    ).textContent =
-        settings.company ||
-        "会社名未設定";
-
-    document.getElementById(
-        "headerCar"
-    ).textContent =
-        settings.car ||
-        "未設定";
-
-    document.getElementById(
-        "headerDriver"
-    ).textContent =
-        settings.driver ||
-        "未設定";
-
+if(!saved){
+document.getElementById("headerCompany").textContent="会社名未設定";
+document.getElementById("headerCar").textContent="未設定";
+document.getElementById("headerDriver").textContent="未設定";
+return;
 }
 
+let settings=JSON.parse(saved);
 
-// =====================================
-// 走行距離計算
-// =====================================
+document.getElementById("headerCompany").textContent=settings.company||"会社名未設定";
+document.getElementById("headerCar").textContent=settings.car||"未設定";
+document.getElementById("headerDriver").textContent=settings.driver||"未設定";
+}
 
 function calculateDistance(){
 
-    let start =
-        Number(
-            document.getElementById(
-                "start"
-            ).value
-        );
+let start=Number(document.getElementById("start").value);
+let end=Number(document.getElementById("returnMileage").value);
 
-    let end =
-        Number(
-            document.getElementById(
-                "returnMileage"
-            ).value
-        );
-
-    if(
-        end >= start &&
-        start > 0
-    ){
-
-        document.getElementById(
-            "distance"
-        ).value =
-            (end - start) + " km";
-
-    }else{
-
-        document.getElementById(
-            "distance"
-        ).value = "";
-
-    }
-
+document.getElementById("distance").value=
+end>=start&&start>0?(end-start)+" km":"";
 }
-
-
-// =====================================
-// 下書き保存
-// =====================================
 
 function saveDraft(){
 
-    if(editingIndex !== -1){
-        return;
-    }
+if(editingIndex!==-1)return;
 
-    let draft = {
+let draft={
+date:document.getElementById("date").value,
+start:document.getElementById("start").value,
+returnMileage:document.getElementById("returnMileage").value,
+work:document.getElementById("work").value,
+memo:document.getElementById("memo").value
+};
 
-        date:
-            document.getElementById("date").value,
-
-        start:
-            document.getElementById("start").value,
-
-        returnMileage:
-            document.getElementById(
-                "returnMileage"
-            ).value,
-
-        work:
-            document.getElementById("work").value,
-
-        memo:
-            document.getElementById("memo").value
-
-    };
-
-    localStorage.setItem(
-        "soukouDraft",
-        JSON.stringify(draft)
-    );
-
+localStorage.setItem("soukouDraft",JSON.stringify(draft));
 }
-
-
-// =====================================
-// 下書き復元
-// =====================================
 
 function loadDraft(){
 
-    let saved =
-        localStorage.getItem("soukouDraft");
+let saved=localStorage.getItem("soukouDraft");
 
-    if(!saved){
-
-        setToday();
-
-        loadPreviousMileage();
-
-        return;
-
-    }
-
-    let draft =
-        JSON.parse(saved);
-
-    let today =
-        getToday();
-
-    if(draft.date !== today){
-
-        localStorage.removeItem(
-            "soukouDraft"
-        );
-
-        setToday();
-
-        loadPreviousMileage();
-
-        return;
-
-    }
-
-    document.getElementById("date").value =
-        draft.date || today;
-
-    document.getElementById("start").value =
-        draft.start || "";
-
-    document.getElementById(
-        "returnMileage"
-    ).value =
-        draft.returnMileage || "";
-
-    document.getElementById("work").value =
-        draft.work || "";
-
-    document.getElementById("memo").value =
-        draft.memo || "";
-
-    if(!draft.start){
-
-        loadPreviousMileage();
-
-    }
-
-    calculateDistance();
-
+if(!saved){
+setToday();
+loadPreviousMileage();
+return;
 }
 
+let draft=JSON.parse(saved);
+let today=getToday();
 
-// =====================================
-// 編集
-// =====================================
+if(draft.date!==today){
+localStorage.removeItem("soukouDraft");
+setToday();
+loadPreviousMileage();
+return;
+}
+
+document.getElementById("date").value=draft.date||today;
+document.getElementById("start").value=draft.start||"";
+document.getElementById("returnMileage").value=draft.returnMileage||"";
+document.getElementById("work").value=draft.work||"";
+document.getElementById("memo").value=draft.memo||"";
+
+if(!draft.start)loadPreviousMileage();
+
+calculateDistance();
+}
 
 function editReport(index){
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+let report=reports[index];
 
-    let report =
-        reports[index];
+if(!report)return;
 
-    if(!report){
-        return;
-    }
+editingIndex=index;
 
-    editingIndex = index;
+document.getElementById("date").value=report.date;
+document.getElementById("start").value=report.start;
+document.getElementById("returnMileage").value=report.end;
+document.getElementById("work").value=report.work||"";
+document.getElementById("memo").value=report.memo||"";
 
-    document.getElementById("date").value =
-        report.date;
+calculateDistance();
 
-    document.getElementById("start").value =
-        report.start;
+document.getElementById("editMode").style.display="block";
+document.getElementById("saveButton").textContent="変更を保存";
+document.getElementById("cancelEditButton").style.display="block";
 
-    document.getElementById(
-        "returnMileage"
-    ).value =
-        report.end;
-
-    document.getElementById("work").value =
-        report.work || "";
-
-    document.getElementById("memo").value =
-        report.memo || "";
-
-    calculateDistance();
-
-    document.getElementById(
-        "editMode"
-    ).style.display = "block";
-
-    document.getElementById(
-        "saveButton"
-    ).textContent =
-        "変更を保存";
-
-    document.getElementById(
-        "cancelEditButton"
-    ).style.display =
-        "block";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
+window.scrollTo({top:0,behavior:"smooth"});
 }
-
-
-// =====================================
-// 編集キャンセル
-// =====================================
 
 function cancelEdit(){
 
-    editingIndex = -1;
+editingIndex=-1;
 
-    document.getElementById(
-        "editMode"
-    ).style.display =
-        "none";
+document.getElementById("editMode").style.display="none";
+document.getElementById("saveButton").textContent="日報を保存";
+document.getElementById("cancelEditButton").style.display="none";
 
-    document.getElementById(
-        "saveButton"
-    ).textContent =
-        "日報を保存";
-
-    document.getElementById(
-        "cancelEditButton"
-    ).style.display =
-        "none";
-
-    clearInputs();
-
-    setToday();
-
-    loadPreviousMileage();
-
+clearInputs();
+setToday();
+loadPreviousMileage();
 }
-
-
-// =====================================
-// 入力クリア
-// =====================================
 
 function clearInputs(){
 
-    document.getElementById("start").value = "";
-
-    document.getElementById(
-        "returnMileage"
-    ).value = "";
-
-    document.getElementById(
-        "distance"
-    ).value = "";
-
-    document.getElementById("work").value = "";
-
-    document.getElementById("memo").value = "";
-
+document.getElementById("start").value="";
+document.getElementById("returnMileage").value="";
+document.getElementById("distance").value="";
+document.getElementById("work").value="";
+document.getElementById("memo").value="";
 }
 
+document.getElementById("start").addEventListener("input",function(){
+calculateDistance();
+saveDraft();
+updateOilManagement();
+});
 
-// =====================================
-// 入力イベント
-// =====================================
+document.getElementById("returnMileage").addEventListener("input",function(){
+calculateDistance();
+saveDraft();
+updateOilManagement();
+});
 
-document.getElementById("start")
-.addEventListener(
-    "input",
-    function(){
+document.getElementById("work").addEventListener("input",saveDraft);
+document.getElementById("memo").addEventListener("input",saveDraft);
 
-        calculateDistance();
+document.getElementById("date").addEventListener("change",function(){
 
-        saveDraft();
+if(editingIndex!==-1)return;
 
-        updateOilManagement();
+document.getElementById("start").value="";
+document.getElementById("returnMileage").value="";
+document.getElementById("distance").value="";
 
-    }
-);
-
-
-document.getElementById("returnMileage")
-.addEventListener(
-    "input",
-    function(){
-
-        calculateDistance();
-
-        saveDraft();
-
-        updateOilManagement();
-
-    }
-);
-
-
-document.getElementById("work")
-.addEventListener(
-    "input",
-    saveDraft
-);
-
-
-document.getElementById("memo")
-.addEventListener(
-    "input",
-    saveDraft
-);
-
-
-// =====================================
-// 日付変更
-// =====================================
-
-document.getElementById("date")
-.addEventListener(
-    "change",
-    function(){
-
-        if(editingIndex !== -1){
-            return;
-        }
-
-        document.getElementById(
-            "start"
-        ).value = "";
-
-        document.getElementById(
-            "returnMileage"
-        ).value = "";
-
-        document.getElementById(
-            "distance"
-        ).value = "";
-
-        saveDraft();
-
-        loadPreviousMileage();
-
-    }
-);
-
-
-// =====================================
-// 日報保存
-// =====================================
+saveDraft();
+loadPreviousMileage();
+});
 
 function save(){
 
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
+let settingsData=localStorage.getItem("soukouSettings");
 
-    if(!settingsData){
+if(!settingsData){
 
-        alert(
-            "先に「基本情報を変更」から\n" +
-            "会社名・車番・運転者名を設定してください"
-        );
+alert("先に「基本情報を変更」から\n会社名・車番・運転者名を設定してください");
 
-        document.getElementById(
-            "settings"
-        ).style.display =
-            "block";
+document.getElementById("settings").style.display="block";
+loadSettings();
 
-        loadSettings();
-
-        return;
-
-    }
-
-    let settings =
-        JSON.parse(settingsData);
-
-    let date =
-        document.getElementById("date").value;
-
-    let start =
-        Number(
-            document.getElementById("start").value
-        );
-
-    let end =
-        Number(
-            document.getElementById(
-                "returnMileage"
-            ).value
-        );
-
-    let work =
-        document.getElementById("work").value;
-
-    let memo =
-        document.getElementById("memo").value;
-
-    if(
-        !date ||
-        !start ||
-        !end
-    ){
-
-        alert(
-            "日付・出発時走行距離・帰社時走行距離を入力してください"
-        );
-
-        return;
-
-    }
-
-    if(end < start){
-
-        alert(
-            "帰社時走行距離は、出発時走行距離以上にしてください"
-        );
-
-        return;
-
-    }
-
-    let distance =
-        end - start;
-
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
-
-
-    // 編集保存
-
-    if(editingIndex !== -1){
-
-        reports[editingIndex] = {
-
-            company:
-                settings.company,
-
-            date:
-                date,
-
-            car:
-                settings.car,
-
-            start:
-                start,
-
-            end:
-                end,
-
-            distance:
-                distance,
-
-            driver:
-                settings.driver,
-
-            work:
-                work,
-
-            memo:
-                memo
-
-        };
-
-        localStorage.setItem(
-            "soukouReports",
-            JSON.stringify(reports)
-        );
-
-        alert(
-            "日報を変更しました！"
-        );
-
-        editingIndex = -1;
-
-        document.getElementById(
-            "editMode"
-        ).style.display =
-            "none";
-
-        document.getElementById(
-            "saveButton"
-        ).textContent =
-            "日報を保存";
-
-        document.getElementById(
-            "cancelEditButton"
-        ).style.display =
-            "none";
-
-        clearInputs();
-
-        localStorage.removeItem(
-            "soukouDraft"
-        );
-
-        setToday();
-
-        displayReports();
-
-        loadPreviousMileage();
-
-        updateOilManagement();
-
-        return;
-
-    }
-
-
-    // 新規保存
-
-    let report = {
-
-        company:
-            settings.company,
-
-        date:
-            date,
-
-        car:
-            settings.car,
-
-        start:
-            start,
-
-        end:
-            end,
-
-        distance:
-            distance,
-
-        driver:
-            settings.driver,
-
-        work:
-            work,
-
-        memo:
-            memo
-
-    };
-
-    reports.push(report);
-
-    localStorage.setItem(
-        "soukouReports",
-        JSON.stringify(reports)
-    );
-
-    localStorage.removeItem(
-        "soukouDraft"
-    );
-
-    displayReports();
-
-    alert(
-        "日報を保存しました！"
-    );
-
-    clearInputs();
-
-    setToday();
-
-    loadPreviousMileage();
-
-    updateOilManagement();
-
+return;
 }
 
+let settings=JSON.parse(settingsData);
 
-// =====================================
-// 日報削除
-// =====================================
+let date=document.getElementById("date").value;
+let start=Number(document.getElementById("start").value);
+let end=Number(document.getElementById("returnMileage").value);
+let work=document.getElementById("work").value;
+let memo=document.getElementById("memo").value;
+
+if(!date||!start||!end){
+alert("日付・出発時走行距離・帰社時走行距離を入力してください");
+return;
+}
+
+if(end<start){
+alert("帰社時走行距離は、出発時走行距離以上にしてください");
+return;
+}
+
+let distance=end-start;
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+
+let report={
+company:settings.company,
+date:date,
+car:settings.car,
+start:start,
+end:end,
+distance:distance,
+driver:settings.driver,
+work:work,
+memo:memo
+};
+
+if(editingIndex!==-1){
+
+reports[editingIndex]=report;
+
+localStorage.setItem("soukouReports",JSON.stringify(reports));
+
+alert("日報を変更しました！");
+
+editingIndex=-1;
+
+document.getElementById("editMode").style.display="none";
+document.getElementById("saveButton").textContent="日報を保存";
+document.getElementById("cancelEditButton").style.display="none";
+
+clearInputs();
+localStorage.removeItem("soukouDraft");
+
+setToday();
+displayReports();
+loadPreviousMileage();
+updateOilManagement();
+
+if(document.getElementById("monthlyList").style.display==="block"){
+showMonthlyList();
+}
+
+return;
+}
+
+reports.push(report);
+
+localStorage.setItem("soukouReports",JSON.stringify(reports));
+localStorage.removeItem("soukouDraft");
+
+displayReports();
+
+alert("日報を保存しました！");
+
+clearInputs();
+setToday();
+loadPreviousMileage();
+updateOilManagement();
+
+if(document.getElementById("monthlyList").style.display==="block"){
+showMonthlyList();
+}
+}
 
 function deleteReport(index){
 
-    if(
-        !confirm(
-            "この日報を削除しますか？"
-        )
-    ){
+if(!confirm("この日報を削除しますか？"))return;
 
-        return;
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-    }
+reports.splice(index,1);
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+localStorage.setItem("soukouReports",JSON.stringify(reports));
 
-    reports.splice(
-        index,
-        1
-    );
+displayReports();
+showMonthlyList();
+updateOilManagement();
 
-    localStorage.setItem(
-        "soukouReports",
-        JSON.stringify(reports)
-    );
-
-    displayReports();
-
-    showMonthlyList();
-
-    updateOilManagement();
-
-    alert(
-        "日報を削除しました"
-    );
-
+alert("日報を削除しました");
 }
-
-
-// =====================================
-// 保存済み日報表示
-// =====================================
 
 function displayReports(){
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+let list=document.getElementById("list");
 
-    let list =
-        document.getElementById("list");
+list.innerHTML="";
 
-    list.innerHTML = "";
+reports.forEach(function(report,index){
 
-    reports.forEach(
-        function(report,index){
-
-            let row = `
-
+list.innerHTML+=`
 <tr>
-
 <td>${formatDateWithDay(report.date)}</td>
-
-<td>${report.driver || ""}</td>
-
-<td>${report.car || ""}</td>
-
-<td>${report.start || ""}</td>
-
-<td>${report.end || ""}</td>
-
-<td>${report.distance || 0} km</td>
-
+<td>${report.driver||""}</td>
+<td>${report.car||""}</td>
+<td>${report.start||""}</td>
+<td>${report.end||""}</td>
+<td>${report.distance||0} km</td>
 <td class="action-cell">
-
-<button
-class="edit-button"
-onclick="editReport(${index})">
-
-編集
-
-</button>
-
-<br>
-
-<button
-class="delete-button"
-onclick="deleteReport(${index})">
-
-削除
-
-</button>
-
+<button class="edit-button" onclick="editReport(${index})">編集</button><br>
+<button class="delete-button" onclick="deleteReport(${index})">削除</button>
 </td>
-
-</tr>
-
-`;
-
-            list.innerHTML += row;
-
-        }
-    );
-
+</tr>`;
+});
 }
-
-
-// =====================================
-// オイル交換記録取得
-// =====================================
 
 function getOilRecords(){
-
-    return JSON.parse(
-        localStorage.getItem(
-            "soukouOilRecords"
-        )
-    ) || [];
-
+return JSON.parse(localStorage.getItem("soukouOilRecords"))||[];
 }
-
-
-// =====================================
-// オイル交換管理 開閉
-// =====================================
 
 function toggleOilManagement(){
 
-    let management =
-        document.getElementById(
-            "oilManagement"
-        );
+let management=document.getElementById("oilManagement");
+let button=document.getElementById("oilToggleButton");
 
-    let button =
-        document.getElementById(
-            "oilToggleButton"
-        );
-
-    if(
-        management.style.display === "block"
-    ){
-
-        management.style.display =
-            "none";
-
-        button.textContent =
-            "🛢️ オイル交換管理を見る";
-
-    }else{
-
-        updateOilManagement();
-
-        management.style.display =
-            "block";
-
-        button.textContent =
-            "📕 オイル交換管理を閉じる";
-
-    }
-
+if(management.style.display==="block"){
+management.style.display="none";
+button.textContent="🛢️ オイル交換管理を見る";
+}else{
+updateOilManagement();
+management.style.display="block";
+button.textContent="📕 オイル交換管理を閉じる";
+}
 }
 
-
-// =====================================
-// オイル交換記録保存
-// =====================================
+/* =====================================
+   オイル交換保存
+   ===================================== */
 
 function saveOilChange(){
 
-    let mileage =
-        Number(
-            document.getElementById(
-                "oilChangeMileage"
-            ).value
-        );
+let mileage=Number(document.getElementById("oilChangeMileage").value);
 
-    if(!mileage || mileage <= 0){
-
-        alert(
-            "オイル交換時の走行距離を入力してください"
-        );
-
-        return;
-
-    }
-
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
-
-    if(!settingsData){
-
-        alert(
-            "先に基本情報を設定してください"
-        );
-
-        return;
-
-    }
-
-    let settings =
-        JSON.parse(settingsData);
-
-    let date =
-        document.getElementById(
-            "date"
-        ).value || getToday();
-
-    let nextMileage =
-        mileage + 4000;
-
-    let records =
-        getOilRecords();
-
-    records.push({
-
-        date:date,
-
-        mileage:mileage,
-
-        nextMileage:nextMileage,
-
-        car:settings.car,
-
-        driver:settings.driver
-
-    });
-
-    localStorage.setItem(
-        "soukouOilRecords",
-        JSON.stringify(records)
-    );
-
-    document.getElementById(
-        "oilChangeMileage"
-    ).value = "";
-
-    updateOilManagement();
-
-    showMonthlyList();
-
-    alert(
-        "オイル交換を記録しました！\n\n" +
-        "交換時：" +
-        mileage.toLocaleString() +
-        " km\n" +
-        "次回交換：" +
-        nextMileage.toLocaleString() +
-        " km"
-    );
-
+if(!mileage||mileage<=0){
+alert("オイル交換時の走行距離を入力してください");
+return;
 }
 
+let settingsData=localStorage.getItem("soukouSettings");
 
-// =====================================
-// オイル交換記録削除
-// =====================================
+if(!settingsData){
+alert("先に基本情報を設定してください");
+return;
+}
+
+let settings=JSON.parse(settingsData);
+
+let date=document.getElementById("date").value||getToday();
+
+let nextMileage=mileage+4000;
+
+let records=getOilRecords();
+
+records.push({
+date:date,
+mileage:mileage,
+nextMileage:nextMileage,
+car:settings.car,
+driver:settings.driver
+});
+
+localStorage.setItem("soukouOilRecords",JSON.stringify(records));
+
+document.getElementById("oilChangeMileage").value="";
+
+/*
+   ★ここが今回の重要部分
+   オイル交換時に入力した距離を、
+   一時的に現在走行距離として表示する
+*/
+document.getElementById("oilCurrentMileage").textContent=
+mileage.toLocaleString();
+
+updateOilManagement();
+
+if(document.getElementById("monthlyList").style.display==="block"){
+showMonthlyList();
+}
+
+alert(
+"オイル交換を記録しました！\n\n"+
+"交換時："+mileage.toLocaleString()+" km\n"+
+"次回交換："+nextMileage.toLocaleString()+" km"
+);
+}
 
 function deleteOilRecord(index){
 
-    if(
-        !confirm(
-            "このオイル交換記録を削除しますか？"
-        )
-    ){
+if(!confirm("このオイル交換記録を削除しますか？"))return;
 
-        return;
+let records=getOilRecords();
 
-    }
+records.splice(index,1);
 
-    let records =
-        getOilRecords();
+localStorage.setItem("soukouOilRecords",JSON.stringify(records));
 
-    records.splice(
-        index,
-        1
-    );
+updateOilManagement();
 
-    localStorage.setItem(
-        "soukouOilRecords",
-        JSON.stringify(records)
-    );
-
-    updateOilManagement();
-
-    showMonthlyList();
-
+if(document.getElementById("monthlyList").style.display==="block"){
+showMonthlyList();
+}
 }
 
-
-// =====================================
-// 現在の走行距離取得
-// =====================================
+/* =====================================
+   現在の走行距離
+   日報とオイル交換のうち最新・最大の距離を使用
+===================================== */
 
 function getCurrentMileage(){
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-    let oilRecords =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouOilRecords"
-            )
-        ) || [];
+let settingsData=localStorage.getItem("soukouSettings");
 
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
+if(!settingsData)return 0;
 
-    if(!settingsData){
-        return 0;
-    }
+let settings=JSON.parse(settingsData);
 
-    let settings =
-        JSON.parse(settingsData);
+let mileageList=[];
 
-    let car =
-        settings.car || "";
+reports.forEach(function(report){
 
-
-    // =====================================
-    // 日報から現在の走行距離を取得
-    // =====================================
-
-    let carReports =
-        reports.filter(
-            function(report){
-
-                return (
-                    report.car === car &&
-                    report.end !== undefined &&
-                    report.end !== null &&
-                    report.end !== ""
-                );
-
-            }
-        );
-
-
-    let reportMileage = 0;
-    let reportDate = "";
-
-
-    if(carReports.length > 0){
-
-        carReports.sort(
-            function(a,b){
-
-                if(a.date !== b.date){
-
-                    return a.date.localeCompare(
-                        b.date
-                    );
-
-                }
-
-                return (
-                    Number(a.end) -
-                    Number(b.end)
-                );
-
-            }
-        );
-
-        let latestReport =
-            carReports[
-                carReports.length - 1
-            ];
-
-        reportMileage =
-            Number(latestReport.end) || 0;
-
-        reportDate =
-            latestReport.date || "";
-
-    }
-
-
-    // =====================================
-    // オイル交換時の走行距離を取得
-    // =====================================
-
-    let carOilRecords =
-        oilRecords.filter(
-            function(record){
-
-                return (
-                    !record.car ||
-                    !car ||
-                    record.car === car
-                );
-
-            }
-        );
-
-
-    let oilMileage = 0;
-    let oilDate = "";
-
-
-    if(carOilRecords.length > 0){
-
-        carOilRecords.sort(
-            function(a,b){
-
-                if(a.date !== b.date){
-
-                    return a.date.localeCompare(
-                        b.date
-                    );
-
-                }
-
-                return (
-                    Number(a.mileage) -
-                    Number(b.mileage)
-                );
-
-            }
-        );
-
-        let latestOil =
-            carOilRecords[
-                carOilRecords.length - 1
-            ];
-
-        oilMileage =
-            Number(latestOil.mileage) || 0;
-
-        oilDate =
-            latestOil.date || "";
-
-    }
-
-
-    // =====================================
-    // 日報とオイル交換を比較
-    // =====================================
-
-    /*
-       日報の方が新しい
-       → 日報の帰社時走行距離
-
-       オイル交換の方が新しい
-       → オイル交換時の走行距離
-
-       同じ日の場合
-       → 大きい走行距離を使用
-    */
-
-    if(
-        reportMileage > 0 &&
-        oilMileage > 0
-    ){
-
-        if(reportDate > oilDate){
-
-            return reportMileage;
-
-        }
-
-        if(oilDate > reportDate){
-
-            return oilMileage;
-
-        }
-
-        return Math.max(
-            reportMileage,
-            oilMileage
-        );
-
-    }
-
-
-    // 日報しかない場合
-
-    if(reportMileage > 0){
-
-        return reportMileage;
-
-    }
-
-
-    // オイル交換記録しかない場合
-
-    if(oilMileage > 0){
-
-        return oilMileage;
-
-    }
-
-
-    // =====================================
-    // まだ保存データがない場合
-    // =====================================
-
-    let currentInput =
-        Number(
-            document.getElementById(
-                "returnMileage"
-            ).value
-        );
-
-    return currentInput || 0;
-
+if(
+report.car===settings.car &&
+report.end!==undefined &&
+report.end!==null &&
+report.end!==""
+){
+mileageList.push(Number(report.end));
 }
 
+});
 
-// =====================================
-// オイル交換管理表示
-// =====================================
+let oilRecords=getOilRecords();
+
+oilRecords.forEach(function(record){
+
+if(
+(!record.car||!settings.car||record.car===settings.car) &&
+record.mileage!==undefined &&
+record.mileage!==null &&
+record.mileage!==""
+){
+mileageList.push(Number(record.mileage));
+}
+
+});
+
+let currentInput=Number(
+document.getElementById("returnMileage").value
+);
+
+if(currentInput>0){
+mileageList.push(currentInput);
+}
+
+if(mileageList.length===0)return 0;
+
+return Math.max.apply(null,mileageList);
+}
+
+/* =====================================
+   オイル交換管理
+===================================== */
 
 function updateOilManagement(){
 
-    let currentMileage =
-        getCurrentMileage();
+let currentMileage=getCurrentMileage();
 
-    let currentElement =
-        document.getElementById(
-            "oilCurrentMileage"
-        );
+let currentElement=document.getElementById("oilCurrentMileage");
 
-    if(currentMileage > 0){
+if(currentMileage>0){
+currentElement.textContent=currentMileage.toLocaleString();
+}else{
+currentElement.textContent="---";
+}
 
-        currentElement.textContent =
-            currentMileage.toLocaleString();
+let records=getOilRecords();
 
-    }else{
+let nextElement=document.getElementById("oilNextMileage");
+let warningElement=document.getElementById("oilWarning");
+let okElement=document.getElementById("oilOk");
 
-        currentElement.textContent =
-            "---";
+warningElement.style.display="none";
+okElement.style.display="none";
 
-    }
+let settingsData=localStorage.getItem("soukouSettings");
 
-    let records =
-        getOilRecords();
+let settings=settingsData?JSON.parse(settingsData):{};
 
-    let nextElement =
-        document.getElementById(
-            "oilNextMileage"
-        );
+let carRecords=records.filter(function(record){
+return !record.car||!settings.car||record.car===settings.car;
+});
 
-    let warningElement =
-        document.getElementById(
-            "oilWarning"
-        );
+if(carRecords.length===0){
 
-    let okElement =
-        document.getElementById(
-            "oilOk"
-        );
+nextElement.textContent="未登録";
+document.getElementById("oilHistory").innerHTML="";
+return;
+}
 
-    warningElement.style.display =
-        "none";
+carRecords.sort(function(a,b){
 
-    okElement.style.display =
-        "none";
+if(a.date!==b.date){
+return a.date.localeCompare(b.date);
+}
 
-    if(records.length === 0){
+return Number(a.mileage)-Number(b.mileage);
+});
 
-        nextElement.textContent =
-            "未登録";
+let latest=carRecords[carRecords.length-1];
 
-        document.getElementById(
-            "oilHistory"
-        ).innerHTML = "";
+let nextMileage=Number(latest.nextMileage);
 
-        return;
+nextElement.textContent=nextMileage.toLocaleString()+" km";
 
-    }
+if(currentMileage>0){
 
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
+let remaining=nextMileage-currentMileage;
 
-    let settings =
-        settingsData
-        ? JSON.parse(settingsData)
-        : {};
+if(remaining<=0){
 
-    let carRecords =
-        records.filter(
-            function(record){
+warningElement.style.display="block";
 
-                return (
-                    !record.car ||
-                    !settings.car ||
-                    record.car === settings.car
-                );
+warningElement.textContent=
+"🚨 オイル交換時期を超えています！ "+
+Math.abs(remaining).toLocaleString()+" km 超過";
 
-            }
-        );
+}else if(remaining<=500){
 
-    if(carRecords.length === 0){
+warningElement.style.display="block";
 
-        nextElement.textContent =
-            "未登録";
+warningElement.textContent=
+"⚠️ オイル交換まであと "+
+remaining.toLocaleString()+" km です！";
 
-        return;
+}else{
 
-    }
+okElement.style.display="block";
 
-    carRecords.sort(
-        function(a,b){
+okElement.textContent=
+"オイル交換まであと "+
+remaining.toLocaleString()+" km";
+}
+}
 
-            return (
-                a.date.localeCompare(b.date)
-            );
-
-        }
-    );
-
-    let latest =
-        carRecords[
-            carRecords.length - 1
-        ];
-
-    let nextMileage =
-        Number(latest.nextMileage);
-
-    nextElement.textContent =
-        nextMileage.toLocaleString() +
-        " km";
-
-    if(currentMileage > 0){
-
-        let remaining =
-            nextMileage -
-            currentMileage;
-
-        if(remaining <= 0){
-
-            warningElement.style.display =
-                "block";
-
-            warningElement.textContent =
-                "🚨 オイル交換時期を超えています！ " +
-                Math.abs(remaining).toLocaleString() +
-                " km 超過";
-
-        }else if(remaining <= 500){
-
-            warningElement.style.display =
-                "block";
-
-            warningElement.textContent =
-                "⚠️ オイル交換まであと " +
-                remaining.toLocaleString() +
-                " km です！";
-
-        }else{
-
-            okElement.style.display =
-                "block";
-
-            okElement.textContent =
-                "オイル交換まであと " +
-                remaining.toLocaleString() +
-                " km";
-
-        }
-
-    }
-
-
-    // オイル交換履歴
-
-    let historyHtml = `
-
-<h3 style="color:#e65100;">
-🛢️ オイル交換履歴
-</h3>
-
+let historyHtml=`
+<h3 style="color:#e65100;">🛢️ オイル交換履歴</h3>
 `;
 
-    carRecords
-    .slice()
-    .reverse()
-    .forEach(
-        function(record,index){
+carRecords.slice().reverse().forEach(function(record){
 
-            let originalIndex =
-                records.indexOf(record);
+let originalIndex=records.indexOf(record);
 
-            historyHtml += `
-
-<div
-style="
+historyHtml+=`
+<div style="
 background:white;
 border:1px solid #ddd;
 border-radius:8px;
@@ -2382,543 +862,283 @@ margin-top:8px;
 ">
 
 ${formatDateWithDay(record.date)}
-
 <br>
-
 交換時：
-<strong>
-${Number(record.mileage).toLocaleString()} km
-</strong>
-
+<strong>${Number(record.mileage).toLocaleString()} km</strong>
 <br>
-
 次回：
-<strong>
-${Number(record.nextMileage).toLocaleString()} km
-</strong>
-
+<strong>${Number(record.nextMileage).toLocaleString()} km</strong>
 <br>
 
-<button
-class="oil-delete"
-onclick="deleteOilRecord(${originalIndex})">
-
+<button class="oil-delete" onclick="deleteOilRecord(${originalIndex})">
 削除
-
 </button>
 
 </div>
-
 `;
+});
 
-        }
-    );
-
-    document.getElementById(
-        "oilHistory"
-    ).innerHTML =
-        historyHtml;
-
+document.getElementById("oilHistory").innerHTML=historyHtml;
 }
 
-
-// =====================================
-// オイル交換表示判定
-// =====================================
+/* =====================================
+   日報の日付に対応するオイル交換
+===================================== */
 
 function getOilText(date){
 
-    let records =
-        getOilRecords();
+let records=getOilRecords();
 
-    let matching =
-        records.filter(
-            function(record){
+let matching=records.filter(function(record){
+return record.date===date;
+});
 
-                return record.date === date;
+if(matching.length===0)return "";
 
-            }
-        );
+let text="";
 
-    if(matching.length === 0){
-        return "";
-    }
+matching.forEach(function(record){
 
-    let text = "";
+if(text)text+="<br>";
 
-    matching.forEach(
-        function(record){
+text+="🛢️ "+Number(record.mileage).toLocaleString()+"km";
 
-            if(text){
-                text += "<br>";
-            }
+});
 
-            text +=
-                "🛢️ " +
-                Number(
-                    record.mileage
-                ).toLocaleString() +
-                "km";
-
-        }
-    );
-
-    return text;
-
+return text;
 }
 
-
-// =====================================
-// 月間一覧
-// =====================================
+/* =====================================
+   月間一覧
+===================================== */
 
 function showMonthlyList(){
 
-    let month =
-        document.getElementById(
-            "printMonth"
-        ).value;
+let month=document.getElementById("printMonth").value;
 
-    if(!month){
+if(!month)return;
 
-        return;
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-    }
+let monthlyReports=reports.filter(function(report){
+return report.date.startsWith(month);
+});
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+monthlyReports.sort(function(a,b){
+return a.date.localeCompare(b.date);
+});
 
-    let monthlyReports =
-        reports.filter(
-            function(report){
+let total=0;
 
-                return report.date.startsWith(
-                    month
-                );
+let body=document.getElementById("monthlyListBody");
 
-            }
-        );
+body.innerHTML="";
 
-    monthlyReports.sort(
-        function(a,b){
+/* 日報 */
+monthlyReports.forEach(function(report){
 
-            return a.date.localeCompare(
-                b.date
-            );
+total+=Number(report.distance)||0;
 
-        }
-    );
+let oilText=getOilText(report.date);
 
-    let total = 0;
-
-    let body =
-        document.getElementById(
-            "monthlyListBody"
-        );
-
-    body.innerHTML = "";
-
-    monthlyReports.forEach(
-        function(report){
-
-            total +=
-                Number(report.distance) || 0;
-
-            let oilText =
-                getOilText(report.date);
-
-            body.innerHTML += `
-
+body.innerHTML+=`
 <tr>
-
 <td>${formatDateWithDay(report.date)}</td>
-
-<td>${report.driver || ""}</td>
-
-<td>${report.car || ""}</td>
-
-<td>${report.start || ""}</td>
-
-<td>${report.end || ""}</td>
-
-<td>${report.distance || 0} km</td>
-
-<td>${report.work || ""}</td>
-
-<td class="oil-mark">
-${oilText}
-</td>
-
+<td>${report.driver||""}</td>
+<td>${report.car||""}</td>
+<td>${report.start||""}</td>
+<td>${report.end||""}</td>
+<td>${report.distance||0} km</td>
+<td>${report.work||""}</td>
+<td class="oil-mark">${oilText}</td>
 </tr>
-
 `;
+});
 
-        }
-    );
+/*
+   ★今回の修正
+   月間のオイル交換記録を必ず一覧に追加
+   日報がある日でも、オイル交換記録を独立した行として表示
+*/
 
+let oilRecords=getOilRecords();
 
-    // 日報がない月でもオイル交換記録を表示
+let monthlyOilRecords=oilRecords.filter(function(record){
+return record.date.startsWith(month);
+});
 
-    let oilRecords =
-        getOilRecords();
+monthlyOilRecords.forEach(function(record){
 
-    let monthlyOilRecords =
-        oilRecords.filter(
-            function(record){
+/*
+   すでに日報側のオイル欄に表示されていても、
+   独立したオイル交換行を追加する
+*/
 
-                return record.date.startsWith(
-                    month
-                );
-
-            }
-        );
-
-    if(
-        monthlyReports.length === 0 &&
-        monthlyOilRecords.length > 0
-    ){
-
-        monthlyOilRecords.forEach(
-            function(record){
-
-                body.innerHTML += `
-
-<tr>
-
+body.innerHTML+=`
+<tr class="oil-row">
 <td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver || ""}</td>
-
-<td>${record.car || ""}</td>
-
-<td colspan="4">
-</td>
-
+<td>${record.driver||""}</td>
+<td>${record.car||""}</td>
+<td colspan="3"></td>
+<td>🛢️ オイル交換</td>
 <td class="oil-mark">
-
-🛢️ ${Number(
-    record.mileage
-).toLocaleString()} km
-
+${Number(record.mileage).toLocaleString()} km
 </td>
-
 </tr>
-
 `;
+});
 
-            }
-        );
+if(monthlyReports.length===0&&monthlyOilRecords.length===0){
 
-    }
-
-
-    if(
-        monthlyReports.length === 0 &&
-        monthlyOilRecords.length === 0
-    ){
-
-        body.innerHTML = `
-
+body.innerHTML=`
 <tr>
-
-<td colspan="8">
-
-この月の日報はありません
-
-</td>
-
+<td colspan="8">この月の日報はありません</td>
 </tr>
-
 `;
-
-    }
-
-    document.getElementById(
-        "monthlySummary"
-    ).textContent =
-        "月間走行距離合計：" +
-        total +
-        " km";
-
 }
 
+document.getElementById("monthlySummary").textContent=
+"月間走行距離合計："+total+" km";
+}
 
-// =====================================
-// 月間一覧 開閉
-// =====================================
+/* =====================================
+   月間一覧 開閉
+===================================== */
 
 function toggleMonthlyList(){
 
-    let list =
-        document.getElementById(
-            "monthlyList"
-        );
+let list=document.getElementById("monthlyList");
+let button=document.getElementById("monthlyListButton");
 
-    let button =
-        document.getElementById(
-            "monthlyListButton"
-        );
+if(list.style.display==="block"){
 
-    if(list.style.display === "block"){
+list.style.display="none";
+button.textContent="📅 月間日報一覧を見る";
 
-        list.style.display = "none";
+}else{
 
-        button.textContent =
-            "📅 月間日報一覧を見る";
+showMonthlyList();
 
-    }else{
-
-        showMonthlyList();
-
-        list.style.display = "block";
-
-        button.textContent =
-            "📕 月間日報一覧を閉じる";
-
-    }
-
+list.style.display="block";
+button.textContent="📕 月間日報一覧を閉じる";
+}
 }
 
-
-// =====================================
-// A4 PDF
-// =====================================
+/* =====================================
+   A4 PDF
+===================================== */
 
 function openMonthlyPrint(){
 
-    let month =
-        document.getElementById(
-            "printMonth"
-        ).value;
+let month=document.getElementById("printMonth").value;
 
-    if(!month){
+if(!month){
+alert("印刷する月を選択してください");
+return;
+}
 
-        alert(
-            "印刷する月を選択してください"
-        );
+let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-        return;
+let monthlyReports=reports.filter(function(report){
+return report.date.startsWith(month);
+});
 
-    }
+monthlyReports.sort(function(a,b){
+return a.date.localeCompare(b.date);
+});
 
-    let reports =
-        JSON.parse(
-            localStorage.getItem(
-                "soukouReports"
-            )
-        ) || [];
+let settingsData=localStorage.getItem("soukouSettings");
 
-    let monthlyReports =
-        reports.filter(
-            function(report){
+let settings=settingsData?JSON.parse(settingsData):{
+company:"会社名未設定",
+car:"未設定",
+driver:"未設定"
+};
 
-                return report.date.startsWith(
-                    month
-                );
+let totalDistance=0;
 
-            }
-        );
+monthlyReports.forEach(function(report){
+totalDistance+=Number(report.distance)||0;
+});
 
-    monthlyReports.sort(
-        function(a,b){
+let year=month.substring(0,4);
+let monthNumber=Number(month.substring(5,7));
 
-            return a.date.localeCompare(
-                b.date
-            );
+let rows="";
 
-        }
-    );
+/* 日報 */
+monthlyReports.forEach(function(report){
 
-    let settingsData =
-        localStorage.getItem(
-            "soukouSettings"
-        );
+let oilText=getOilText(report.date);
 
-    let settings =
-        settingsData
-        ? JSON.parse(settingsData)
-        : {
-            company:"会社名未設定",
-            car:"未設定",
-            driver:"未設定"
-        };
-
-    let totalDistance = 0;
-
-    monthlyReports.forEach(
-        function(report){
-
-            totalDistance +=
-                Number(report.distance) || 0;
-
-        }
-    );
-
-    let year =
-        month.substring(0,4);
-
-    let monthNumber =
-        Number(
-            month.substring(5,7)
-        );
-
-    let rows = "";
-
-    monthlyReports.forEach(
-        function(report){
-
-            let oilText =
-                getOilText(report.date);
-
-            rows += `
-
+rows+=`
 <tr>
-
 <td>${formatDateWithDay(report.date)}</td>
-
-<td>${report.driver || ""}</td>
-
-<td>${report.car || ""}</td>
-
-<td>${report.start || ""}</td>
-
-<td>${report.end || ""}</td>
-
-<td>${report.distance || 0} km</td>
-
-<td class="left">
-${report.work || ""}
-</td>
-
-<td class="left">
-${report.memo || ""}
-</td>
-
-<td class="oil">
-${oilText}
-</td>
-
+<td>${report.driver||""}</td>
+<td>${report.car||""}</td>
+<td>${report.start||""}</td>
+<td>${report.end||""}</td>
+<td>${report.distance||0} km</td>
+<td class="left">${report.work||""}</td>
+<td class="left">${report.memo||""}</td>
+<td class="oil">${oilText}</td>
 </tr>
-
 `;
+});
 
-        }
+/* オイル交換 */
+let oilRecords=getOilRecords();
 
-    );
+let monthlyOilRecords=oilRecords.filter(function(record){
+return record.date.startsWith(month);
+});
 
+monthlyOilRecords.forEach(function(record){
 
-    // 日報がない月のオイル交換
-
-    let oilRecords =
-        getOilRecords();
-
-    let monthlyOilRecords =
-        oilRecords.filter(
-            function(record){
-
-                return record.date.startsWith(
-                    month
-                );
-
-            }
-        );
-
-    if(
-        monthlyReports.length === 0 &&
-        monthlyOilRecords.length > 0
-    ){
-
-        monthlyOilRecords.forEach(
-            function(record){
-
-                rows += `
-
+rows+=`
 <tr>
-
 <td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver || ""}</td>
-
-<td>${record.car || ""}</td>
-
+<td>${record.driver||""}</td>
+<td>${record.car||""}</td>
 <td></td>
-
 <td></td>
-
 <td></td>
-
+<td class="left">🛢️ オイル交換</td>
 <td></td>
-
-<td></td>
-
 <td class="oil">
-
-🛢️ ${Number(
-    record.mileage
-).toLocaleString()} km
-
+${Number(record.mileage).toLocaleString()} km
 </td>
-
 </tr>
-
 `;
+});
 
-            }
-        );
+if(monthlyReports.length===0&&monthlyOilRecords.length===0){
 
-    }
-
-
-    if(
-        monthlyReports.length === 0 &&
-        monthlyOilRecords.length === 0
-    ){
-
-        rows = `
-
+rows=`
 <tr>
-
-<td colspan="9">
-
-この月の日報はありません
-
-</td>
-
+<td colspan="9">この月の日報はありません</td>
 </tr>
-
 `;
+}
 
-    }
+let printWindow=window.open("","_blank");
 
-    let printWindow =
-        window.open(
-            "",
-            "_blank"
-        );
+if(!printWindow){
 
-    if(!printWindow){
+alert(
+"ポップアップがブロックされています。\n"+
+"ブラウザのポップアップを許可してください。"
+);
 
-        alert(
-            "ポップアップがブロックされています。\n" +
-            "ブラウザのポップアップを許可してください。"
-        );
+return;
+}
 
-        return;
-
-    }
-
-    printWindow.document.write(`
+printWindow.document.write(`
 
 <!DOCTYPE html>
-
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
 
 <title>
@@ -2928,88 +1148,84 @@ ${year}年${monthNumber}月 走行日報
 <style>
 
 @page{
-    size:A4 portrait;
-    margin:8mm;
+size:A4 portrait;
+margin:8mm;
 }
 
 *{
-    box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-    font-family:sans-serif;
-    margin:0;
-    color:#000;
+font-family:sans-serif;
+margin:0;
+color:#000;
 }
 
 h1{
-    text-align:center;
-    font-size:22px;
-    margin:0 0 12px 0;
+text-align:center;
+font-size:22px;
+margin:0 0 12px 0;
 }
 
 .info{
-    display:flex;
-    justify-content:space-between;
-    border:1px solid #000;
-    padding:8px;
-    margin-bottom:12px;
-    font-size:12px;
+display:flex;
+justify-content:space-between;
+border:1px solid #000;
+padding:8px;
+margin-bottom:12px;
+font-size:12px;
 }
 
 table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:7px;
+width:100%;
+border-collapse:collapse;
+font-size:7px;
 }
 
-th,
-td{
-    border:1px solid #000;
-    padding:3px;
-    text-align:center;
+th,td{
+border:1px solid #000;
+padding:3px;
+text-align:center;
 }
 
 th{
-    background:#eeeeee;
+background:#eeeeee;
 }
 
 .left{
-    text-align:left;
+text-align:left;
 }
 
 .oil{
-    font-weight:bold;
+font-weight:bold;
 }
 
 .total{
-    margin-top:12px;
-    text-align:right;
-    font-size:14px;
-    font-weight:bold;
+margin-top:12px;
+text-align:right;
+font-size:14px;
+font-weight:bold;
 }
 
 .buttons{
-    text-align:center;
-    margin-top:20px;
+text-align:center;
+margin-top:20px;
 }
 
 button{
-    padding:12px 25px;
-    font-size:18px;
-    margin:5px;
+padding:12px 25px;
+font-size:18px;
+margin:5px;
 }
 
 @media print{
-
-    .buttons{
-        display:none;
-    }
-
+.buttons{
+display:none;
+}
 }
 
 </style>
-
 </head>
 
 <body>
@@ -3022,17 +1238,17 @@ ${year}年${monthNumber}月　走行日報
 
 <div>
 会社名：
-${settings.company || ""}
+${settings.company||""}
 </div>
 
 <div>
 車番：
-${settings.car || ""}
+${settings.car||""}
 </div>
 
 <div>
 運転者：
-${settings.driver || ""}
+${settings.driver||""}
 </div>
 
 </div>
@@ -3042,7 +1258,6 @@ ${settings.driver || ""}
 <thead>
 
 <tr>
-
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -3052,7 +1267,6 @@ ${settings.driver || ""}
 <th>運行内容</th>
 <th>備考</th>
 <th>オイル交換</th>
-
 </tr>
 
 </thead>
@@ -3066,10 +1280,8 @@ ${rows}
 </table>
 
 <div class="total">
-
 月間走行距離合計：
 ${totalDistance} km
-
 </div>
 
 <div class="buttons">
@@ -3086,150 +1298,89 @@ A4 PDFプレビュー
 
 <script>
 
-window.onload = function(){
-
-    setTimeout(function(){
-
-        window.print();
-
-    },500);
-
+window.onload=function(){
+setTimeout(function(){
+window.print();
+},500);
 };
 
 <\/script>
 
 </body>
-
 </html>
-
 `);
 
-    printWindow.document.close();
-
+printWindow.document.close();
 }
 
+/* =====================================
+   月変更
+===================================== */
 
-// =====================================
-// 月変更
-// =====================================
+document.getElementById("printMonth").addEventListener("change",function(){
 
-document.getElementById(
-    "printMonth"
-).addEventListener(
-    "change",
-    function(){
+showMonthlyList();
 
-        showMonthlyList();
+});
 
-    }
-);
-
-
-// =====================================
-// 今月を選択
-// =====================================
+/* =====================================
+   今月
+===================================== */
 
 function setPrintMonth(){
 
-    let today =
-        new Date();
+let today=new Date();
 
-    let year =
-        today.getFullYear();
+let year=today.getFullYear();
 
-    let month =
-        String(
-            today.getMonth() + 1
-        ).padStart(2,"0");
+let month=String(today.getMonth()+1).padStart(2,"0");
 
-    document.getElementById(
-        "printMonth"
-    ).value =
-        year + "-" + month;
-
+document.getElementById("printMonth").value=
+year+"-"+month;
 }
 
-
-// =====================================
-// 起動時
-// =====================================
+/* =====================================
+   起動時
+===================================== */
 
 updateHeader();
-
 loadSettings();
-
 loadDraft();
-
 displayReports();
-
 setPrintMonth();
-
 updateOilManagement();
 
+document.getElementById("monthlyList").style.display="none";
 
-// 月間一覧は起動時には閉じる
+document.getElementById("monthlyListButton").textContent=
+"📅 月間日報一覧を見る";
 
-document.getElementById(
-    "monthlyList"
-).style.display =
-    "none";
+document.getElementById("oilManagement").style.display="none";
 
-document.getElementById(
-    "monthlyListButton"
-).textContent =
-    "📅 月間日報一覧を見る";
+document.getElementById("oilToggleButton").textContent=
+"🛢️ オイル交換管理を見る";
 
+/* =====================================
+   PWA
+===================================== */
 
-// オイル交換管理は起動時には閉じる
+if("serviceWorker" in navigator){
 
-document.getElementById(
-    "oilManagement"
-).style.display =
-    "none";
+window.addEventListener("load",function(){
 
-document.getElementById(
-    "oilToggleButton"
-).textContent =
-    "🛢️ オイル交換管理を見る";
+navigator.serviceWorker.register("sw.js")
+.then(function(){
+console.log("Service Worker登録成功");
+})
+.catch(function(error){
+console.log("Service Worker登録エラー：",error);
+});
 
-
-// =====================================
-// PWA Service Worker
-// =====================================
-
-if(
-    "serviceWorker" in navigator
-){
-
-    window.addEventListener(
-        "load",
-        function(){
-
-            navigator.serviceWorker
-            .register("sw.js")
-            .then(function(){
-
-                console.log(
-                    "Service Worker登録成功"
-                );
-
-            })
-            .catch(function(error){
-
-                console.log(
-                    "Service Worker登録エラー：",
-                    error
-                );
-
-            });
-
-        }
-    );
+});
 
 }
 
 </script>
 
 </body>
-
 </html>
