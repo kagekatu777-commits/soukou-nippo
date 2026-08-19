@@ -168,8 +168,14 @@ button{
    オイル交換管理
 ========================= */
 
-.oil-management{
+.oil-toggle-button{
     margin-top:25px;
+    background:#ef6c00;
+}
+
+.oil-management{
+    display:none;
+    margin-top:15px;
     padding:15px;
     background:#fff8e1;
     border-radius:10px;
@@ -474,10 +480,26 @@ style="display:none;">
 
 
 <!-- =========================
+     オイル交換管理 開閉ボタン
+========================= -->
+
+<button
+id="oilToggleButton"
+class="oil-toggle-button"
+onclick="toggleOilManagement()">
+
+🛢️ オイル交換管理を見る
+
+</button>
+
+
+<!-- =========================
      オイル交換管理
 ========================= -->
 
-<div class="oil-management">
+<div
+class="oil-management"
+id="oilManagement">
 
 <h2>🛢️ オイル交換管理</h2>
 
@@ -1778,6 +1800,47 @@ function getOilRecords(){
 
 
 // =====================================
+// オイル交換管理 開閉
+// =====================================
+
+function toggleOilManagement(){
+
+    let management =
+        document.getElementById(
+            "oilManagement"
+        );
+
+    let button =
+        document.getElementById(
+            "oilToggleButton"
+        );
+
+    if(
+        management.style.display === "block"
+    ){
+
+        management.style.display =
+            "none";
+
+        button.textContent =
+            "🛢️ オイル交換管理を見る";
+
+    }else{
+
+        updateOilManagement();
+
+        management.style.display =
+            "block";
+
+        button.textContent =
+            "📕 オイル交換管理を閉じる";
+
+    }
+
+}
+
+
+// =====================================
 // オイル交換記録保存
 // =====================================
 
@@ -2970,6 +3033,19 @@ document.getElementById(
     "monthlyListButton"
 ).textContent =
     "📅 月間日報一覧を見る";
+
+
+// オイル交換管理は起動時には閉じる
+
+document.getElementById(
+    "oilManagement"
+).style.display =
+    "none";
+
+document.getElementById(
+    "oilToggleButton"
+).textContent =
+    "🛢️ オイル交換管理を見る";
 
 
 // =====================================
