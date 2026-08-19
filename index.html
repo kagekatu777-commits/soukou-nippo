@@ -1981,6 +1981,13 @@ function getCurrentMileage(){
             )
         ) || [];
 
+    let oilRecords =
+        JSON.parse(
+            localStorage.getItem(
+                "soukouOilRecords"
+            )
+        ) || [];
+
     let settingsData =
         localStorage.getItem(
             "soukouSettings"
@@ -1993,12 +2000,20 @@ function getCurrentMileage(){
     let settings =
         JSON.parse(settingsData);
 
+    let car =
+        settings.car || "";
+
+
+    // =====================================
+    // 日報から現在の走行距離を取得
+    // =====================================
+
     let carReports =
         reports.filter(
             function(report){
 
                 return (
-                    report.car === settings.car &&
+                    report.car === car &&
                     report.end !== undefined &&
                     report.end !== null &&
                     report.end !== ""
@@ -2007,43 +2022,173 @@ function getCurrentMileage(){
             }
         );
 
-    if(carReports.length === 0){
 
-        let currentInput =
-            Number(
-                document.getElementById(
-                    "returnMileage"
-                ).value
-            );
+    let reportMileage = 0;
+    let reportDate = "";
 
-        return currentInput || 0;
 
-    }
+    if(carReports.length > 0){
 
-    carReports.sort(
-        function(a,b){
+        carReports.sort(
+            function(a,b){
 
-            if(a.date !== b.date){
+                if(a.date !== b.date){
 
-                return a.date.localeCompare(
-                    b.date
+                    return a.date.localeCompare(
+                        b.date
+                    );
+
+                }
+
+                return (
+                    Number(a.end) -
+                    Number(b.end)
                 );
 
             }
+        );
 
-            return (
-                Number(a.end) -
-                Number(b.end)
-            );
+        let latestReport =
+            carReports[
+                carReports.length - 1
+            ];
+
+        reportMileage =
+            Number(latestReport.end) || 0;
+
+        reportDate =
+            latestReport.date || "";
+
+    }
+
+
+    // =====================================
+    // オイル交換時の走行距離を取得
+    // =====================================
+
+    let carOilRecords =
+        oilRecords.filter(
+            function(record){
+
+                return (
+                    !record.car ||
+                    !car ||
+                    record.car === car
+                );
+
+            }
+        );
+
+
+    let oilMileage = 0;
+    let oilDate = "";
+
+
+    if(carOilRecords.length > 0){
+
+        carOilRecords.sort(
+            function(a,b){
+
+                if(a.date !== b.date){
+
+                    return a.date.localeCompare(
+                        b.date
+                    );
+
+                }
+
+                return (
+                    Number(a.mileage) -
+                    Number(b.mileage)
+                );
+
+            }
+        );
+
+        let latestOil =
+            carOilRecords[
+                carOilRecords.length - 1
+            ];
+
+        oilMileage =
+            Number(latestOil.mileage) || 0;
+
+        oilDate =
+            latestOil.date || "";
+
+    }
+
+
+    // =====================================
+    // 日報とオイル交換を比較
+    // =====================================
+
+    /*
+       日報の方が新しい
+       → 日報の帰社時走行距離
+
+       オイル交換の方が新しい
+       → オイル交換時の走行距離
+
+       同じ日の場合
+       → 大きい走行距離を使用
+    */
+
+    if(
+        reportMileage > 0 &&
+        oilMileage > 0
+    ){
+
+        if(reportDate > oilDate){
+
+            return reportMileage;
 
         }
-    );
 
-    return Number(
-        carReports[
-            carReports.length - 1
-        ].end
-    ) || 0;
+        if(oilDate > reportDate){
+
+            return oilMileage;
+
+        }
+
+        return Math.max(
+            reportMileage,
+            oilMileage
+        );
+
+    }
+
+
+    // 日報しかない場合
+
+    if(reportMileage > 0){
+
+        return reportMileage;
+
+    }
+
+
+    // オイル交換記録しかない場合
+
+    if(oilMileage > 0){
+
+        return oilMileage;
+
+    }
+
+
+    // =====================================
+    // まだ保存データがない場合
+    // =====================================
+
+    let currentInput =
+        Number(
+            document.getElementById(
+                "returnMileage"
+            ).value
+        );
+
+    return currentInput || 0;
 
 }
 
