@@ -91,8 +91,8 @@ th,td{padding:5px}
 <input type="date" id="date">
 
 <label>出発時走行距離</label>
-<input type="number" id="start" placeholder="前日の帰社時走行距離から自動入力">
-<div class="auto-info">※前日の日報が保存されている場合、自動入力されます</div>
+<input type="number" id="start" placeholder="前回の帰社時走行距離から自動入力">
+<div class="auto-info">※休みの日があっても、直近の日報の帰社時走行距離から自動入力されます</div>
 
 <label>帰社時走行距離</label>
 <input type="number" id="returnMileage" placeholder="帰社時の走行距離を入力">
@@ -216,51 +216,88 @@ if(parts.length!==3)return dateString;
 return parts[0]+"/"+parts[1]+"/"+parts[2]+"（"+getDayOfWeek(dateString)+"）";
 }
 
-function getPreviousDate(dateString){
-let date=new Date(dateString+"T00:00:00");
-date.setDate(date.getDate()-1);
-return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
-}
+/*
+=====================================
+直近の日報から出発時走行距離を取得
+=====================================
 
-function setToday(){
-document.getElementById("date").value=getToday();
-}
+★ここを変更
+
+以前：
+「前日の日報」だけを探していた
+
+今回：
+「入力した日付より前」にある
+「同じ車番」の日報を全部探し、
+一番新しい帰社時走行距離を使う
+
+これで日曜休み・祝日・連休でも
+最後に仕事した日の距離を引き継ぐ
+=====================================
+*/
 
 function loadPreviousMileage(){
 
 if(editingIndex!==-1)return;
 
 let date=document.getElementById("date").value;
+
 if(!date)return;
 
 let currentStart=document.getElementById("start").value;
+
 if(currentStart)return;
 
 let settingsData=localStorage.getItem("soukouSettings");
+
 if(!settingsData)return;
 
 let settings=JSON.parse(settingsData);
+
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-let previousDate=getPreviousDate(date);
+/*
+その日より前の日報だけを対象にする
+同じ車番で帰社時走行距離が入っているもの
+*/
 
 let previousReports=reports.filter(function(report){
-return report.date===previousDate && report.car===settings.car;
+
+return(
+report.date &&
+report.date<date &&
+report.car===settings.car &&
+report.end!==undefined &&
+report.end!==null &&
+report.end!==""
+);
+
 });
+
+/* 日付の新しい順に並べる */
+
+previousReports.sort(function(a,b){
+
+if(a.date!==b.date){
+return b.date.localeCompare(a.date);
+}
+
+return Number(b.end)-Number(a.end);
+
+});
+
+/* 一番新しい日報を取得 */
 
 if(previousReports.length===0)return;
 
-previousReports.sort(function(a,b){
-return Number(a.end)-Number(b.end);
-});
+let previousReport=previousReports[0];
 
-let previousReport=previousReports[previousReports.length-1];
+/* 出発時走行距離へ自動入力 */
 
-if(previousReport.end!==undefined && previousReport.end!==null && previousReport.end!==""){
 document.getElementById("start").value=previousReport.end;
+
 calculateDistance();
 saveDraft();
-}
 
 }
 
@@ -625,7 +662,7 @@ button.textContent="📕 オイル交換管理を閉じる";
 
 /* =====================================
    オイル交換保存
-   ===================================== */
+===================================== */
 
 function saveOilChange(){
 
@@ -663,11 +700,6 @@ localStorage.setItem("soukouOilRecords",JSON.stringify(records));
 
 document.getElementById("oilChangeMileage").value="";
 
-/*
-   ★ここが今回の重要部分
-   オイル交換時に入力した距離を、
-   一時的に現在走行距離として表示する
-*/
 document.getElementById("oilCurrentMileage").textContent=
 mileage.toLocaleString();
 
@@ -703,7 +735,6 @@ showMonthlyList();
 
 /* =====================================
    現在の走行距離
-   日報とオイル交換のうち最新・最大の距離を使用
 ===================================== */
 
 function getCurrentMileage(){
@@ -934,7 +965,6 @@ let body=document.getElementById("monthlyListBody");
 
 body.innerHTML="";
 
-/* 日報 */
 monthlyReports.forEach(function(report){
 
 total+=Number(report.distance)||0;
@@ -955,12 +985,6 @@ body.innerHTML+=`
 `;
 });
 
-/*
-   ★今回の修正
-   月間のオイル交換記録を必ず一覧に追加
-   日報がある日でも、オイル交換記録を独立した行として表示
-*/
-
 let oilRecords=getOilRecords();
 
 let monthlyOilRecords=oilRecords.filter(function(record){
@@ -968,11 +992,6 @@ return record.date.startsWith(month);
 });
 
 monthlyOilRecords.forEach(function(record){
-
-/*
-   すでに日報側のオイル欄に表示されていても、
-   独立したオイル交換行を追加する
-*/
 
 body.innerHTML+=`
 <tr class="oil-row">
@@ -1066,7 +1085,6 @@ let monthNumber=Number(month.substring(5,7));
 
 let rows="";
 
-/* 日報 */
 monthlyReports.forEach(function(report){
 
 let oilText=getOilText(report.date);
@@ -1086,7 +1104,6 @@ rows+=`
 `;
 });
 
-/* オイル交換 */
 let oilRecords=getOilRecords();
 
 let monthlyOilRecords=oilRecords.filter(function(record){
