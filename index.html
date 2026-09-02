@@ -45,7 +45,7 @@ button{width:100%;margin-top:20px;padding:15px;font-size:22px;background:#1565c0
 
 /* 給油 */
 .fuel-toggle-button{margin-top:25px;background:#1976d2}
-.fuel-management{margin-top:15px;padding:15px;background:#e3f2fd;border-radius:10px;border:2px solid #1976d2}
+.fuel-management{display:none;margin-top:15px;padding:15px;background:#e3f2fd;border-radius:10px;border:2px solid #1976d2}
 .fuel-management h2{margin-top:0;color:#1565c0}
 .fuel-save{background:#1976d2}
 .fuel-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
@@ -127,6 +127,13 @@ th,td{padding:5px}
 <!-- =========================
      給油管理
 ========================= -->
+
+<button
+id="fuelToggleButton"
+class="fuel-toggle-button"
+onclick="toggleFuelManagement()">
+⛽ 給油管理を見る
+</button>
 
 <div class="fuel-management" id="fuelManagement">
 
@@ -1706,25 +1713,6 @@ return text;
    月間燃費計算
 ===================================== */
 
-/*
-月間燃費は、
-その月に発生した「給油～次の給油」の
-走行距離と給油量から計算。
-
-例えば、
-
-8月20日 給油
-↓
-9月2日 給油
-
-なら、9月2日の給油について
-8月20日～9月2日の走行距離を使う。
-
-そのため、月初の給油でも
-前月の最後の給油記録があれば
-正しく計算できる。
-*/
-
 function getMonthlyFuelEconomy(month){
 
 let records=getFuelRecords();
@@ -2603,6 +2591,12 @@ document.getElementById("oilManagement").style.display="none";
 
 document.getElementById("oilToggleButton").textContent=
 "🛢️ オイル交換管理を見る";
+
+
+document.getElementById("fuelManagement").style.display="none";
+
+document.getElementById("fuelToggleButton").textContent=
+"⛽ 給油管理を見る";
 
 
 /* =====================================
