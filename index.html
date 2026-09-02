@@ -30,7 +30,7 @@ button{width:100%;margin-top:20px;padding:15px;font-size:22px;background:#1565c0
 .monthly-print h2{margin-top:0;color:#1565c0}
 .monthly-list{margin-top:25px;display:none}
 .monthly-list h2{color:#1565c0}
-.monthly-summary{background:#eeeeee;padding:12px;border-radius:8px;font-size:18px;font-weight:bold;margin-bottom:10px}
+.monthly-summary{background:#eeeeee;padding:12px;border-radius:8px;font-size:18px;font-weight:bold;margin-bottom:10px;line-height:1.8}
 
 /* オイル交換 */
 .oil-toggle-button{margin-top:25px;background:#ef6c00}
@@ -42,6 +42,18 @@ button{width:100%;margin-top:20px;padding:15px;font-size:22px;background:#1565c0
 .oil-ok{background:#e8f5e9;border:2px solid #43a047;color:#2e7d32;padding:12px;border-radius:8px;margin-top:10px;font-size:16px;font-weight:bold;display:none}
 .oil-save{background:#ef6c00}
 .oil-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
+
+/* 給油 */
+.fuel-toggle-button{margin-top:25px;background:#1976d2}
+.fuel-management{margin-top:15px;padding:15px;background:#e3f2fd;border-radius:10px;border:2px solid #1976d2}
+.fuel-management h2{margin-top:0;color:#1565c0}
+.fuel-save{background:#1976d2}
+.fuel-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
+.fuel-history-item{background:white;border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:8px;font-size:16px;line-height:1.7}
+.fuel-economy{font-size:20px;font-weight:bold;color:#1565c0}
+.fuel-mark{font-weight:bold;color:#1565c0}
+.fuel-row{background:#e3f2fd}
+
 table{width:100%;margin-top:20px;border-collapse:collapse}
 th,td{border:1px solid #ccc;padding:8px;text-align:center}
 th{background:#1565c0;color:white}
@@ -50,6 +62,7 @@ th{background:#1565c0;color:white}
 .action-cell{white-space:nowrap}
 .oil-mark{font-weight:bold;color:#e65100}
 .oil-row{background:#fff8e1}
+
 @media(max-width:600px){
 table{font-size:12px}
 th,td{padding:5px}
@@ -110,6 +123,7 @@ th,td{padding:5px}
 
 <button id="cancelEditButton" class="cancel-button" onclick="cancelEdit()" style="display:none;">編集をキャンセル</button>
 
+
 <!-- オイル交換 -->
 <button id="oilToggleButton" class="oil-toggle-button" onclick="toggleOilManagement()">🛢️ オイル交換管理を見る</button>
 
@@ -138,6 +152,29 @@ th,td{padding:5px}
 <div id="oilHistory" style="margin-top:15px;"></div>
 
 </div>
+
+
+<!-- 給油 -->
+<div class="fuel-management" id="fuelManagement">
+
+<h2>⛽ 給油管理</h2>
+
+<div class="auto-info">
+※給油したときに、スタンドで走行距離と給油量を入力してください
+</div>
+
+<label>給油時走行距離</label>
+<input type="number" id="fuelMileage" placeholder="例：125320">
+
+<label>給油量（L）</label>
+<input type="number" id="fuelLiters" step="0.1" placeholder="例：38.5">
+
+<button class="fuel-save" onclick="saveFuel()">⛽ 給油を記録</button>
+
+<div id="fuelHistory" style="margin-top:15px;"></div>
+
+</div>
+
 
 <!-- 月間印刷 -->
 <div class="monthly-print">
@@ -168,12 +205,14 @@ th,td{padding:5px}
 <th>距離</th>
 <th>運行内容</th>
 <th>オイル交換</th>
+<th>給油</th>
 </tr>
 </thead>
 <tbody id="monthlyListBody"></tbody>
 </table>
 
 </div>
+
 
 <h2 style="color:#1565c0;margin-top:30px;">📋 保存済み日報</h2>
 
@@ -198,41 +237,45 @@ th,td{padding:5px}
 
 let editingIndex=-1;
 
+
 function getToday(){
+
 let today=new Date();
-return today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+
+return today.getFullYear()+"-"+
+String(today.getMonth()+1).padStart(2,"0")+"-"+
+String(today.getDate()).padStart(2,"0");
+
 }
+
 
 function getDayOfWeek(dateString){
+
 if(!dateString)return "";
+
 let date=new Date(dateString+"T00:00:00");
+
 return ["日","月","火","水","木","金","土"][date.getDay()];
+
 }
 
+
 function formatDateWithDay(dateString){
+
 if(!dateString)return "";
+
 let parts=dateString.split("-");
+
 if(parts.length!==3)return dateString;
+
 return parts[0]+"/"+parts[1]+"/"+parts[2]+"（"+getDayOfWeek(dateString)+"）";
+
 }
+
 
 /*
 =====================================
 直近の日報から出発時走行距離を取得
-=====================================
-
-★ここを変更
-
-以前：
-「前日の日報」だけを探していた
-
-今回：
-「入力した日付より前」にある
-「同じ車番」の日報を全部探し、
-一番新しい帰社時走行距離を使う
-
-これで日曜休み・祝日・連休でも
-最後に仕事した日の距離を引き継ぐ
 =====================================
 */
 
@@ -256,11 +299,6 @@ let settings=JSON.parse(settingsData);
 
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-/*
-その日より前の日報だけを対象にする
-同じ車番で帰社時走行距離が入っているもの
-*/
-
 let previousReports=reports.filter(function(report){
 
 return(
@@ -274,8 +312,6 @@ report.end!==""
 
 });
 
-/* 日付の新しい順に並べる */
-
 previousReports.sort(function(a,b){
 
 if(a.date!==b.date){
@@ -286,31 +322,37 @@ return Number(b.end)-Number(a.end);
 
 });
 
-/* 一番新しい日報を取得 */
-
 if(previousReports.length===0)return;
 
 let previousReport=previousReports[0];
 
-/* 出発時走行距離へ自動入力 */
-
 document.getElementById("start").value=previousReport.end;
 
 calculateDistance();
+
 saveDraft();
 
 }
 
+
 function toggleSettings(){
+
 let settings=document.getElementById("settings");
 
 if(settings.style.display==="block"){
+
 settings.style.display="none";
+
 }else{
+
 settings.style.display="block";
+
 loadSettings();
+
 }
+
 }
+
 
 function saveSettings(){
 
@@ -319,36 +361,50 @@ let car=document.getElementById("settingCar").value.trim();
 let driver=document.getElementById("settingDriver").value.trim();
 
 if(!company||!car||!driver){
+
 alert("会社名・車番・運転者名を入力してください");
+
 return;
+
 }
 
 localStorage.setItem("soukouSettings",JSON.stringify({
+
 company:company,
 car:car,
 driver:driver
+
 }));
 
 updateHeader();
 
 document.getElementById("settings").style.display="none";
+
 document.getElementById("start").value="";
 
 loadPreviousMileage();
+
 updateOilManagement();
 
+updateFuelManagement();
+
 alert("基本情報を保存しました！");
+
 }
+
 
 function loadSettings(){
 
 let saved=localStorage.getItem("soukouSettings");
 
 if(!saved){
+
 document.getElementById("settingCompany").value="";
 document.getElementById("settingCar").value="";
 document.getElementById("settingDriver").value="";
+
 return;
+
 }
 
 let settings=JSON.parse(saved);
@@ -356,17 +412,22 @@ let settings=JSON.parse(saved);
 document.getElementById("settingCompany").value=settings.company||"";
 document.getElementById("settingCar").value=settings.car||"";
 document.getElementById("settingDriver").value=settings.driver||"";
+
 }
+
 
 function updateHeader(){
 
 let saved=localStorage.getItem("soukouSettings");
 
 if(!saved){
+
 document.getElementById("headerCompany").textContent="会社名未設定";
 document.getElementById("headerCar").textContent="未設定";
 document.getElementById("headerDriver").textContent="未設定";
+
 return;
+
 }
 
 let settings=JSON.parse(saved);
@@ -374,7 +435,9 @@ let settings=JSON.parse(saved);
 document.getElementById("headerCompany").textContent=settings.company||"会社名未設定";
 document.getElementById("headerCar").textContent=settings.car||"未設定";
 document.getElementById("headerDriver").textContent=settings.driver||"未設定";
+
 }
+
 
 function calculateDistance(){
 
@@ -383,41 +446,57 @@ let end=Number(document.getElementById("returnMileage").value);
 
 document.getElementById("distance").value=
 end>=start&&start>0?(end-start)+" km":"";
+
 }
+
 
 function saveDraft(){
 
 if(editingIndex!==-1)return;
 
 let draft={
+
 date:document.getElementById("date").value,
 start:document.getElementById("start").value,
 returnMileage:document.getElementById("returnMileage").value,
 work:document.getElementById("work").value,
 memo:document.getElementById("memo").value
+
 };
 
 localStorage.setItem("soukouDraft",JSON.stringify(draft));
+
 }
+
 
 function loadDraft(){
 
 let saved=localStorage.getItem("soukouDraft");
 
 if(!saved){
+
 setToday();
+
 loadPreviousMileage();
+
 return;
+
 }
 
 let draft=JSON.parse(saved);
+
 let today=getToday();
 
 if(draft.date!==today){
+
 localStorage.removeItem("soukouDraft");
+
 setToday();
+
 loadPreviousMileage();
+
 return;
+
 }
 
 document.getElementById("date").value=draft.date||today;
@@ -429,11 +508,21 @@ document.getElementById("memo").value=draft.memo||"";
 if(!draft.start)loadPreviousMileage();
 
 calculateDistance();
+
 }
+
+
+function setToday(){
+
+document.getElementById("date").value=getToday();
+
+}
+
 
 function editReport(index){
 
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+
 let report=reports[index];
 
 if(!report)return;
@@ -449,24 +538,34 @@ document.getElementById("memo").value=report.memo||"";
 calculateDistance();
 
 document.getElementById("editMode").style.display="block";
+
 document.getElementById("saveButton").textContent="変更を保存";
+
 document.getElementById("cancelEditButton").style.display="block";
 
 window.scrollTo({top:0,behavior:"smooth"});
+
 }
+
 
 function cancelEdit(){
 
 editingIndex=-1;
 
 document.getElementById("editMode").style.display="none";
+
 document.getElementById("saveButton").textContent="日報を保存";
+
 document.getElementById("cancelEditButton").style.display="none";
 
 clearInputs();
+
 setToday();
+
 loadPreviousMileage();
+
 }
+
 
 function clearInputs(){
 
@@ -475,22 +574,36 @@ document.getElementById("returnMileage").value="";
 document.getElementById("distance").value="";
 document.getElementById("work").value="";
 document.getElementById("memo").value="";
+
 }
 
+
 document.getElementById("start").addEventListener("input",function(){
+
 calculateDistance();
+
 saveDraft();
+
 updateOilManagement();
+
 });
+
 
 document.getElementById("returnMileage").addEventListener("input",function(){
+
 calculateDistance();
+
 saveDraft();
+
 updateOilManagement();
+
 });
 
+
 document.getElementById("work").addEventListener("input",saveDraft);
+
 document.getElementById("memo").addEventListener("input",saveDraft);
+
 
 document.getElementById("date").addEventListener("change",function(){
 
@@ -501,8 +614,15 @@ document.getElementById("returnMileage").value="";
 document.getElementById("distance").value="";
 
 saveDraft();
+
 loadPreviousMileage();
+
 });
+
+
+/* =====================================
+   日報保存
+===================================== */
 
 function save(){
 
@@ -510,12 +630,17 @@ let settingsData=localStorage.getItem("soukouSettings");
 
 if(!settingsData){
 
-alert("先に「基本情報を変更」から\n会社名・車番・運転者名を設定してください");
+alert(
+"先に「基本情報を変更」から\n"+
+"会社名・車番・運転者名を設定してください"
+);
 
 document.getElementById("settings").style.display="block";
+
 loadSettings();
 
 return;
+
 }
 
 let settings=JSON.parse(settingsData);
@@ -527,19 +652,31 @@ let work=document.getElementById("work").value;
 let memo=document.getElementById("memo").value;
 
 if(!date||!start||!end){
-alert("日付・出発時走行距離・帰社時走行距離を入力してください");
+
+alert(
+"日付・出発時走行距離・帰社時走行距離を入力してください"
+);
+
 return;
+
 }
 
 if(end<start){
-alert("帰社時走行距離は、出発時走行距離以上にしてください");
+
+alert(
+"帰社時走行距離は、出発時走行距離以上にしてください"
+);
+
 return;
+
 }
 
 let distance=end-start;
+
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
 let report={
+
 company:settings.company,
 date:date,
 car:settings.car,
@@ -549,40 +686,61 @@ distance:distance,
 driver:settings.driver,
 work:work,
 memo:memo
+
 };
+
 
 if(editingIndex!==-1){
 
 reports[editingIndex]=report;
 
-localStorage.setItem("soukouReports",JSON.stringify(reports));
+localStorage.setItem(
+"soukouReports",
+JSON.stringify(reports)
+);
 
 alert("日報を変更しました！");
 
 editingIndex=-1;
 
 document.getElementById("editMode").style.display="none";
+
 document.getElementById("saveButton").textContent="日報を保存";
+
 document.getElementById("cancelEditButton").style.display="none";
 
 clearInputs();
+
 localStorage.removeItem("soukouDraft");
 
 setToday();
+
 displayReports();
+
 loadPreviousMileage();
+
 updateOilManagement();
 
+updateFuelManagement();
+
 if(document.getElementById("monthlyList").style.display==="block"){
+
 showMonthlyList();
+
 }
 
 return;
+
 }
+
 
 reports.push(report);
 
-localStorage.setItem("soukouReports",JSON.stringify(reports));
+localStorage.setItem(
+"soukouReports",
+JSON.stringify(reports)
+);
+
 localStorage.removeItem("soukouDraft");
 
 displayReports();
@@ -590,14 +748,23 @@ displayReports();
 alert("日報を保存しました！");
 
 clearInputs();
+
 setToday();
+
 loadPreviousMileage();
+
 updateOilManagement();
 
+updateFuelManagement();
+
 if(document.getElementById("monthlyList").style.display==="block"){
+
 showMonthlyList();
+
 }
+
 }
+
 
 function deleteReport(index){
 
@@ -607,18 +774,28 @@ let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
 reports.splice(index,1);
 
-localStorage.setItem("soukouReports",JSON.stringify(reports));
+localStorage.setItem(
+"soukouReports",
+JSON.stringify(reports)
+);
 
 displayReports();
+
 showMonthlyList();
+
 updateOilManagement();
 
+updateFuelManagement();
+
 alert("日報を削除しました");
+
 }
+
 
 function displayReports(){
 
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+
 let list=document.getElementById("list");
 
 list.innerHTML="";
@@ -626,77 +803,130 @@ list.innerHTML="";
 reports.forEach(function(report,index){
 
 list.innerHTML+=`
+
 <tr>
+
 <td>${formatDateWithDay(report.date)}</td>
 <td>${report.driver||""}</td>
 <td>${report.car||""}</td>
 <td>${report.start||""}</td>
 <td>${report.end||""}</td>
 <td>${report.distance||0} km</td>
+
 <td class="action-cell">
-<button class="edit-button" onclick="editReport(${index})">編集</button><br>
-<button class="delete-button" onclick="deleteReport(${index})">削除</button>
+
+<button class="edit-button"
+onclick="editReport(${index})">
+編集
+</button>
+
+<br>
+
+<button class="delete-button"
+onclick="deleteReport(${index})">
+削除
+</button>
+
 </td>
-</tr>`;
+
+</tr>
+
+`;
+
 });
+
 }
 
+
+/* =====================================
+   オイル交換
+===================================== */
+
 function getOilRecords(){
-return JSON.parse(localStorage.getItem("soukouOilRecords"))||[];
+
+return JSON.parse(
+localStorage.getItem("soukouOilRecords")
+)||[];
+
 }
+
 
 function toggleOilManagement(){
 
 let management=document.getElementById("oilManagement");
+
 let button=document.getElementById("oilToggleButton");
 
 if(management.style.display==="block"){
+
 management.style.display="none";
+
 button.textContent="🛢️ オイル交換管理を見る";
+
 }else{
+
 updateOilManagement();
+
 management.style.display="block";
+
 button.textContent="📕 オイル交換管理を閉じる";
-}
+
 }
 
-/* =====================================
-   オイル交換保存
-===================================== */
+}
+
 
 function saveOilChange(){
 
-let mileage=Number(document.getElementById("oilChangeMileage").value);
+let mileage=Number(
+document.getElementById("oilChangeMileage").value
+);
 
 if(!mileage||mileage<=0){
-alert("オイル交換時の走行距離を入力してください");
+
+alert(
+"オイル交換時の走行距離を入力してください"
+);
+
 return;
+
 }
 
-let settingsData=localStorage.getItem("soukouSettings");
+let settingsData=
+localStorage.getItem("soukouSettings");
 
 if(!settingsData){
+
 alert("先に基本情報を設定してください");
+
 return;
+
 }
 
 let settings=JSON.parse(settingsData);
 
-let date=document.getElementById("date").value||getToday();
+let date=
+document.getElementById("date").value||
+getToday();
 
 let nextMileage=mileage+4000;
 
 let records=getOilRecords();
 
 records.push({
+
 date:date,
 mileage:mileage,
 nextMileage:nextMileage,
 car:settings.car,
 driver:settings.driver
+
 });
 
-localStorage.setItem("soukouOilRecords",JSON.stringify(records));
+localStorage.setItem(
+"soukouOilRecords",
+JSON.stringify(records)
+);
 
 document.getElementById("oilChangeMileage").value="";
 
@@ -706,7 +936,9 @@ mileage.toLocaleString();
 updateOilManagement();
 
 if(document.getElementById("monthlyList").style.display==="block"){
+
 showMonthlyList();
+
 }
 
 alert(
@@ -714,7 +946,9 @@ alert(
 "交換時："+mileage.toLocaleString()+" km\n"+
 "次回交換："+nextMileage.toLocaleString()+" km"
 );
+
 }
+
 
 function deleteOilRecord(index){
 
@@ -724,14 +958,21 @@ let records=getOilRecords();
 
 records.splice(index,1);
 
-localStorage.setItem("soukouOilRecords",JSON.stringify(records));
+localStorage.setItem(
+"soukouOilRecords",
+JSON.stringify(records)
+);
 
 updateOilManagement();
 
 if(document.getElementById("monthlyList").style.display==="block"){
+
 showMonthlyList();
+
 }
+
 }
+
 
 /* =====================================
    現在の走行距離
@@ -739,9 +980,12 @@ showMonthlyList();
 
 function getCurrentMileage(){
 
-let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+let reports=
+JSON.parse(localStorage.getItem("soukouReports"))
+||[];
 
-let settingsData=localStorage.getItem("soukouSettings");
+let settingsData=
+localStorage.getItem("soukouSettings");
 
 if(!settingsData)return 0;
 
@@ -757,10 +1001,13 @@ report.end!==undefined &&
 report.end!==null &&
 report.end!==""
 ){
+
 mileageList.push(Number(report.end));
+
 }
 
 });
+
 
 let oilRecords=getOilRecords();
 
@@ -772,23 +1019,31 @@ record.mileage!==undefined &&
 record.mileage!==null &&
 record.mileage!==""
 ){
+
 mileageList.push(Number(record.mileage));
+
 }
 
 });
+
 
 let currentInput=Number(
 document.getElementById("returnMileage").value
 );
 
 if(currentInput>0){
+
 mileageList.push(currentInput);
+
 }
+
 
 if(mileageList.length===0)return 0;
 
 return Math.max.apply(null,mileageList);
+
 }
+
 
 /* =====================================
    オイル交換管理
@@ -798,56 +1053,93 @@ function updateOilManagement(){
 
 let currentMileage=getCurrentMileage();
 
-let currentElement=document.getElementById("oilCurrentMileage");
+let currentElement=
+document.getElementById("oilCurrentMileage");
 
 if(currentMileage>0){
-currentElement.textContent=currentMileage.toLocaleString();
+
+currentElement.textContent=
+currentMileage.toLocaleString();
+
 }else{
+
 currentElement.textContent="---";
+
 }
+
 
 let records=getOilRecords();
 
-let nextElement=document.getElementById("oilNextMileage");
-let warningElement=document.getElementById("oilWarning");
-let okElement=document.getElementById("oilOk");
+let nextElement=
+document.getElementById("oilNextMileage");
+
+let warningElement=
+document.getElementById("oilWarning");
+
+let okElement=
+document.getElementById("oilOk");
 
 warningElement.style.display="none";
 okElement.style.display="none";
 
-let settingsData=localStorage.getItem("soukouSettings");
 
-let settings=settingsData?JSON.parse(settingsData):{};
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+let settings=
+settingsData?JSON.parse(settingsData):{};
+
 
 let carRecords=records.filter(function(record){
-return !record.car||!settings.car||record.car===settings.car;
+
+return(
+!record.car||
+!settings.car||
+record.car===settings.car
+);
+
 });
+
 
 if(carRecords.length===0){
 
 nextElement.textContent="未登録";
+
 document.getElementById("oilHistory").innerHTML="";
+
 return;
+
 }
+
 
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
+
 return a.date.localeCompare(b.date);
+
 }
 
 return Number(a.mileage)-Number(b.mileage);
+
 });
 
-let latest=carRecords[carRecords.length-1];
 
-let nextMileage=Number(latest.nextMileage);
+let latest=
+carRecords[carRecords.length-1];
 
-nextElement.textContent=nextMileage.toLocaleString()+" km";
+let nextMileage=
+Number(latest.nextMileage);
+
+nextElement.textContent=
+nextMileage.toLocaleString()+" km";
+
 
 if(currentMileage>0){
 
-let remaining=nextMileage-currentMileage;
+let remaining=
+nextMileage-currentMileage;
+
 
 if(remaining<=0){
 
@@ -855,7 +1147,8 @@ warningElement.style.display="block";
 
 warningElement.textContent=
 "🚨 オイル交換時期を超えています！ "+
-Math.abs(remaining).toLocaleString()+" km 超過";
+Math.abs(remaining).toLocaleString()+
+" km 超過";
 
 }else if(remaining<=500){
 
@@ -863,7 +1156,8 @@ warningElement.style.display="block";
 
 warningElement.textContent=
 "⚠️ オイル交換まであと "+
-remaining.toLocaleString()+" km です！";
+remaining.toLocaleString()+
+" km です！";
 
 }else{
 
@@ -871,19 +1165,30 @@ okElement.style.display="block";
 
 okElement.textContent=
 "オイル交換まであと "+
-remaining.toLocaleString()+" km";
-}
+remaining.toLocaleString()+
+" km";
+
 }
 
+}
+
+
 let historyHtml=`
-<h3 style="color:#e65100;">🛢️ オイル交換履歴</h3>
+
+<h3 style="color:#e65100;">
+🛢️ オイル交換履歴
+</h3>
+
 `;
+
 
 carRecords.slice().reverse().forEach(function(record){
 
-let originalIndex=records.indexOf(record);
+let originalIndex=
+records.indexOf(record);
 
 historyHtml+=`
+
 <div style="
 background:white;
 border:1px solid #ddd;
@@ -893,24 +1198,422 @@ margin-top:8px;
 ">
 
 ${formatDateWithDay(record.date)}
-<br>
-交換時：
-<strong>${Number(record.mileage).toLocaleString()} km</strong>
-<br>
-次回：
-<strong>${Number(record.nextMileage).toLocaleString()} km</strong>
+
 <br>
 
-<button class="oil-delete" onclick="deleteOilRecord(${originalIndex})">
+交換時：
+<strong>
+${Number(record.mileage).toLocaleString()} km
+</strong>
+
+<br>
+
+次回：
+<strong>
+${Number(record.nextMileage).toLocaleString()} km
+</strong>
+
+<br>
+
+<button class="oil-delete"
+onclick="deleteOilRecord(${originalIndex})">
 削除
 </button>
 
 </div>
+
 `;
+
 });
 
-document.getElementById("oilHistory").innerHTML=historyHtml;
+
+document.getElementById("oilHistory").innerHTML=
+historyHtml;
+
 }
+
+
+/* =====================================
+   給油管理
+===================================== */
+
+function getFuelRecords(){
+
+return JSON.parse(
+localStorage.getItem("soukouFuelRecords")
+)||[];
+
+}
+
+
+/*
+前回の給油記録から
+今回の給油までの燃費を計算
+
+同じ車番の給油記録だけを使用
+*/
+
+function getFuelEconomy(record){
+
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+if(!settingsData)return null;
+
+let settings=JSON.parse(settingsData);
+
+let records=getFuelRecords();
+
+let carRecords=records.filter(function(item){
+
+return(
+item.car===settings.car &&
+item.mileage!==undefined &&
+item.mileage!==null &&
+item.mileage!==""
+);
+
+});
+
+
+carRecords.sort(function(a,b){
+
+if(a.date!==b.date){
+
+return a.date.localeCompare(b.date);
+
+}
+
+return Number(a.mileage)-Number(b.mileage);
+
+});
+
+
+let index=carRecords.indexOf(record);
+
+if(index<=0)return null;
+
+let previous=carRecords[index-1];
+
+let distance=
+Number(record.mileage)-Number(previous.mileage);
+
+let liters=
+Number(record.liters);
+
+if(distance<=0||liters<=0)return null;
+
+return distance/liters;
+
+}
+
+
+/*
+給油記録保存
+*/
+
+function saveFuel(){
+
+let mileage=
+Number(document.getElementById("fuelMileage").value);
+
+let liters=
+Number(document.getElementById("fuelLiters").value);
+
+if(!mileage||mileage<=0){
+
+alert(
+"給油時走行距離を入力してください"
+);
+
+return;
+
+}
+
+if(!liters||liters<=0){
+
+alert(
+"給油量（L）を入力してください"
+);
+
+return;
+
+}
+
+
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+if(!settingsData){
+
+alert(
+"先に基本情報を設定してください"
+);
+
+return;
+
+}
+
+
+let settings=
+JSON.parse(settingsData);
+
+let date=
+document.getElementById("date").value||
+getToday();
+
+
+let records=getFuelRecords();
+
+
+/*
+同じ車番で、
+今回より後の走行距離の給油記録がある場合は
+入力ミスの可能性があるので確認
+*/
+
+let laterRecord=records.find(function(record){
+
+return(
+record.car===settings.car &&
+Number(record.mileage)>mileage
+);
+
+});
+
+
+if(laterRecord){
+
+let ok=confirm(
+"今回の走行距離より大きい給油記録があります。\n\n"+
+"今回："+mileage.toLocaleString()+" km\n"+
+"既存："+Number(laterRecord.mileage).toLocaleString()+" km\n\n"+
+"このまま記録しますか？"
+);
+
+if(!ok)return;
+
+}
+
+
+records.push({
+
+date:date,
+mileage:mileage,
+liters:liters,
+car:settings.car,
+driver:settings.driver
+
+});
+
+
+localStorage.setItem(
+"soukouFuelRecords",
+JSON.stringify(records)
+);
+
+
+document.getElementById("fuelMileage").value="";
+document.getElementById("fuelLiters").value="";
+
+
+updateFuelManagement();
+
+
+if(document.getElementById("monthlyList").style.display==="block"){
+
+showMonthlyList();
+
+}
+
+
+let savedRecord=records[records.length-1];
+
+let economy=getFuelEconomy(savedRecord);
+
+
+if(economy){
+
+alert(
+"給油を記録しました！\n\n"+
+"給油時："+mileage.toLocaleString()+" km\n"+
+"給油量："+liters.toFixed(1)+" L\n"+
+"燃費："+economy.toFixed(1)+" km/L"
+);
+
+}else{
+
+alert(
+"給油を記録しました！\n\n"+
+"給油時："+mileage.toLocaleString()+" km\n"+
+"給油量："+liters.toFixed(1)+" L\n\n"+
+"※次回の給油から燃費を計算します"
+);
+
+}
+
+}
+
+
+/*
+給油記録削除
+*/
+
+function deleteFuelRecord(index){
+
+if(!confirm("この給油記録を削除しますか？"))return;
+
+let records=getFuelRecords();
+
+records.splice(index,1);
+
+localStorage.setItem(
+"soukouFuelRecords",
+JSON.stringify(records)
+);
+
+updateFuelManagement();
+
+if(document.getElementById("monthlyList").style.display==="block"){
+
+showMonthlyList();
+
+}
+
+}
+
+
+/*
+給油履歴表示
+*/
+
+function updateFuelManagement(){
+
+let records=getFuelRecords();
+
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+let settings=
+settingsData?JSON.parse(settingsData):{};
+
+
+let carRecords=records.filter(function(record){
+
+return(
+!record.car||
+!settings.car||
+record.car===settings.car
+);
+
+});
+
+
+carRecords.sort(function(a,b){
+
+if(a.date!==b.date){
+
+return b.date.localeCompare(a.date);
+
+}
+
+return Number(b.mileage)-Number(a.mileage);
+
+});
+
+
+let historyHtml=`
+
+<h3 style="color:#1565c0;">
+⛽ 給油履歴
+</h3>
+
+`;
+
+
+if(carRecords.length===0){
+
+historyHtml+=`
+<div class="fuel-history-item">
+まだ給油記録がありません
+</div>
+`;
+
+}else{
+
+carRecords.forEach(function(record){
+
+let originalIndex=
+records.indexOf(record);
+
+let economy=
+getFuelEconomy(record);
+
+historyHtml+=`
+
+<div class="fuel-history-item">
+
+${formatDateWithDay(record.date)}
+
+<br>
+
+給油時走行距離：
+<strong>
+${Number(record.mileage).toLocaleString()} km
+</strong>
+
+<br>
+
+給油量：
+<strong>
+${Number(record.liters).toFixed(1)} L
+</strong>
+
+<br>
+
+`;
+
+if(economy){
+
+historyHtml+=`
+燃費：
+<span class="fuel-economy">
+${economy.toFixed(1)} km/L
+</span>
+`;
+
+}else{
+
+historyHtml+=`
+燃費：
+前回記録なし
+`;
+
+}
+
+historyHtml+=`
+
+<br>
+
+<button class="fuel-delete"
+onclick="deleteFuelRecord(${originalIndex})">
+削除
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+document.getElementById("fuelHistory").innerHTML=
+historyHtml;
+
+}
+
 
 /* =====================================
    日報の日付に対応するオイル交換
@@ -921,23 +1624,172 @@ function getOilText(date){
 let records=getOilRecords();
 
 let matching=records.filter(function(record){
+
 return record.date===date;
+
 });
+
 
 if(matching.length===0)return "";
 
 let text="";
 
+
 matching.forEach(function(record){
 
 if(text)text+="<br>";
 
-text+="🛢️ "+Number(record.mileage).toLocaleString()+"km";
+text+="🛢️ "+
+Number(record.mileage).toLocaleString()+
+"km";
 
 });
 
+
 return text;
+
 }
+
+
+/* =====================================
+   日報の日付に対応する給油
+===================================== */
+
+function getFuelText(date){
+
+let records=getFuelRecords();
+
+let matching=records.filter(function(record){
+
+return record.date===date;
+
+});
+
+
+if(matching.length===0)return "";
+
+let text="";
+
+
+matching.forEach(function(record){
+
+if(text)text+="<br>";
+
+text+="⛽ "+
+Number(record.liters).toFixed(1)+
+"L";
+
+let economy=getFuelEconomy(record);
+
+if(economy){
+
+text+="<br>"+
+economy.toFixed(1)+" km/L";
+
+}
+
+});
+
+
+return text;
+
+}
+
+
+/* =====================================
+   月間燃費計算
+===================================== */
+
+/*
+月間燃費は、
+その月に発生した「給油～次の給油」の
+走行距離と給油量から計算。
+
+例えば、
+
+8月20日 給油
+↓
+9月2日 給油
+
+なら、9月2日の給油について
+8月20日～9月2日の走行距離を使う。
+
+そのため、月初の給油でも
+前月の最後の給油記録があれば
+正しく計算できる。
+*/
+
+function getMonthlyFuelEconomy(month){
+
+let records=getFuelRecords();
+
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+if(!settingsData)return null;
+
+let settings=JSON.parse(settingsData);
+
+
+let carRecords=records.filter(function(record){
+
+return(
+record.car===settings.car &&
+record.mileage!==undefined &&
+record.mileage!==null &&
+record.mileage!==""
+);
+
+});
+
+
+carRecords.sort(function(a,b){
+
+if(a.date!==b.date){
+
+return a.date.localeCompare(b.date);
+
+}
+
+return Number(a.mileage)-Number(b.mileage);
+
+});
+
+
+let totalFuelDistance=0;
+let totalLiters=0;
+
+
+carRecords.forEach(function(record,index){
+
+if(!record.date.startsWith(month))return;
+
+if(index===0)return;
+
+let previous=carRecords[index-1];
+
+let distance=
+Number(record.mileage)-Number(previous.mileage);
+
+let liters=
+Number(record.liters);
+
+if(distance>0&&liters>0){
+
+totalFuelDistance+=distance;
+totalLiters+=liters;
+
+}
+
+});
+
+
+if(totalLiters<=0)return null;
+
+return totalFuelDistance/totalLiters;
+
+}
+
 
 /* =====================================
    月間一覧
@@ -945,34 +1797,55 @@ return text;
 
 function showMonthlyList(){
 
-let month=document.getElementById("printMonth").value;
+let month=
+document.getElementById("printMonth").value;
 
 if(!month)return;
 
-let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-let monthlyReports=reports.filter(function(report){
+let reports=
+JSON.parse(localStorage.getItem("soukouReports"))
+||[];
+
+
+let monthlyReports=
+reports.filter(function(report){
+
 return report.date.startsWith(month);
+
 });
+
 
 monthlyReports.sort(function(a,b){
+
 return a.date.localeCompare(b.date);
+
 });
+
 
 let total=0;
 
-let body=document.getElementById("monthlyListBody");
+let body=
+document.getElementById("monthlyListBody");
 
 body.innerHTML="";
+
 
 monthlyReports.forEach(function(report){
 
 total+=Number(report.distance)||0;
 
-let oilText=getOilText(report.date);
+let oilText=
+getOilText(report.date);
+
+let fuelText=
+getFuelText(report.date);
+
 
 body.innerHTML+=`
+
 <tr>
+
 <td>${formatDateWithDay(report.date)}</td>
 <td>${report.driver||""}</td>
 <td>${report.car||""}</td>
@@ -981,44 +1854,162 @@ body.innerHTML+=`
 <td>${report.distance||0} km</td>
 <td>${report.work||""}</td>
 <td class="oil-mark">${oilText}</td>
+<td class="fuel-mark">${fuelText}</td>
+
 </tr>
+
 `;
+
 });
+
 
 let oilRecords=getOilRecords();
 
-let monthlyOilRecords=oilRecords.filter(function(record){
+
+let monthlyOilRecords=
+oilRecords.filter(function(record){
+
 return record.date.startsWith(month);
+
 });
+
 
 monthlyOilRecords.forEach(function(record){
 
 body.innerHTML+=`
+
 <tr class="oil-row">
+
 <td>${formatDateWithDay(record.date)}</td>
+
 <td>${record.driver||""}</td>
+
 <td>${record.car||""}</td>
+
 <td colspan="3"></td>
+
 <td>🛢️ オイル交換</td>
+
 <td class="oil-mark">
 ${Number(record.mileage).toLocaleString()} km
 </td>
+
+<td></td>
+
 </tr>
+
 `;
+
 });
 
-if(monthlyReports.length===0&&monthlyOilRecords.length===0){
+
+let fuelRecords=getFuelRecords();
+
+
+let monthlyFuelRecords=
+fuelRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+
+monthlyFuelRecords.forEach(function(record){
+
+let economy=
+getFuelEconomy(record);
+
+let fuelText=
+Number(record.liters).toFixed(1)+" L";
+
+if(economy){
+
+fuelText+=
+"<br>"+economy.toFixed(1)+" km/L";
+
+}
+
+
+body.innerHTML+=`
+
+<tr class="fuel-row">
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td colspan="3"></td>
+
+<td>⛽ 給油</td>
+
+<td></td>
+
+<td class="fuel-mark">
+${Number(record.mileage).toLocaleString()} km
+<br>
+${fuelText}
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+if(
+monthlyReports.length===0 &&
+monthlyOilRecords.length===0 &&
+monthlyFuelRecords.length===0
+){
 
 body.innerHTML=`
+
 <tr>
-<td colspan="8">この月の日報はありません</td>
+
+<td colspan="9">
+この月の日報はありません
+</td>
+
 </tr>
+
 `;
+
 }
 
-document.getElementById("monthlySummary").textContent=
-"月間走行距離合計："+total+" km";
+
+let monthlyFuelEconomy=
+getMonthlyFuelEconomy(month);
+
+
+let summaryText=
+"月間走行距離合計："+
+total.toLocaleString()+
+" km";
+
+
+if(monthlyFuelEconomy!==null){
+
+summaryText+=
+"　｜　月間燃費："+
+monthlyFuelEconomy.toFixed(1)+
+" km/L";
+
+}else{
+
+summaryText+=
+"　｜　月間燃費：---";
+
 }
+
+
+document.getElementById("monthlySummary").textContent=
+summaryText;
+
+}
+
 
 /* =====================================
    月間一覧 開閉
@@ -1026,22 +2017,33 @@ document.getElementById("monthlySummary").textContent=
 
 function toggleMonthlyList(){
 
-let list=document.getElementById("monthlyList");
-let button=document.getElementById("monthlyListButton");
+let list=
+document.getElementById("monthlyList");
+
+let button=
+document.getElementById("monthlyListButton");
+
 
 if(list.style.display==="block"){
 
 list.style.display="none";
-button.textContent="📅 月間日報一覧を見る";
+
+button.textContent=
+"📅 月間日報一覧を見る";
 
 }else{
 
 showMonthlyList();
 
 list.style.display="block";
-button.textContent="📕 月間日報一覧を閉じる";
+
+button.textContent=
+"📕 月間日報一覧を閉じる";
+
 }
+
 }
+
 
 /* =====================================
    A4 PDF
@@ -1049,96 +2051,253 @@ button.textContent="📕 月間日報一覧を閉じる";
 
 function openMonthlyPrint(){
 
-let month=document.getElementById("printMonth").value;
+let month=
+document.getElementById("printMonth").value;
 
 if(!month){
+
 alert("印刷する月を選択してください");
+
 return;
+
 }
 
-let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
 
-let monthlyReports=reports.filter(function(report){
+let reports=
+JSON.parse(localStorage.getItem("soukouReports"))
+||[];
+
+
+let monthlyReports=
+reports.filter(function(report){
+
 return report.date.startsWith(month);
+
 });
+
 
 monthlyReports.sort(function(a,b){
+
 return a.date.localeCompare(b.date);
+
 });
 
-let settingsData=localStorage.getItem("soukouSettings");
 
-let settings=settingsData?JSON.parse(settingsData):{
+let settingsData=
+localStorage.getItem("soukouSettings");
+
+
+let settings=
+settingsData?
+JSON.parse(settingsData):
+{
 company:"会社名未設定",
 car:"未設定",
 driver:"未設定"
 };
 
+
 let totalDistance=0;
 
+
 monthlyReports.forEach(function(report){
+
 totalDistance+=Number(report.distance)||0;
+
 });
 
-let year=month.substring(0,4);
-let monthNumber=Number(month.substring(5,7));
+
+let monthlyFuelEconomy=
+getMonthlyFuelEconomy(month);
+
+
+let year=
+month.substring(0,4);
+
+let monthNumber=
+Number(month.substring(5,7));
+
 
 let rows="";
 
+
 monthlyReports.forEach(function(report){
 
-let oilText=getOilText(report.date);
+let oilText=
+getOilText(report.date);
+
+let fuelText=
+getFuelText(report.date);
+
 
 rows+=`
+
 <tr>
+
 <td>${formatDateWithDay(report.date)}</td>
+
 <td>${report.driver||""}</td>
+
 <td>${report.car||""}</td>
+
 <td>${report.start||""}</td>
+
 <td>${report.end||""}</td>
+
 <td>${report.distance||0} km</td>
+
 <td class="left">${report.work||""}</td>
+
 <td class="left">${report.memo||""}</td>
+
 <td class="oil">${oilText}</td>
+
+<td class="fuel">${fuelText}</td>
+
 </tr>
+
 `;
+
 });
+
 
 let oilRecords=getOilRecords();
 
-let monthlyOilRecords=oilRecords.filter(function(record){
+
+let monthlyOilRecords=
+oilRecords.filter(function(record){
+
 return record.date.startsWith(month);
+
 });
+
 
 monthlyOilRecords.forEach(function(record){
 
 rows+=`
+
 <tr>
+
 <td>${formatDateWithDay(record.date)}</td>
+
 <td>${record.driver||""}</td>
+
 <td>${record.car||""}</td>
+
 <td></td>
+
 <td></td>
+
 <td></td>
+
 <td class="left">🛢️ オイル交換</td>
+
 <td></td>
+
 <td class="oil">
 ${Number(record.mileage).toLocaleString()} km
 </td>
+
+<td></td>
+
 </tr>
+
 `;
+
 });
 
-if(monthlyReports.length===0&&monthlyOilRecords.length===0){
 
-rows=`
-<tr>
-<td colspan="9">この月の日報はありません</td>
-</tr>
-`;
+let fuelRecords=getFuelRecords();
+
+
+let monthlyFuelRecords=
+fuelRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+
+monthlyFuelRecords.forEach(function(record){
+
+let economy=
+getFuelEconomy(record);
+
+
+let fuelText=
+Number(record.mileage).toLocaleString()+
+" km<br>"+
+Number(record.liters).toFixed(1)+
+" L";
+
+
+if(economy){
+
+fuelText+=
+"<br>"+
+economy.toFixed(1)+
+" km/L";
+
 }
 
-let printWindow=window.open("","_blank");
+
+rows+=`
+
+<tr>
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td class="left">⛽ 給油</td>
+
+<td></td>
+
+<td></td>
+
+<td class="fuel">
+${fuelText}
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+if(
+monthlyReports.length===0 &&
+monthlyOilRecords.length===0 &&
+monthlyFuelRecords.length===0
+){
+
+rows=`
+
+<tr>
+
+<td colspan="10">
+この月の日報はありません
+</td>
+
+</tr>
+
+`;
+
+}
+
+
+let printWindow=
+window.open("","_blank");
+
 
 if(!printWindow){
 
@@ -1148,14 +2307,30 @@ alert(
 );
 
 return;
+
 }
+
+
+let fuelSummary="---";
+
+
+if(monthlyFuelEconomy!==null){
+
+fuelSummary=
+monthlyFuelEconomy.toFixed(1)+
+" km/L";
+
+}
+
 
 printWindow.document.write(`
 
 <!DOCTYPE html>
+
 <html lang="ja">
 
 <head>
+
 <meta charset="UTF-8">
 
 <title>
@@ -1181,7 +2356,7 @@ color:#000;
 
 h1{
 text-align:center;
-font-size:22px;
+font-size:20px;
 margin:0 0 12px 0;
 }
 
@@ -1197,7 +2372,7 @@ font-size:12px;
 table{
 width:100%;
 border-collapse:collapse;
-font-size:7px;
+font-size:6.5px;
 }
 
 th,td{
@@ -1215,6 +2390,10 @@ text-align:left;
 }
 
 .oil{
+font-weight:bold;
+}
+
+.fuel{
 font-weight:bold;
 }
 
@@ -1237,12 +2416,15 @@ margin:5px;
 }
 
 @media print{
+
 .buttons{
 display:none;
 }
+
 }
 
 </style>
+
 </head>
 
 <body>
@@ -1250,6 +2432,7 @@ display:none;
 <h1>
 ${year}年${monthNumber}月　走行日報
 </h1>
+
 
 <div class="info">
 
@@ -1270,11 +2453,13 @@ ${settings.driver||""}
 
 </div>
 
+
 <table>
 
 <thead>
 
 <tr>
+
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -1284,9 +2469,12 @@ ${settings.driver||""}
 <th>運行内容</th>
 <th>備考</th>
 <th>オイル交換</th>
+<th>給油</th>
+
 </tr>
 
 </thead>
+
 
 <tbody>
 
@@ -1296,10 +2484,19 @@ ${rows}
 
 </table>
 
+
 <div class="total">
+
 月間走行距離合計：
-${totalDistance} km
+${totalDistance.toLocaleString()} km
+
+　｜　
+
+月間燃費：
+${fuelSummary}
+
 </div>
+
 
 <div class="buttons">
 
@@ -1313,32 +2510,44 @@ A4 PDFプレビュー
 
 </div>
 
+
 <script>
 
 window.onload=function(){
+
 setTimeout(function(){
+
 window.print();
+
 },500);
+
 };
 
 <\/script>
 
 </body>
+
 </html>
+
 `);
 
+
 printWindow.document.close();
+
 }
+
 
 /* =====================================
    月変更
 ===================================== */
 
-document.getElementById("printMonth").addEventListener("change",function(){
+document.getElementById("printMonth")
+.addEventListener("change",function(){
 
 showMonthlyList();
 
 });
+
 
 /* =====================================
    今月
@@ -1350,32 +2559,45 @@ let today=new Date();
 
 let year=today.getFullYear();
 
-let month=String(today.getMonth()+1).padStart(2,"0");
+let month=
+String(today.getMonth()+1).padStart(2,"0");
 
 document.getElementById("printMonth").value=
 year+"-"+month;
+
 }
+
 
 /* =====================================
    起動時
 ===================================== */
 
 updateHeader();
+
 loadSettings();
+
 loadDraft();
+
 displayReports();
+
 setPrintMonth();
+
 updateOilManagement();
+
+updateFuelManagement();
+
 
 document.getElementById("monthlyList").style.display="none";
 
 document.getElementById("monthlyListButton").textContent=
 "📅 月間日報一覧を見る";
 
+
 document.getElementById("oilManagement").style.display="none";
 
 document.getElementById("oilToggleButton").textContent=
 "🛢️ オイル交換管理を見る";
+
 
 /* =====================================
    PWA
@@ -1386,11 +2608,20 @@ if("serviceWorker" in navigator){
 window.addEventListener("load",function(){
 
 navigator.serviceWorker.register("sw.js")
+
 .then(function(){
+
 console.log("Service Worker登録成功");
+
 })
+
 .catch(function(error){
-console.log("Service Worker登録エラー：",error);
+
+console.log(
+"Service Worker登録エラー：",
+error
+);
+
 });
 
 });
