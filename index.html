@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
+<!DOCTYPE html><html lang="ja">
 <head>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#555555">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>走行日報</title>
-
-<style>
+<title>走行日報</title><style>
 *{box-sizing:border-box}
 body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:15px}
 .card{background:white;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
@@ -67,26 +64,15 @@ th{background:#1565c0;color:white}
 table{font-size:12px}
 th,td{padding:5px}
 }
-</style>
-</head>
-
-<body>
-<div class="card">
-
-<h1>🚚走行日報</h1>
-
-<div class="header-info">
+</style></head><body>
+<div class="card"><h1>🚚走行日報</h1><div class="header-info">
 <div class="header-company" id="headerCompany">会社名未設定</div>
 <div class="header-row">車番：<span id="headerCar">未設定</span></div>
 <div class="header-row">運転者：<span id="headerDriver">未設定</span></div>
-</div>
-
-<button class="settings-button" onclick="toggleSettings()">⚙ 基本情報を変更</button>
+</div><button class="settings-button" onclick="toggleSettings()">⚙ 基本情報を変更</button>
 
 <div class="settings" id="settings">
-<h2>基本情報設定</h2>
-
-<label>会社名</label>
+<h2>基本情報設定</h2><label>会社名</label>
 <input type="text" id="settingCompany" placeholder="会社名を入力">
 
 <label>車番</label>
@@ -96,22 +82,18 @@ th,td{padding:5px}
 <input type="text" id="settingDriver" placeholder="運転者名を入力">
 
 <button class="settings-save" onclick="saveSettings()">基本情報を保存</button>
-</div>
 
-<div id="editMode" class="edit-mode" style="display:none;">
+</div><div id="editMode" class="edit-mode" style="display:none;">
 ✏️ 日報を編集中です
-</div>
-
-<label>日付</label>
+</div><label>日付</label>
 <input type="date" id="date">
 
 <label>出発時走行距離</label>
 <input type="number" id="start" placeholder="前回の帰社時走行距離から自動入力">
+
 <div class="auto-info">
 ※休みの日があっても、直近の日報の帰社時走行距離から自動入力されます
-</div>
-
-<label>帰社時走行距離</label>
+</div><label>帰社時走行距離</label>
 <input type="number" id="returnMileage" placeholder="帰社時の走行距離を入力">
 
 <label>控除走行距離</label>
@@ -127,28 +109,16 @@ th,td{padding:5px}
 
 <button id="cancelEditButton" class="cancel-button" onclick="cancelEdit()" style="display:none;">
 編集をキャンセル
-</button>
-
-<!-- =========================
-     給油管理
-========================= -->
-
-<button
+</button><!-- 給油管理 --><button
 id="fuelToggleButton"
 class="fuel-toggle-button"
 onclick="toggleFuelManagement()">
 ⛽ 給油管理を見る
 </button>
 
-<div class="fuel-management" id="fuelManagement">
-
-<h2>⛽ 給油管理</h2>
-
-<div class="auto-info">
+<div class="fuel-management" id="fuelManagement"><h2>⛽ 給油管理</h2><div class="auto-info">
 ※給油したときに、スタンドで走行距離と給油量を入力してください
-</div>
-
-<label>給油時走行距離</label>
+</div><label>給油時走行距離</label>
 <input type="number" id="fuelMileage" placeholder="例：125320">
 
 <label>給油量（L）</label>
@@ -156,45 +126,23 @@ onclick="toggleFuelManagement()">
 
 <button class="fuel-save" onclick="saveFuel()">
 ⛽ 給油を記録
-</button>
-
-<div id="fuelHistory" style="margin-top:15px;"></div>
-
-</div>
-
-<!-- =========================
-     オイル交換
-========================= -->
-
-<button
+</button><div id="fuelHistory" style="margin-top:15px;"></div></div><!-- オイル交換 --><button
 id="oilToggleButton"
 class="oil-toggle-button"
 onclick="toggleOilManagement()">
 🛢️ オイル交換管理を見る
 </button>
 
-<div class="oil-management" id="oilManagement">
-
-<h2>🛢️ オイル交換管理</h2>
-
-<div class="oil-current">
-
-現在の走行距離：
+<div class="oil-management" id="oilManagement"><h2>🛢️ オイル交換管理</h2><div class="oil-current">現在の走行距離：
 <strong id="oilCurrentMileage">---</strong> km
 
-<br>
-
-次回オイル交換：
+<br>次回オイル交換：
 <span class="oil-next" id="oilNextMileage">
 未登録
 </span>
 
-</div>
-
-<div class="oil-warning" id="oilWarning"></div>
-<div class="oil-ok" id="oilOk"></div>
-
-<label>オイル交換時の走行距離</label>
+</div><div class="oil-warning" id="oilWarning"></div>
+<div class="oil-ok" id="oilOk"></div><label>オイル交換時の走行距離</label>
 
 <input
 type="number"
@@ -203,52 +151,22 @@ placeholder="例：124761">
 
 <div class="auto-info">
 ※次回交換距離は「交換時の走行距離＋4,000km」です
-</div>
-
-<button class="oil-save" onclick="saveOilChange()">
+</div><button class="oil-save" onclick="saveOilChange()">
 🛢️ オイル交換を記録
-</button>
+</button><div id="oilHistory" style="margin-top:15px;"></div></div><!-- 月間印刷 --><div class="monthly-print"><h2>📄 月間A4 PDF</h2><label>印刷する月</label>
 
-<div id="oilHistory" style="margin-top:15px;"></div>
-
-</div>
-
-<!-- 月間印刷 -->
-
-<div class="monthly-print">
-
-<h2>📄 月間A4 PDF</h2>
-
-<label>印刷する月</label>
-
-<input type="month" id="printMonth">
-
-<button onclick="openMonthlyPrint()">
+<input type="month" id="printMonth"><button onclick="openMonthlyPrint()">
 🖨️ A4 PDFプレビュー
-</button>
-
-</div>
-
-<button
+</button></div><button
 id="monthlyListButton"
 onclick="toggleMonthlyList()">
 📅 月間日報一覧を見る
 </button>
 
-<div class="monthly-list" id="monthlyList">
-
-<h2>📅 月間日報一覧</h2>
-
-<div
+<div class="monthly-list" id="monthlyList"><h2>📅 月間日報一覧</h2><div
 class="monthly-summary"
 id="monthlySummary">
-</div>
-
-<table>
-
-<thead>
-
-<tr>
+</div><table><thead><tr>
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -258,25 +176,9 @@ id="monthlySummary">
 <th>運行内容</th>
 <th>オイル交換</th>
 <th>給油</th>
-</tr>
-
-</thead>
-
-<tbody id="monthlyListBody"></tbody>
-
-</table>
-
-</div>
-
-<h2 style="color:#1565c0;margin-top:30px;">
+</tr></thead><tbody id="monthlyListBody"></tbody></table></div><h2 style="color:#1565c0;margin-top:30px;">
 📋 保存済み日報
-</h2>
-
-<table>
-
-<thead>
-
-<tr>
+</h2><table><thead><tr>
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -284,17 +186,7 @@ id="monthlySummary">
 <th>帰社</th>
 <th>距離</th>
 <th>操作</th>
-</tr>
-
-</thead>
-
-<tbody id="list"></tbody>
-
-</table>
-
-</div>
-
-<script>
+</tr></thead><tbody id="list"></tbody></table></div><script>
 
 let editingIndex=-1;
 
@@ -1507,29 +1399,37 @@ button.textContent=
 
 /* =====================================
    燃費計算
+   ★ここを修正
 ===================================== */
 
 function getFuelEconomy(record){
 
-let settingsData=
-localStorage.getItem("soukouSettings");
-
-if(!settingsData)return null;
-
-let settings=
-JSON.parse(settingsData);
+if(!record)return null;
 
 let records=
 getFuelRecords();
+
+/*
+現在の基本情報ではなく、
+「計算対象の給油記録自身の車番」を使用する。
+これにより過去記録も正しく計算できる。
+*/
+
+let targetCar=
+record.car||"";
 
 let carRecords=
 records.filter(function(item){
 
 return(
-item.car===settings.car &&
 item.mileage!==undefined &&
 item.mileage!==null &&
-item.mileage!==""
+item.mileage!=="" &&
+(
+!targetCar ||
+!item.car ||
+item.car===targetCar
+)
 );
 
 });
@@ -1549,6 +1449,13 @@ Number(b.mileage);
 
 let index=
 carRecords.indexOf(record);
+
+if(index===-1)return null;
+
+/*
+同じ日付・同じ走行距離などの場合でも、
+必ず走行距離順で直前の記録を探す。
+*/
 
 if(index<=0)return null;
 
@@ -1651,7 +1558,7 @@ if(!ok)return;
 
 }
 
-records.push({
+let newRecord={
 
 date:date,
 mileage:mileage,
@@ -1659,7 +1566,9 @@ liters:liters,
 car:settings.car,
 driver:settings.driver
 
-});
+};
+
+records.push(newRecord);
 
 localStorage.setItem(
 "soukouFuelRecords",
@@ -1680,11 +1589,8 @@ showMonthlyList();
 
 }
 
-let savedRecord=
-records[records.length-1];
-
 let economy=
-getFuelEconomy(savedRecord);
+getFuelEconomy(newRecord);
 
 if(economy){
 
@@ -1701,7 +1607,7 @@ alert(
 "給油を記録しました！\n\n"+
 "給油時："+mileage.toLocaleString()+" km\n"+
 "給油量："+liters.toFixed(1)+" L\n\n"+
-"※次回の給油から燃費を計算します"
+"※前回の給油記録がないため、燃費は次回から計算します"
 );
 
 }
@@ -2650,42 +2556,18 @@ display:none;
 
 }
 
-</style>
-
-</head>
-
-<body>
-
-<h1>
+</style></head><body><h1>
 ${year}年${monthNumber}月　走行日報
-</h1>
-
-<div class="info">
-
-<div>
+</h1><div class="info"><div>
 会社名：
 ${settings.company||""}
-</div>
-
-<div>
+</div><div>
 車番：
 ${settings.car||""}
-</div>
-
-<div>
+</div><div>
 運転者：
 ${settings.driver||""}
-</div>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>日付</th>
+</div></div><table><thead><tr><th>日付</th>
 <th>運転者</th>
 <th>車番</th>
 <th>出発</th>
@@ -2694,23 +2576,9 @@ ${settings.driver||""}
 <th>運行内容</th>
 <th>備考</th>
 <th>オイル交換</th>
-<th>給油</th>
+<th>給油</th></tr></thead><tbody>${rows}
 
-</tr>
-
-</thead>
-
-<tbody>
-
-${rows}
-
-</tbody>
-
-</table>
-
-<div class="total">
-
-月間走行距離合計：
+</tbody></table><div class="total">月間走行距離合計：
 ${totalDistance.toLocaleString()} km
 
 　｜　
@@ -2718,21 +2586,11 @@ ${totalDistance.toLocaleString()} km
 月間燃費：
 ${fuelSummary}
 
-</div>
-
-<div class="buttons">
-
-<button onclick="window.print()">
+</div><div class="buttons"><button onclick="window.print()">
 A4 PDFプレビュー
-</button>
-
-<button onclick="window.close()">
+</button><button onclick="window.close()">
 閉じる
-</button>
-
-</div>
-
-<script>
+</button></div><script>
 
 window.onload=function(){
 
@@ -2821,8 +2679,6 @@ document.getElementById("oilToggleButton")
 .textContent=
 "🛢️ オイル交換管理を見る";
 
-/* 給油管理も起動時は非表示 */
-
 document.getElementById("fuelManagement")
 .style.display="none";
 
@@ -2862,7 +2718,5 @@ error
 
 }
 
-</script>
-
-</body>
+</script></body>
 </html>
