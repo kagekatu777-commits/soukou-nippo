@@ -1,148 +1,609 @@
-<!DOCTYPE html><html lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
+
 <head>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#555555">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>走行日報</title><style>
-*{box-sizing:border-box}
-body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:15px}
-.card{background:white;border-radius:12px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-h1{text-align:center;color:#1565c0;margin-bottom:10px}
-.header-info{background:#e3f2fd;border-radius:10px;padding:12px;margin-bottom:15px;font-size:17px;line-height:1.7}
-.header-company{font-size:20px;font-weight:bold}
-.header-row{font-weight:bold}
-.settings-button{width:100%;margin-top:10px;padding:10px;font-size:16px;background:#757575;color:white;border:none;border-radius:8px}
-.settings{display:none;background:#f5f5f5;border-radius:10px;padding:12px;margin-bottom:15px}
-.settings h2{margin-top:0;color:#1565c0}
-label{display:block;margin-top:15px;font-weight:bold;font-size:18px}
-input{width:100%;padding:12px;font-size:20px;border-radius:8px;border:1px solid #ccc}
-button{width:100%;margin-top:20px;padding:15px;font-size:22px;background:#1565c0;color:white;border:none;border-radius:10px}
-.settings-save{background:#2e7d32}
-.distance{background:#eeeeee}
-.auto-info{font-size:14px;color:#555;margin-top:5px}
-.edit-mode{background:#fff3cd;border:2px solid #ff9800;border-radius:10px;padding:10px;margin-top:15px;color:#795548;font-weight:bold;text-align:center}
-.cancel-button{background:#757575}
-.monthly-print{margin-top:25px;padding:15px;background:#e3f2fd;border-radius:10px}
-.monthly-print h2{margin-top:0;color:#1565c0}
-.monthly-list{margin-top:25px;display:none}
-.monthly-list h2{color:#1565c0}
-.monthly-summary{background:#eeeeee;padding:12px;border-radius:8px;font-size:18px;font-weight:bold;margin-bottom:10px;line-height:1.8}
+
+<title>走行日報</title>
+
+<style>
+
+*{
+box-sizing:border-box
+}
+
+body{
+font-family:sans-serif;
+background:#f5f5f5;
+margin:0;
+padding:15px
+}
+
+.card{
+background:white;
+border-radius:12px;
+padding:15px;
+box-shadow:0 2px 8px rgba(0,0,0,.15)
+}
+
+h1{
+text-align:center;
+color:#1565c0;
+margin-bottom:10px
+}
+
+.header-info{
+background:#e3f2fd;
+border-radius:10px;
+padding:12px;
+margin-bottom:15px;
+font-size:17px;
+line-height:1.7
+}
+
+.header-company{
+font-size:20px;
+font-weight:bold
+}
+
+.header-row{
+font-weight:bold
+}
+
+.settings-button{
+width:100%;
+margin-top:10px;
+padding:10px;
+font-size:16px;
+background:#757575;
+color:white;
+border:none;
+border-radius:8px
+}
+
+.settings{
+display:none;
+background:#f5f5f5;
+border-radius:10px;
+padding:12px;
+margin-bottom:15px
+}
+
+.settings h2{
+margin-top:0;
+color:#1565c0
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+font-size:18px
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:20px;
+border-radius:8px;
+border:1px solid #ccc
+}
+
+button{
+width:100%;
+margin-top:20px;
+padding:15px;
+font-size:22px;
+background:#1565c0;
+color:white;
+border:none;
+border-radius:10px
+}
+
+.settings-save{
+background:#2e7d32
+}
+
+.distance{
+background:#eeeeee
+}
+
+.auto-info{
+font-size:14px;
+color:#555;
+margin-top:5px
+}
+
+.edit-mode{
+background:#fff3cd;
+border:2px solid #ff9800;
+border-radius:10px;
+padding:10px;
+margin-top:15px;
+color:#795548;
+font-weight:bold;
+text-align:center
+}
+
+.cancel-button{
+background:#757575
+}
+
+.monthly-print{
+margin-top:25px;
+padding:15px;
+background:#e3f2fd;
+border-radius:10px
+}
+
+.monthly-print h2{
+margin-top:0;
+color:#1565c0
+}
+
+.monthly-list{
+margin-top:25px;
+display:none
+}
+
+.monthly-list h2{
+color:#1565c0
+}
+
+.monthly-summary{
+background:#eeeeee;
+padding:12px;
+border-radius:8px;
+font-size:18px;
+font-weight:bold;
+margin-bottom:10px;
+line-height:1.8
+}
 
 /* オイル交換 */
-.oil-toggle-button{margin-top:25px;background:#ef6c00}
-.oil-management{display:none;margin-top:15px;padding:15px;background:#fff8e1;border-radius:10px;border:2px solid #ffb300}
-.oil-management h2{margin-top:0;color:#e65100}
-.oil-current{background:white;border-radius:8px;padding:12px;margin-top:10px;font-size:18px;line-height:1.8}
-.oil-next{font-size:22px;font-weight:bold;color:#e65100}
-.oil-warning{background:#ffebee;border:2px solid #e53935;color:#c62828;padding:12px;border-radius:8px;margin-top:10px;font-size:18px;font-weight:bold;display:none}
-.oil-ok{background:#e8f5e9;border:2px solid #43a047;color:#2e7d32;padding:12px;border-radius:8px;margin-top:10px;font-size:16px;font-weight:bold;display:none}
-.oil-save{background:#ef6c00}
-.oil-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
+
+.oil-toggle-button{
+margin-top:25px;
+background:#ef6c00
+}
+
+.oil-management{
+display:none;
+margin-top:15px;
+padding:15px;
+background:#fff8e1;
+border-radius:10px;
+border:2px solid #ffb300
+}
+
+.oil-management h2{
+margin-top:0;
+color:#e65100
+}
+
+.oil-current{
+background:white;
+border-radius:8px;
+padding:12px;
+margin-top:10px;
+font-size:18px;
+line-height:1.8
+}
+
+.oil-next{
+font-size:22px;
+font-weight:bold;
+color:#e65100
+}
+
+.oil-warning{
+background:#ffebee;
+border:2px solid #e53935;
+color:#c62828;
+padding:12px;
+border-radius:8px;
+margin-top:10px;
+font-size:18px;
+font-weight:bold;
+display:none
+}
+
+.oil-ok{
+background:#e8f5e9;
+border:2px solid #43a047;
+color:#2e7d32;
+padding:12px;
+border-radius:8px;
+margin-top:10px;
+font-size:16px;
+font-weight:bold;
+display:none
+}
+
+.oil-save{
+background:#ef6c00
+}
+
+.oil-delete{
+background:#d32f2f;
+color:white;
+border:none;
+border-radius:6px;
+padding:7px 10px;
+margin:0;
+width:auto;
+font-size:13px
+}
 
 /* 給油 */
-.fuel-toggle-button{margin-top:25px;background:#1976d2}
-.fuel-management{display:none;margin-top:15px;padding:15px;background:#e3f2fd;border-radius:10px;border:2px solid #1976d2}
-.fuel-management h2{margin-top:0;color:#1565c0}
-.fuel-save{background:#1976d2}
-.fuel-delete{background:#d32f2f;color:white;border:none;border-radius:6px;padding:7px 10px;margin:0;width:auto;font-size:13px}
-.fuel-history-item{background:white;border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:8px;font-size:16px;line-height:1.7}
-.fuel-economy{font-size:20px;font-weight:bold;color:#1565c0}
-.fuel-mark{font-weight:bold;color:#1565c0}
-.fuel-row{background:#e3f2fd}
 
-table{width:100%;margin-top:20px;border-collapse:collapse}
-th,td{border:1px solid #ccc;padding:8px;text-align:center}
-th{background:#1565c0;color:white}
-.edit-button{background:#2e7d32;color:white;border:none;border-radius:6px;padding:8px 10px;margin:0 0 5px 0;width:auto;font-size:14px}
-.delete-button{background:#d32f2f;color:white;border:none;border-radius:6px;padding:8px 10px;margin:0;width:auto;font-size:14px}
-.action-cell{white-space:nowrap}
-.oil-mark{font-weight:bold;color:#e65100}
-.oil-row{background:#fff8e1}
+.fuel-toggle-button{
+margin-top:25px;
+background:#1976d2
+}
+
+.fuel-management{
+display:none;
+margin-top:15px;
+padding:15px;
+background:#e3f2fd;
+border-radius:10px;
+border:2px solid #1976d2
+}
+
+.fuel-management h2{
+margin-top:0;
+color:#1565c0
+}
+
+.fuel-save{
+background:#1976d2
+}
+
+.fuel-delete{
+background:#d32f2f;
+color:white;
+border:none;
+border-radius:6px;
+padding:7px 10px;
+margin:0;
+width:auto;
+font-size:13px
+}
+
+.fuel-history-item{
+background:white;
+border:1px solid #ddd;
+border-radius:8px;
+padding:10px;
+margin-top:8px;
+font-size:16px;
+line-height:1.7
+}
+
+.fuel-economy{
+font-size:20px;
+font-weight:bold;
+color:#1565c0
+}
+
+.fuel-mark{
+font-weight:bold;
+color:#1565c0
+}
+
+.fuel-row{
+background:#e3f2fd
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center
+}
+
+th{
+background:#1565c0;
+color:white
+}
+
+.edit-button{
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:6px;
+padding:8px 10px;
+margin:0 0 5px 0;
+width:auto;
+font-size:14px
+}
+
+.delete-button{
+background:#d32f2f;
+color:white;
+border:none;
+border-radius:6px;
+padding:8px 10px;
+margin:0;
+width:auto;
+font-size:14px
+}
+
+.action-cell{
+white-space:nowrap
+}
+
+.oil-mark{
+font-weight:bold;
+color:#e65100
+}
+
+.oil-row{
+background:#fff8e1
+}
 
 @media(max-width:600px){
-table{font-size:12px}
-th,td{padding:5px}
+
+table{
+font-size:12px
 }
-</style></head><body>
-<div class="card"><h1>🚚走行日報</h1><div class="header-info">
-<div class="header-company" id="headerCompany">会社名未設定</div>
-<div class="header-row">車番：<span id="headerCar">未設定</span></div>
-<div class="header-row">運転者：<span id="headerDriver">未設定</span></div>
-</div><button class="settings-button" onclick="toggleSettings()">⚙ 基本情報を変更</button>
+
+th,td{
+padding:5px
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🚚走行日報</h1>
+
+<div class="header-info">
+
+<div class="header-company" id="headerCompany">
+会社名未設定
+</div>
+
+<div class="header-row">
+車番：<span id="headerCar">未設定</span>
+</div>
+
+<div class="header-row">
+運転者：<span id="headerDriver">未設定</span>
+</div>
+
+</div>
+
+<button
+class="settings-button"
+onclick="toggleSettings()">
+⚙ 基本情報を変更
+</button>
 
 <div class="settings" id="settings">
-<h2>基本情報設定</h2><label>会社名</label>
-<input type="text" id="settingCompany" placeholder="会社名を入力">
+
+<h2>基本情報設定</h2>
+
+<label>会社名</label>
+
+<input
+type="text"
+id="settingCompany"
+placeholder="会社名を入力">
 
 <label>車番</label>
-<input type="text" id="settingCar" placeholder="車番を入力">
+
+<input
+type="text"
+id="settingCar"
+placeholder="車番を入力">
 
 <label>運転者名</label>
-<input type="text" id="settingDriver" placeholder="運転者名を入力">
 
-<button class="settings-save" onclick="saveSettings()">基本情報を保存</button>
+<input
+type="text"
+id="settingDriver"
+placeholder="運転者名を入力">
 
-</div><div id="editMode" class="edit-mode" style="display:none;">
+<button
+class="settings-save"
+onclick="saveSettings()">
+基本情報を保存
+</button>
+
+</div>
+
+<div
+id="editMode"
+class="edit-mode"
+style="display:none;">
+
 ✏️ 日報を編集中です
-</div><label>日付</label>
-<input type="date" id="date">
+
+</div>
+
+<label>日付</label>
+
+<input
+type="date"
+id="date">
 
 <label>出発時走行距離</label>
-<input type="number" id="start" placeholder="前回の帰社時走行距離から自動入力">
+
+<input
+type="number"
+id="start"
+placeholder="前回の帰社時走行距離から自動入力">
 
 <div class="auto-info">
+
 ※休みの日があっても、直近の日報の帰社時走行距離から自動入力されます
-</div><label>帰社時走行距離</label>
-<input type="number" id="returnMileage" placeholder="帰社時の走行距離を入力">
+
+</div>
+
+<label>帰社時走行距離</label>
+
+<input
+type="number"
+id="returnMileage"
+placeholder="帰社時の走行距離を入力">
 
 <label>控除走行距離</label>
-<input type="text" id="distance" class="distance" readonly placeholder="自動計算">
+
+<input
+type="text"
+id="distance"
+class="distance"
+readonly
+placeholder="自動計算">
 
 <label>運行内容</label>
-<input type="text" id="work" placeholder="運行内容を入力">
+
+<input
+type="text"
+id="work"
+placeholder="運行内容を入力">
 
 <label>備考</label>
-<input type="text" id="memo" placeholder="備考を入力">
 
-<button id="saveButton" onclick="save()">日報を保存</button>
+<input
+type="text"
+id="memo"
+placeholder="備考を入力">
 
-<button id="cancelEditButton" class="cancel-button" onclick="cancelEdit()" style="display:none;">
+<button
+id="saveButton"
+onclick="save()">
+日報を保存
+</button>
+
+<button
+id="cancelEditButton"
+class="cancel-button"
+onclick="cancelEdit()"
+style="display:none;">
+
 編集をキャンセル
-</button><!-- 給油管理 --><button
+
+</button>
+
+<!-- 給油管理 -->
+
+<button
 id="fuelToggleButton"
 class="fuel-toggle-button"
 onclick="toggleFuelManagement()">
+
 ⛽ 給油管理を見る
+
 </button>
 
-<div class="fuel-management" id="fuelManagement"><h2>⛽ 給油管理</h2><div class="auto-info">
+<div
+class="fuel-management"
+id="fuelManagement">
+
+<h2>⛽ 給油管理</h2>
+
+<div class="auto-info">
+
 ※給油したときに、スタンドで走行距離と給油量を入力してください
-</div><label>給油時走行距離</label>
-<input type="number" id="fuelMileage" placeholder="例：125320">
+
+</div>
+
+<label>給油時走行距離</label>
+
+<input
+type="number"
+id="fuelMileage"
+placeholder="例：125320">
 
 <label>給油量（L）</label>
-<input type="number" id="fuelLiters" step="0.1" placeholder="例：38.5">
 
-<button class="fuel-save" onclick="saveFuel()">
+<input
+type="number"
+id="fuelLiters"
+step="0.1"
+placeholder="例：38.5">
+
+<button
+class="fuel-save"
+onclick="saveFuel()">
+
 ⛽ 給油を記録
-</button><div id="fuelHistory" style="margin-top:15px;"></div></div><!-- オイル交換 --><button
+
+</button>
+
+<div
+id="fuelHistory"
+style="margin-top:15px;">
+</div>
+
+</div>
+
+<!-- オイル交換 -->
+
+<button
 id="oilToggleButton"
 class="oil-toggle-button"
 onclick="toggleOilManagement()">
+
 🛢️ オイル交換管理を見る
+
 </button>
 
-<div class="oil-management" id="oilManagement"><h2>🛢️ オイル交換管理</h2><div class="oil-current">現在の走行距離：
+<div
+class="oil-management"
+id="oilManagement">
+
+<h2>🛢️ オイル交換管理</h2>
+
+<div class="oil-current">
+
+現在の走行距離：
 <strong id="oilCurrentMileage">---</strong> km
 
-<br>次回オイル交換：
-<span class="oil-next" id="oilNextMileage">
+<br>
+
+次回オイル交換：
+
+<span
+class="oil-next"
+id="oilNextMileage">
+
 未登録
+
 </span>
 
-</div><div class="oil-warning" id="oilWarning"></div>
-<div class="oil-ok" id="oilOk"></div><label>オイル交換時の走行距離</label>
+</div>
+
+<div
+class="oil-warning"
+id="oilWarning">
+</div>
+
+<div
+class="oil-ok"
+id="oilOk">
+</div>
+
+<label>オイル交換時の走行距離</label>
 
 <input
 type="number"
@@ -150,23 +611,71 @@ id="oilChangeMileage"
 placeholder="例：124761">
 
 <div class="auto-info">
-※次回交換距離は「交換時の走行距離＋4,000km」です
-</div><button class="oil-save" onclick="saveOilChange()">
-🛢️ オイル交換を記録
-</button><div id="oilHistory" style="margin-top:15px;"></div></div><!-- 月間印刷 --><div class="monthly-print"><h2>📄 月間A4 PDF</h2><label>印刷する月</label>
 
-<input type="month" id="printMonth"><button onclick="openMonthlyPrint()">
-🖨️ A4 PDFプレビュー
-</button></div><button
-id="monthlyListButton"
-onclick="toggleMonthlyList()">
-📅 月間日報一覧を見る
+※次回交換距離は「交換時の走行距離＋4,000km」です
+
+</div>
+
+<button
+class="oil-save"
+onclick="saveOilChange()">
+
+🛢️ オイル交換を記録
+
 </button>
 
-<div class="monthly-list" id="monthlyList"><h2>📅 月間日報一覧</h2><div
+<div
+id="oilHistory"
+style="margin-top:15px;">
+</div>
+
+</div>
+
+<!-- 月間印刷 -->
+
+<div class="monthly-print">
+
+<h2>📄 月間A4 PDF</h2>
+
+<label>印刷する月</label>
+
+<input
+type="month"
+id="printMonth">
+
+<button onclick="openMonthlyPrint()">
+
+🖨️ A4 PDFプレビュー
+
+</button>
+
+</div>
+
+<button
+id="monthlyListButton"
+onclick="toggleMonthlyList()">
+
+📅 月間日報一覧を見る
+
+</button>
+
+<div
+class="monthly-list"
+id="monthlyList">
+
+<h2>📅 月間日報一覧</h2>
+
+<div
 class="monthly-summary"
 id="monthlySummary">
-</div><table><thead><tr>
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -176,9 +685,32 @@ id="monthlySummary">
 <th>運行内容</th>
 <th>オイル交換</th>
 <th>給油</th>
-</tr></thead><tbody id="monthlyListBody"></tbody></table></div><h2 style="color:#1565c0;margin-top:30px;">
+
+</tr>
+
+</thead>
+
+<tbody
+id="monthlyListBody">
+</tbody>
+
+</table>
+
+</div>
+
+<h2
+style="color:#1565c0;margin-top:30px;">
+
 📋 保存済み日報
-</h2><table><thead><tr>
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
 <th>日付</th>
 <th>運転者</th>
 <th>車番</th>
@@ -186,7 +718,19 @@ id="monthlySummary">
 <th>帰社</th>
 <th>距離</th>
 <th>操作</th>
-</tr></thead><tbody id="list"></tbody></table></div><script>
+
+</tr>
+
+</thead>
+
+<tbody id="list">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
 
 let editingIndex=-1;
 
@@ -1399,7 +1943,7 @@ button.textContent=
 
 /* =====================================
    燃費計算
-   ★ここを修正
+   ★★★ 今回の修正版 ★★★
 ===================================== */
 
 function getFuelEconomy(record){
@@ -1409,14 +1953,12 @@ if(!record)return null;
 let records=
 getFuelRecords();
 
-/*
-現在の基本情報ではなく、
-「計算対象の給油記録自身の車番」を使用する。
-これにより過去記録も正しく計算できる。
-*/
-
 let targetCar=
 record.car||"";
+
+/*
+計算対象の車番と同じ給油記録だけを対象にする
+*/
 
 let carRecords=
 records.filter(function(item){
@@ -1434,6 +1976,10 @@ item.car===targetCar
 
 });
 
+/*
+日付 → 走行距離の順番で並べる
+*/
+
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
@@ -1447,20 +1993,61 @@ Number(b.mileage);
 
 });
 
-let index=
-carRecords.indexOf(record);
-
-if(index===-1)return null;
-
 /*
-同じ日付・同じ走行距離などの場合でも、
-必ず走行距離順で直前の記録を探す。
+indexOf(record)は使わない。
+
+JSON.parse()によって
+recordと同じデータでも別オブジェクトになるため、
+
+「今回の給油より前にある記録」
+を条件にして直接探す。
 */
 
-if(index<=0)return null;
+let previousRecords=
+carRecords.filter(function(item){
+
+if(item.date<record.date){
+
+return true;
+
+}
+
+if(item.date===record.date){
+
+return Number(item.mileage)<
+Number(record.mileage);
+
+}
+
+return false;
+
+});
+
+if(previousRecords.length===0){
+
+return null;
+
+}
+
+/*
+一番近い前回給油を取得
+*/
+
+previousRecords.sort(function(a,b){
+
+if(a.date!==b.date){
+
+return b.date.localeCompare(a.date);
+
+}
+
+return Number(b.mileage)-
+Number(a.mileage);
+
+});
 
 let previous=
-carRecords[index-1];
+previousRecords[0];
 
 let distance=
 Number(record.mileage)-
@@ -1469,7 +2056,11 @@ Number(previous.mileage);
 let liters=
 Number(record.liters);
 
-if(distance<=0||liters<=0)return null;
+if(distance<=0||liters<=0){
+
+return null;
+
+}
 
 return distance/liters;
 
@@ -1725,6 +2316,7 @@ ${formatDateWithDay(record.date)}
 <br>
 
 給油時走行距離：
+
 <strong>
 ${Number(record.mileage).toLocaleString()} km
 </strong>
@@ -1732,6 +2324,7 @@ ${Number(record.mileage).toLocaleString()} km
 <br>
 
 給油量：
+
 <strong>
 ${Number(record.liters).toFixed(1)} L
 </strong>
@@ -1745,6 +2338,7 @@ if(economy){
 historyHtml+=`
 
 燃費：
+
 <span class="fuel-economy">
 ${economy.toFixed(1)} km/L
 </span>
@@ -2556,18 +3150,42 @@ display:none;
 
 }
 
-</style></head><body><h1>
+</style>
+
+</head>
+
+<body>
+
+<h1>
 ${year}年${monthNumber}月　走行日報
-</h1><div class="info"><div>
+</h1>
+
+<div class="info">
+
+<div>
 会社名：
 ${settings.company||""}
-</div><div>
+</div>
+
+<div>
 車番：
 ${settings.car||""}
-</div><div>
+</div>
+
+<div>
 運転者：
 ${settings.driver||""}
-</div></div><table><thead><tr><th>日付</th>
+</div>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>日付</th>
 <th>運転者</th>
 <th>車番</th>
 <th>出発</th>
@@ -2576,9 +3194,23 @@ ${settings.driver||""}
 <th>運行内容</th>
 <th>備考</th>
 <th>オイル交換</th>
-<th>給油</th></tr></thead><tbody>${rows}
+<th>給油</th>
 
-</tbody></table><div class="total">月間走行距離合計：
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+<div class="total">
+
+月間走行距離合計：
 ${totalDistance.toLocaleString()} km
 
 　｜　
@@ -2586,11 +3218,21 @@ ${totalDistance.toLocaleString()} km
 月間燃費：
 ${fuelSummary}
 
-</div><div class="buttons"><button onclick="window.print()">
+</div>
+
+<div class="buttons">
+
+<button onclick="window.print()">
 A4 PDFプレビュー
-</button><button onclick="window.close()">
+</button>
+
+<button onclick="window.close()">
 閉じる
-</button></div><script>
+</button>
+
+</div>
+
+<script>
 
 window.onload=function(){
 
@@ -2718,5 +3360,8 @@ error
 
 }
 
-</script></body>
+</script>
+
+</body>
+
 </html>
