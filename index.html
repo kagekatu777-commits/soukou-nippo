@@ -165,7 +165,117 @@ margin-bottom:10px;
 line-height:1.8
 }
 
-/* オイル交換 */
+/* =====================================
+   保存済み日報 月別表示
+===================================== */
+
+.saved-reports{
+margin-top:30px;
+}
+
+.saved-reports h2{
+color:#1565c0;
+margin-bottom:12px;
+}
+
+.saved-month{
+margin-top:12px;
+border-radius:10px;
+overflow:hidden;
+border:1px solid #ccc;
+background:#fafafa;
+}
+
+.saved-month-header{
+width:100%;
+margin:0;
+padding:14px;
+font-size:19px;
+font-weight:bold;
+background:#e3f2fd;
+color:#1565c0;
+border:none;
+border-radius:0;
+text-align:left;
+cursor:pointer;
+}
+
+.saved-month-header:active{
+background:#bbdefb;
+}
+
+.saved-month-content{
+display:none;
+padding:8px;
+background:white;
+}
+
+.saved-month-content.open{
+display:block;
+}
+
+.saved-month-count{
+font-size:15px;
+font-weight:normal;
+color:#555;
+margin-left:5px;
+}
+
+.saved-report-card{
+background:#fff;
+border:1px solid #ddd;
+border-radius:9px;
+padding:10px;
+margin-top:8px;
+font-size:16px;
+line-height:1.7;
+}
+
+.saved-report-date{
+font-size:17px;
+font-weight:bold;
+color:#1565c0;
+margin-bottom:4px;
+}
+
+.saved-report-distance{
+font-size:18px;
+font-weight:bold;
+}
+
+.saved-report-actions{
+display:flex;
+gap:8px;
+margin-top:8px;
+}
+
+.saved-report-actions button{
+margin:0;
+flex:1;
+padding:9px 5px;
+font-size:15px;
+border-radius:7px;
+}
+
+.saved-edit-button{
+background:#2e7d32;
+}
+
+.saved-delete-button{
+background:#d32f2f;
+}
+
+.no-saved-reports{
+background:#eeeeee;
+border-radius:8px;
+padding:15px;
+text-align:center;
+color:#666;
+}
+
+/* =====================================
+   オイル交換
+===================================== */
 
 .oil-toggle-button{
 margin-top:25px;
@@ -240,7 +350,9 @@ width:auto;
 font-size:13px
 }
 
-/* 給油 */
+/* =====================================
+   給油
+===================================== */
 
 .fuel-toggle-button{
 margin-top:25px;
@@ -698,35 +810,19 @@ id="monthlyListBody">
 
 </div>
 
-<h2
-style="color:#1565c0;margin-top:30px;">
+<!-- =====================================
+     保存済み日報
+===================================== -->
 
+<div class="saved-reports">
+
+<h2>
 📋 保存済み日報
-
 </h2>
 
-<table>
+<div id="list"></div>
 
-<thead>
-
-<tr>
-
-<th>日付</th>
-<th>運転者</th>
-<th>車番</th>
-<th>出発</th>
-<th>帰社</th>
-<th>距離</th>
-<th>操作</th>
-
-</tr>
-
-</thead>
-
-<tbody id="list">
-</tbody>
-
-</table>
+</div>
 
 </div>
 
@@ -1414,6 +1510,7 @@ alert("日報を削除しました");
 
 /* =====================================
    保存済み日報表示
+   ★ 月ごとに折りたたみ表示
 ===================================== */
 
 function displayReports(){
@@ -1427,59 +1524,270 @@ document.getElementById("list");
 
 list.innerHTML="";
 
-reports.forEach(function(report,index){
+if(reports.length===0){
 
-list.innerHTML+=`
+list.innerHTML=`
 
-<tr>
+<div class="no-saved-reports">
+まだ保存された日報はありません
+</div>
 
-<td>
-${formatDateWithDay(report.date)}
-</td>
+`;
 
-<td>
-${report.driver||""}
-</td>
+return;
 
-<td>
-${report.car||""}
-</td>
+}
 
-<td>
-${report.start||""}
-</td>
+/*
+日付の新しい順に並べる。
+元のreports配列そのものは変更しない。
+*/
 
-<td>
-${report.end||""}
-</td>
+let sortedReports=
+reports.map(function(report,index){
 
-<td>
-${report.distance||0} km
-</td>
+return{
+report:report,
+index:index
+};
 
-<td class="action-cell">
+});
+
+sortedReports.sort(function(a,b){
+
+return b.report.date.localeCompare(a.report.date);
+
+});
+
+/*
+年月ごとにグループ化
+*/
+
+let groups={};
+
+sortedReports.forEach(function(item){
+
+let report=item.report;
+
+let month=
+report.date?
+report.date.substring(0,7):
+"不明";
+
+if(!groups[month]){
+
+groups[month]=[];
+
+}
+
+groups[month].push(item);
+
+});
+
+let months=
+Object.keys(groups).sort(function(a,b){
+
+return b.localeCompare(a);
+
+});
+
+let currentMonth=
+getToday().substring(0,7);
+
+months.forEach(function(month){
+
+let items=
+groups[month];
+
+let isCurrentMonth=
+month===currentMonth;
+
+let monthLabel="";
+
+if(month.length===7){
+
+let year=
+month.substring(0,4);
+
+let monthNumber=
+Number(month.substring(5,7));
+
+monthLabel=
+year+"年"+monthNumber+"月";
+
+}else{
+
+monthLabel="年月不明";
+
+}
+
+let monthId=
+"savedMonth_"+month.replace(/[^0-9]/g,"");
+
+let contentClass=
+isCurrentMonth?
+"saved-month-content open":
+"saved-month-content";
+
+let arrow=
+isCurrentMonth?
+"▼":
+"▶";
+
+let html=`
+
+<div class="saved-month">
 
 <button
-class="edit-button"
-onclick="editReport(${index})">
-編集
+class="saved-month-header"
+onclick="toggleSavedMonth('${monthId}',this)">
+
+${arrow} 📅 ${monthLabel}
+
+<span class="saved-month-count">
+（${items.length}件）
+</span>
+
 </button>
+
+<div
+id="${monthId}"
+class="${contentClass}">
+
+`;
+
+items.forEach(function(item){
+
+let report=item.report;
+let index=item.index;
+
+html+=`
+
+<div class="saved-report-card">
+
+<div class="saved-report-date">
+
+${formatDateWithDay(report.date)}
+
+</div>
+
+運転者：
+<strong>${report.driver||""}</strong>
 
 <br>
 
+車番：
+<strong>${report.car||""}</strong>
+
+<br>
+
+出発：
+<strong>${report.start||""}</strong>
+km
+
+<br>
+
+帰社：
+<strong>${report.end||""}</strong>
+km
+
+<br>
+
+<span class="saved-report-distance">
+
+走行距離：
+${report.distance||0} km
+
+</span>
+
+<br>
+
+運行内容：
+${report.work||""}
+
+`;
+
+if(report.memo){
+
+html+=`
+
+<br>
+
+備考：
+${report.memo}
+
+`;
+
+}
+
+html+=`
+
+<div class="saved-report-actions">
+
 <button
-class="delete-button"
-onclick="deleteReport(${index})">
-削除
+class="saved-edit-button"
+onclick="editReport(${index})">
+
+✏️ 編集
+
 </button>
 
-</td>
+<button
+class="saved-delete-button"
+onclick="deleteReport(${index})">
 
-</tr>
+🗑️ 削除
+
+</button>
+
+</div>
+
+</div>
 
 `;
 
 });
+
+html+=`
+
+</div>
+
+</div>
+
+`;
+
+list.innerHTML+=html;
+
+});
+
+}
+
+/* =====================================
+   保存済み日報 月 開閉
+===================================== */
+
+function toggleSavedMonth(monthId,button){
+
+let content=
+document.getElementById(monthId);
+
+if(!content)return;
+
+if(content.classList.contains("open")){
+
+content.classList.remove("open");
+
+button.textContent=
+button.textContent.replace("▼","▶");
+
+}else{
+
+content.classList.add("open");
+
+button.textContent=
+button.textContent.replace("▶","▼");
+
+}
 
 }
 
@@ -1909,10 +2217,6 @@ localStorage.getItem("soukouFuelRecords")
 
 }
 
-/* =====================================
-   給油管理 開閉
-===================================== */
-
 function toggleFuelManagement(){
 
 let management=
@@ -1943,7 +2247,6 @@ button.textContent=
 
 /* =====================================
    燃費計算
-   ★★★ 今回の修正版 ★★★
 ===================================== */
 
 function getFuelEconomy(record){
@@ -1955,10 +2258,6 @@ getFuelRecords();
 
 let targetCar=
 record.car||"";
-
-/*
-計算対象の車番と同じ給油記録だけを対象にする
-*/
 
 let carRecords=
 records.filter(function(item){
@@ -1976,10 +2275,6 @@ item.car===targetCar
 
 });
 
-/*
-日付 → 走行距離の順番で並べる
-*/
-
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
@@ -1992,16 +2287,6 @@ return Number(a.mileage)-
 Number(b.mileage);
 
 });
-
-/*
-indexOf(record)は使わない。
-
-JSON.parse()によって
-recordと同じデータでも別オブジェクトになるため、
-
-「今回の給油より前にある記録」
-を条件にして直接探す。
-*/
 
 let previousRecords=
 carRecords.filter(function(item){
@@ -2028,10 +2313,6 @@ if(previousRecords.length===0){
 return null;
 
 }
-
-/*
-一番近い前回給油を取得
-*/
 
 previousRecords.sort(function(a,b){
 
@@ -3040,16 +3321,6 @@ return;
 
 }
 
-let fuelSummary="---";
-
-if(monthlyFuelEconomy!==null){
-
-fuelSummary=
-monthlyFuelEconomy.toFixed(1)+
-" km/L";
-
-}
-
 printWindow.document.write(`
 
 <!DOCTYPE html>
@@ -3216,7 +3487,11 @@ ${totalDistance.toLocaleString()} km
 　｜　
 
 月間燃費：
-${fuelSummary}
+${
+monthlyFuelEconomy!==null?
+monthlyFuelEconomy.toFixed(1)+" km/L":
+"---"
+}
 
 </div>
 
