@@ -565,9 +565,7 @@ id="start"
 placeholder="前回の帰社時走行距離から自動入力">
 
 <div class="auto-info">
-
 ※休みの日があっても、直近の日報の帰社時走行距離から自動入力されます
-
 </div>
 
 <label>帰社時走行距離</label>
@@ -611,9 +609,7 @@ id="cancelEditButton"
 class="cancel-button"
 onclick="cancelEdit()"
 style="display:none;">
-
 編集をキャンセル
-
 </button>
 
 <!-- 給油管理 -->
@@ -622,9 +618,7 @@ style="display:none;">
 id="fuelToggleButton"
 class="fuel-toggle-button"
 onclick="toggleFuelManagement()">
-
 ⛽ 給油管理を見る
-
 </button>
 
 <div
@@ -634,9 +628,7 @@ id="fuelManagement">
 <h2>⛽ 給油管理</h2>
 
 <div class="auto-info">
-
 ※給油したときに、スタンドで走行距離と給油量を入力してください
-
 </div>
 
 <label>給油時走行距離</label>
@@ -657,9 +649,7 @@ placeholder="例：38.5">
 <button
 class="fuel-save"
 onclick="saveFuel()">
-
 ⛽ 給油を記録
-
 </button>
 
 <div
@@ -675,9 +665,7 @@ style="margin-top:15px;">
 id="oilToggleButton"
 class="oil-toggle-button"
 onclick="toggleOilManagement()">
-
 🛢️ オイル交換管理を見る
-
 </button>
 
 <div
@@ -698,9 +686,7 @@ id="oilManagement">
 <span
 class="oil-next"
 id="oilNextMileage">
-
 未登録
-
 </span>
 
 </div>
@@ -723,17 +709,13 @@ id="oilChangeMileage"
 placeholder="例：124761">
 
 <div class="auto-info">
-
 ※次回交換距離は「交換時の走行距離＋4,000km」です
-
 </div>
 
 <button
 class="oil-save"
 onclick="saveOilChange()">
-
 🛢️ オイル交換を記録
-
 </button>
 
 <div
@@ -756,9 +738,7 @@ type="month"
 id="printMonth">
 
 <button onclick="openMonthlyPrint()">
-
 🖨️ A4 PDFプレビュー
-
 </button>
 
 </div>
@@ -766,9 +746,7 @@ id="printMonth">
 <button
 id="monthlyListButton"
 onclick="toggleMonthlyList()">
-
 📅 月間日報一覧を見る
-
 </button>
 
 <div
@@ -795,8 +773,11 @@ id="monthlySummary">
 <th>帰社</th>
 <th>距離</th>
 <th>運行内容</th>
-<th>オイル交換</th>
+
+<!-- ★ 給油とオイル交換を逆に変更 -->
+
 <th>給油</th>
+<th>オイル交換</th>
 
 </tr>
 
@@ -810,9 +791,7 @@ id="monthlyListBody">
 
 </div>
 
-<!-- =====================================
-     保存済み日報
-===================================== -->
+<!-- 保存済み日報 -->
 
 <div class="saved-reports">
 
@@ -916,9 +895,7 @@ report.end!==""
 previousReports.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return b.date.localeCompare(a.date);
-
 }
 
 return Number(b.end)-Number(a.end);
@@ -986,11 +963,9 @@ return;
 localStorage.setItem(
 "soukouSettings",
 JSON.stringify({
-
 company:company,
 car:car,
 driver:driver
-
 })
 );
 
@@ -1168,9 +1143,7 @@ document.getElementById("memo").value=
 draft.memo||"";
 
 if(!draft.start){
-
 loadPreviousMileage();
-
 }
 
 calculateDistance();
@@ -1272,9 +1245,7 @@ document.getElementById("start")
 .addEventListener("input",function(){
 
 calculateDistance();
-
 saveDraft();
-
 updateOilManagement();
 
 });
@@ -1283,9 +1254,7 @@ document.getElementById("returnMileage")
 .addEventListener("input",function(){
 
 calculateDistance();
-
 saveDraft();
-
 updateOilManagement();
 
 });
@@ -1434,9 +1403,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 return;
@@ -1470,9 +1437,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 }
@@ -1510,7 +1475,6 @@ alert("日報を削除しました");
 
 /* =====================================
    保存済み日報表示
-   ★ 月ごとに折りたたみ表示
 ===================================== */
 
 function displayReports(){
@@ -1566,9 +1530,7 @@ report.date.substring(0,7):
 "不明";
 
 if(!groups[month]){
-
 groups[month]=[];
-
 }
 
 groups[month].push(item);
@@ -1587,8 +1549,7 @@ getToday().substring(0,7);
 
 months.forEach(function(month){
 
-let items=
-groups[month];
+let items=groups[month];
 
 let isCurrentMonth=
 month===currentMonth;
@@ -1597,8 +1558,7 @@ let monthLabel="";
 
 if(month.length===7){
 
-let year=
-month.substring(0,4);
+let year=month.substring(0,4);
 
 let monthNumber=
 Number(month.substring(5,7));
@@ -1657,9 +1617,7 @@ html+=`
 <div class="saved-report-card">
 
 <div class="saved-report-date">
-
 ${formatDateWithDay(report.date)}
-
 </div>
 
 運転者：
@@ -1685,10 +1643,8 @@ km
 <br>
 
 <span class="saved-report-distance">
-
 走行距離：
 ${report.distance||0} km
-
 </span>
 
 <br>
@@ -1718,17 +1674,13 @@ html+=`
 <button
 class="saved-edit-button"
 onclick="editReport(${index})">
-
 ✏️ 編集
-
 </button>
 
 <button
 class="saved-delete-button"
 onclick="deleteReport(${index})">
-
 🗑️ 削除
-
 </button>
 
 </div>
@@ -1892,9 +1844,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 alert(
@@ -1926,9 +1876,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 }
@@ -1982,9 +1930,7 @@ record.mileage!==null &&
 record.mileage!==""
 ){
 
-mileageList.push(
-Number(record.mileage)
-);
+mileageList.push(Number(record.mileage));
 
 }
 
@@ -1996,9 +1942,7 @@ document.getElementById("returnMileage").value
 );
 
 if(currentInput>0){
-
 mileageList.push(currentInput);
-
 }
 
 if(mileageList.length===0)return 0;
@@ -2081,9 +2025,7 @@ return;
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return a.date.localeCompare(b.date);
-
 }
 
 return Number(a.mileage)-
@@ -2269,9 +2211,7 @@ item.car===targetCar
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return a.date.localeCompare(b.date);
-
 }
 
 return Number(a.mileage)-
@@ -2283,9 +2223,7 @@ let previousRecords=
 carRecords.filter(function(item){
 
 if(item.date<record.date){
-
 return true;
-
 }
 
 if(item.date===record.date){
@@ -2300,17 +2238,13 @@ return false;
 });
 
 if(previousRecords.length===0){
-
 return null;
-
 }
 
 previousRecords.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return b.date.localeCompare(a.date);
-
 }
 
 return Number(b.mileage)-
@@ -2329,9 +2263,7 @@ let liters=
 Number(record.liters);
 
 if(distance<=0||liters<=0){
-
 return null;
-
 }
 
 return distance/liters;
@@ -2447,9 +2379,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 let economy=
@@ -2503,9 +2433,7 @@ if(
 document.getElementById("monthlyList")
 .style.display==="block"
 ){
-
 showMonthlyList();
-
 }
 
 }
@@ -2541,9 +2469,7 @@ record.car===settings.car
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return b.date.localeCompare(a.date);
-
 }
 
 return Number(b.mileage)-
@@ -2763,9 +2689,7 @@ record.mileage!==""
 carRecords.sort(function(a,b){
 
 if(a.date!==b.date){
-
 return a.date.localeCompare(b.date);
-
 }
 
 return Number(a.mileage)-
@@ -2809,7 +2733,7 @@ return totalFuelDistance/totalLiters;
 
 /* =====================================
    月間一覧
-   ★ 給油・オイル交換は別行にしない
+   ★ 給油 → オイル交換の順番
 ===================================== */
 
 function showMonthlyList(){
@@ -2843,11 +2767,6 @@ document.getElementById("monthlyListBody");
 
 body.innerHTML="";
 
-/*
-日報がある日の行に、
-オイル交換・給油を一緒に表示する
-*/
-
 monthlyReports.forEach(function(report){
 
 total+=Number(report.distance)||0;
@@ -2876,12 +2795,14 @@ body.innerHTML+=`
 
 <td>${report.work||""}</td>
 
-<td class="oil-mark">
-${oilText}
-</td>
+<!-- ★ 給油を先に表示 -->
 
 <td class="fuel-mark">
 ${fuelText}
+</td>
+
+<td class="oil-mark">
+${oilText}
 </td>
 
 </tr>
@@ -2890,11 +2811,121 @@ ${fuelText}
 
 });
 
-/*
-日報がない場合だけ「この月の日報はありません」
-*/
+/* =====================================
+   オイル交換単独行
+===================================== */
 
-if(monthlyReports.length===0){
+let oilRecords=
+getOilRecords();
+
+let monthlyOilRecords=
+oilRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+monthlyOilRecords.forEach(function(record){
+
+body.innerHTML+=`
+
+<tr class="oil-row">
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td colspan="3"></td>
+
+<td>🛢️ オイル交換</td>
+
+<td></td>
+
+<td class="oil-mark">
+${Number(record.mileage).toLocaleString()} km
+</td>
+
+</tr>
+
+`;
+
+/* ★ オイル交換は最後の列 */
+
+});
+
+/* =====================================
+   給油単独行
+===================================== */
+
+let fuelRecords=
+getFuelRecords();
+
+let monthlyFuelRecords=
+fuelRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+monthlyFuelRecords.forEach(function(record){
+
+let economy=
+getFuelEconomy(record);
+
+let fuelText=
+Number(record.liters).toFixed(1)+
+" L";
+
+if(economy){
+
+fuelText+=
+"<br>"+
+economy.toFixed(1)+
+" km/L";
+
+}
+
+body.innerHTML+=`
+
+<tr class="fuel-row">
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td colspan="3"></td>
+
+<td>⛽ 給油</td>
+
+<td class="fuel-mark">
+
+${Number(record.mileage).toLocaleString()} km
+
+<br>
+
+${fuelText}
+
+</td>
+
+<td></td>
+
+</tr>
+
+`;
+
+/* ★ 給油は先の列 */
+
+});
+
+if(
+monthlyReports.length===0 &&
+monthlyOilRecords.length===0 &&
+monthlyFuelRecords.length===0
+){
 
 body.innerHTML=`
 
@@ -2972,7 +3003,7 @@ button.textContent=
 
 /* =====================================
    A4 PDF
-   ★ 給油・オイル交換は別行にしない
+   ★ 給油 → オイル交換
 ===================================== */
 
 function openMonthlyPrint(){
@@ -3039,11 +3070,6 @@ Number(month.substring(5,7));
 
 let rows="";
 
-/*
-日報1行につき、
-同じ日のオイル交換・給油を表示
-*/
-
 monthlyReports.forEach(function(report){
 
 let oilText=
@@ -3072,9 +3098,17 @@ rows+=`
 
 <td class="left">${report.memo||""}</td>
 
-<td class="oil">${oilText}</td>
+<!-- ★ 給油を先に -->
 
-<td class="fuel">${fuelText}</td>
+<td class="fuel">
+${fuelText}
+</td>
+
+<!-- ★ オイル交換を後に -->
+
+<td class="oil">
+${oilText}
+</td>
 
 </tr>
 
@@ -3082,11 +3116,137 @@ rows+=`
 
 });
 
-/*
-日報が1件もない場合だけ表示
-*/
+/* =====================================
+   A4 オイル交換単独行
+===================================== */
 
-if(monthlyReports.length===0){
+let oilRecords=
+getOilRecords();
+
+let monthlyOilRecords=
+oilRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+monthlyOilRecords.forEach(function(record){
+
+rows+=`
+
+<tr>
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td class="left">
+🛢️ オイル交換
+</td>
+
+<td></td>
+
+<!-- 給油列 -->
+
+<td></td>
+
+<!-- オイル交換列 -->
+
+<td class="oil">
+${Number(record.mileage).toLocaleString()} km
+</td>
+
+</tr>
+
+`;
+
+});
+
+/* =====================================
+   A4 給油単独行
+===================================== */
+
+let fuelRecords=
+getFuelRecords();
+
+let monthlyFuelRecords=
+fuelRecords.filter(function(record){
+
+return record.date.startsWith(month);
+
+});
+
+monthlyFuelRecords.forEach(function(record){
+
+let economy=
+getFuelEconomy(record);
+
+let fuelText=
+Number(record.mileage).toLocaleString()+
+" km<br>"+
+Number(record.liters).toFixed(1)+
+" L";
+
+if(economy){
+
+fuelText+=
+"<br>"+
+economy.toFixed(1)+
+" km/L";
+
+}
+
+rows+=`
+
+<tr>
+
+<td>${formatDateWithDay(record.date)}</td>
+
+<td>${record.driver||""}</td>
+
+<td>${record.car||""}</td>
+
+<td></td>
+
+<td></td>
+
+<td></td>
+
+<td class="left">
+⛽ 給油
+</td>
+
+<td></td>
+
+<!-- 給油列 -->
+
+<td class="fuel">
+${fuelText}
+</td>
+
+<!-- オイル交換列 -->
+
+<td></td>
+
+</tr>
+
+`;
+
+});
+
+if(
+monthlyReports.length===0 &&
+monthlyOilRecords.length===0 &&
+monthlyFuelRecords.length===0
+){
 
 rows=`
 
@@ -3259,8 +3419,11 @@ ${settings.driver||""}
 <th>走行距離</th>
 <th>運行内容</th>
 <th>備考</th>
-<th>オイル交換</th>
+
+<!-- ★ 給油 → オイル交換 -->
+
 <th>給油</th>
+<th>オイル交換</th>
 
 </tr>
 
