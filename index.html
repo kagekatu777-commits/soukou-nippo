@@ -1538,11 +1538,6 @@ return;
 
 }
 
-/*
-日付の新しい順に並べる。
-元のreports配列そのものは変更しない。
-*/
-
 let sortedReports=
 reports.map(function(report,index){
 
@@ -1558,10 +1553,6 @@ sortedReports.sort(function(a,b){
 return b.report.date.localeCompare(a.report.date);
 
 });
-
-/*
-年月ごとにグループ化
-*/
 
 let groups={};
 
@@ -2818,6 +2809,7 @@ return totalFuelDistance/totalLiters;
 
 /* =====================================
    月間一覧
+   ★ 給油・オイル交換は別行にしない
 ===================================== */
 
 function showMonthlyList(){
@@ -2850,6 +2842,11 @@ let body=
 document.getElementById("monthlyListBody");
 
 body.innerHTML="";
+
+/*
+日報がある日の行に、
+オイル交換・給油を一緒に表示する
+*/
 
 monthlyReports.forEach(function(report){
 
@@ -2893,109 +2890,11 @@ ${fuelText}
 
 });
 
-let oilRecords=
-getOilRecords();
+/*
+日報がない場合だけ「この月の日報はありません」
+*/
 
-let monthlyOilRecords=
-oilRecords.filter(function(record){
-
-return record.date.startsWith(month);
-
-});
-
-monthlyOilRecords.forEach(function(record){
-
-body.innerHTML+=`
-
-<tr class="oil-row">
-
-<td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver||""}</td>
-
-<td>${record.car||""}</td>
-
-<td colspan="3"></td>
-
-<td>🛢️ オイル交換</td>
-
-<td class="oil-mark">
-${Number(record.mileage).toLocaleString()} km
-</td>
-
-<td></td>
-
-</tr>
-
-`;
-
-});
-
-let fuelRecords=
-getFuelRecords();
-
-let monthlyFuelRecords=
-fuelRecords.filter(function(record){
-
-return record.date.startsWith(month);
-
-});
-
-monthlyFuelRecords.forEach(function(record){
-
-let economy=
-getFuelEconomy(record);
-
-let fuelText=
-Number(record.liters).toFixed(1)+
-" L";
-
-if(economy){
-
-fuelText+=
-"<br>"+
-economy.toFixed(1)+
-" km/L";
-
-}
-
-body.innerHTML+=`
-
-<tr class="fuel-row">
-
-<td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver||""}</td>
-
-<td>${record.car||""}</td>
-
-<td colspan="3"></td>
-
-<td>⛽ 給油</td>
-
-<td></td>
-
-<td class="fuel-mark">
-
-${Number(record.mileage).toLocaleString()} km
-
-<br>
-
-${fuelText}
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-if(
-monthlyReports.length===0 &&
-monthlyOilRecords.length===0 &&
-monthlyFuelRecords.length===0
-){
+if(monthlyReports.length===0){
 
 body.innerHTML=`
 
@@ -3073,6 +2972,7 @@ button.textContent=
 
 /* =====================================
    A4 PDF
+   ★ 給油・オイル交換は別行にしない
 ===================================== */
 
 function openMonthlyPrint(){
@@ -3139,6 +3039,11 @@ Number(month.substring(5,7));
 
 let rows="";
 
+/*
+日報1行につき、
+同じ日のオイル交換・給油を表示
+*/
+
 monthlyReports.forEach(function(report){
 
 let oilText=
@@ -3177,121 +3082,11 @@ rows+=`
 
 });
 
-let oilRecords=
-getOilRecords();
+/*
+日報が1件もない場合だけ表示
+*/
 
-let monthlyOilRecords=
-oilRecords.filter(function(record){
-
-return record.date.startsWith(month);
-
-});
-
-monthlyOilRecords.forEach(function(record){
-
-rows+=`
-
-<tr>
-
-<td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver||""}</td>
-
-<td>${record.car||""}</td>
-
-<td></td>
-
-<td></td>
-
-<td></td>
-
-<td class="left">
-🛢️ オイル交換
-</td>
-
-<td></td>
-
-<td class="oil">
-${Number(record.mileage).toLocaleString()} km
-</td>
-
-<td></td>
-
-</tr>
-
-`;
-
-});
-
-let fuelRecords=
-getFuelRecords();
-
-let monthlyFuelRecords=
-fuelRecords.filter(function(record){
-
-return record.date.startsWith(month);
-
-});
-
-monthlyFuelRecords.forEach(function(record){
-
-let economy=
-getFuelEconomy(record);
-
-let fuelText=
-Number(record.mileage).toLocaleString()+
-" km<br>"+
-Number(record.liters).toFixed(1)+
-" L";
-
-if(economy){
-
-fuelText+=
-"<br>"+
-economy.toFixed(1)+
-" km/L";
-
-}
-
-rows+=`
-
-<tr>
-
-<td>${formatDateWithDay(record.date)}</td>
-
-<td>${record.driver||""}</td>
-
-<td>${record.car||""}</td>
-
-<td></td>
-
-<td></td>
-
-<td></td>
-
-<td class="left">
-⛽ 給油
-</td>
-
-<td></td>
-
-<td></td>
-
-<td class="fuel">
-${fuelText}
-</td>
-
-</tr>
-
-`;
-
-});
-
-if(
-monthlyReports.length===0 &&
-monthlyOilRecords.length===0 &&
-monthlyFuelRecords.length===0
-){
+if(monthlyReports.length===0){
 
 rows=`
 
