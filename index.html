@@ -773,9 +773,6 @@ id="monthlySummary">
 <th>帰社</th>
 <th>距離</th>
 <th>運行内容</th>
-
-<!-- 給油 → オイル交換 -->
-
 <th>給油</th>
 <th>オイル交換</th>
 
@@ -2733,8 +2730,6 @@ return totalFuelDistance/totalLiters;
 
 /* =====================================
    月間一覧
-   ★ 給油 → オイル交換
-   ★ 単独行は作らない
 ===================================== */
 
 function showMonthlyList(){
@@ -2795,8 +2790,6 @@ body.innerHTML+=`
 <td>${report.distance||0} km</td>
 
 <td>${report.work||""}</td>
-
-<!-- 給油 → オイル交換 -->
 
 <td class="fuel-mark">
 ${fuelText}
@@ -2890,8 +2883,7 @@ button.textContent=
 
 /* =====================================
    A4 PDF
-   ★ 給油 → オイル交換
-   ★ 単独行は作らない
+   ★ A4いっぱい・文字拡大版
 ===================================== */
 
 function openMonthlyPrint(){
@@ -2986,8 +2978,6 @@ rows+=`
 
 <td class="left">${report.memo||""}</td>
 
-<!-- 給油 → オイル交換 -->
-
 <td class="fuel">
 ${fuelText}
 </td>
@@ -3048,74 +3038,176 @@ ${year}年${monthNumber}月 走行日報
 
 <style>
 
+/* =====================================
+   A4印刷レイアウト
+===================================== */
+
 @page{
 size:A4 portrait;
-margin:8mm;
+margin:5mm;
 }
 
 *{
 box-sizing:border-box;
 }
 
+html,
 body{
-font-family:sans-serif;
 margin:0;
-color:#000;
+padding:0;
+width:100%;
 }
+
+body{
+font-family:
+sans-serif;
+color:#000;
+font-size:8.5px;
+}
+
+/* タイトル */
 
 h1{
 text-align:center;
-font-size:20px;
-margin:0 0 12px 0;
+font-size:22px;
+font-weight:bold;
+margin:0 0 7mm 0;
 }
 
+/* 会社情報 */
+
 .info{
-display:flex;
-justify-content:space-between;
-border:1px solid #000;
-padding:8px;
-margin-bottom:12px;
-font-size:12px;
+display:grid;
+grid-template-columns:
+2fr 1fr 1fr;
+border:1.5px solid #000;
+padding:3mm 4mm;
+margin-bottom:5mm;
+font-size:11px;
+font-weight:bold;
+line-height:1.4;
 }
+
+/* 表 */
 
 table{
 width:100%;
 border-collapse:collapse;
-font-size:6.5px;
+table-layout:fixed;
+font-size:8.5px;
+line-height:1.15;
 }
 
-th,td{
-border:1px solid #000;
-padding:3px;
-text-align:center;
+/* 列幅 */
+
+th:nth-child(1),
+td:nth-child(1){
+width:11%;
 }
+
+th:nth-child(2),
+td:nth-child(2){
+width:9%;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+width:8%;
+}
+
+th:nth-child(4),
+td:nth-child(4){
+width:8%;
+}
+
+th:nth-child(5),
+td:nth-child(5){
+width:8%;
+}
+
+th:nth-child(6),
+td:nth-child(6){
+width:9%;
+}
+
+th:nth-child(7),
+td:nth-child(7){
+width:16%;
+}
+
+th:nth-child(8),
+td:nth-child(8){
+width:17%;
+}
+
+th:nth-child(9),
+td:nth-child(9){
+width:7%;
+}
+
+th:nth-child(10),
+td:nth-child(10){
+width:7%;
+}
+
+/* セル */
+
+th,
+td{
+border:1px solid #000;
+padding:2.5mm 1.5mm;
+text-align:center;
+vertical-align:middle;
+word-break:break-word;
+overflow-wrap:anywhere;
+}
+
+/* 見出し */
 
 th{
 background:#eeeeee;
+font-size:9px;
+font-weight:bold;
+white-space:nowrap;
 }
+
+/* 左寄せ */
 
 .left{
 text-align:left;
 }
 
-.oil{
-font-weight:bold;
-}
+/* 給油 */
 
 .fuel{
 font-weight:bold;
+font-size:8px;
 }
 
+/* オイル */
+
+.oil{
+font-weight:bold;
+font-size:8px;
+}
+
+/* 合計 */
+
 .total{
-margin-top:12px;
+margin-top:6mm;
+padding:3mm 4mm;
+border:1.5px solid #000;
 text-align:right;
 font-size:14px;
 font-weight:bold;
+line-height:1.6;
 }
+
+/* ボタン */
 
 .buttons{
 text-align:center;
-margin-top:20px;
+margin-top:8mm;
 }
 
 button{
@@ -3124,10 +3216,41 @@ font-size:18px;
 margin:5px;
 }
 
+/* 印刷時 */
+
 @media print{
 
 .buttons{
 display:none;
+}
+
+}
+
+/* =====================================
+   画面が狭い場合の調整
+===================================== */
+
+@media screen and (max-width:700px){
+
+body{
+font-size:8px;
+}
+
+h1{
+font-size:20px;
+}
+
+.info{
+font-size:10px;
+}
+
+table{
+font-size:8px;
+}
+
+th,
+td{
+padding:2mm 1mm;
 }
 
 }
@@ -3145,18 +3268,15 @@ ${year}年${monthNumber}月　走行日報
 <div class="info">
 
 <div>
-会社名：
-${settings.company||""}
+会社名：${settings.company||""}
 </div>
 
 <div>
-車番：
-${settings.car||""}
+車番：${settings.car||""}
 </div>
 
 <div>
-運転者：
-${settings.driver||""}
+運転者：${settings.driver||""}
 </div>
 
 </div>
@@ -3175,9 +3295,6 @@ ${settings.driver||""}
 <th>走行距離</th>
 <th>運行内容</th>
 <th>備考</th>
-
-<!-- 給油 → オイル交換 -->
-
 <th>給油</th>
 <th>オイル交換</th>
 
