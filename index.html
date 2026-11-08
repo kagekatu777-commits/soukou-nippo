@@ -1,4 +1,5 @@
 HTML
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1645,8 +1646,8 @@ button.textContent="📕 月間日報一覧を閉じる";
 }
 
 /* =====================================
-   A4 PDFプレビュー
-   A4横向き・1ページに調整
+   A4 PDF印刷
+   A4横向き・日付ごとに1行にまとめる
 ===================================== */
 
 function openMonthlyPrint(){
@@ -1659,134 +1660,129 @@ return;
 }
 
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+let settingsData=localStorage.getItem("soukouSettings");
 
-let monthlyReports=reports.filter(function(report){
-return report.date.startsWith(month);
+let settings=settingsData?JSON.parse(settingsData):{
+company:"会社名未設定",
+car:"未設定",
+driver:"未設定"
+};
+
+let monthlyReports=reports.filter(function(r){
+return r.date&&r.date.startsWith(month);
 });
 
 monthlyReports.sort(function(a,b){
 return a.date.localeCompare(b.date);
 });
 
-let settingsData=localStorage.getItem("soukouSettings");
-
-let settings=settingsData?
-JSON.parse(settingsData):
-{
-company:"会社名未設定",
-car:"未設定",
-driver:"未設定"
-};
-
-let totalDistance=0;
-
-monthlyReports.forEach(function(report){
-totalDistance+=Number(report.distance)||0;
+let oilRecords=getOilRecords().filter(function(r){
+return r.date&&r.date.startsWith(month);
 });
+
+let fuelRecords=getFuelRecords().filter(function(r){
+return r.date&&r.date.startsWith(month);
+});
+
+/* 月間走行距離 */
+let totalDistance=monthlyReports.reduce(function(sum,r){
+return sum+(Number(r.distance)||0);
+},0);
 
 let monthlyFuelEconomy=getMonthlyFuelEconomy(month);
 
-let year=month.substring(0,4);
-let monthNumber=Number(month.substring(5,7));
+/* 日付ごとにまとめる */
+let dates=[...new Set([
+...monthlyReports.map(r=>r.date),
+...oilRecords.map(r=>r.date),
+...fuelRecords.map(r=>r.date)
+])].sort();
 
 let rows="";
 
-/* 日報 */
-monthlyReports.forEach(function(report){
+dates.forEach(function(date){
 
-let oilText=getOilText(report.date)
-.replace(/<br\s*\/?>/gi," / ");
+let dayReports=monthlyReports.filter(function(r){
+return r.date===date;
+});
 
-let fuelText=getFuelText(report.date)
-.replace(/<br\s*\/?>/gi," / ");
+let dayOil=oilRecords.filter(function(r){
+return r.date===date;
+});
+
+let dayFuel=fuelRecords.filter(function(r){
+return r.date===date;
+});
+
+let report=dayReports[0]||{};
+
+let otherRecord=dayFuel[0]||dayOil[0]||{};
+
+let driver=report.driver||otherRecord.driver||"";
+let car=report.car||otherRecord.car||"";
+
+let start=dayReports.map(function(r){
+return r.start;
+}).filter(Boolean).join(" / ");
+
+let end=dayReports.map(function(r){
+return r.end;
+}).filter(Boolean).join(" / ");
+
+let distance=dayReports.map(function(r){
+return (Number(r.distance)||0)+" km";
+}).join(" / ");
+
+let work=dayReports.map(function(r){
+return r.work;
+}).filter(Boolean).join(" / ");
+
+let fuelText=dayFuel.map(function(r){
+
+let text=
+Number(r.mileage).toLocaleString()+"km / "+
+Number(r.liters).toFixed(1)+"L";
+
+let economy=getFuelEconomy(r);
+
+if(economy){
+text+=" / "+economy.toFixed(1)+"km/L";
+}
+
+return text;
+
+}).join("、");
+
+let oilText=dayOil.map(function(r){
+return Number(r.mileage).toLocaleString()+"km";
+}).join("、");
 
 rows+=`
 <tr>
-<td>${formatDateWithDay(report.date)}</td>
-<td>${report.driver||""}</td>
-<td>${report.car||""}</td>
-<td>${report.start||""}</td>
-<td>${report.end||""}</td>
-<td>${report.distance||0} km</td>
-<td class="left">${report.work||""}</td>
+<td>${formatDateWithDay(date)}</td>
+<td>${driver}</td>
+<td>${car}</td>
+<td>${start}</td>
+<td>${end}</td>
+<td>${distance}</td>
+<td class="left">${work}</td>
 <td class="fuel">${fuelText}</td>
 <td class="oil">${oilText}</td>
 </tr>
 `;
 });
 
-/* オイル交換単独行 */
-let oilRecords=getOilRecords();
-
-let monthlyOilRecords=oilRecords.filter(function(record){
-return record.date.startsWith(month);
-});
-
-monthlyOilRecords.forEach(function(record){
-rows+=`
-<tr>
-<td>${formatDateWithDay(record.date)}</td>
-<td>${record.driver||""}</td>
-<td>${record.car||""}</td>
-<td></td>
-<td></td>
-<td></td>
-<td class="left">オイル交換</td>
-<td></td>
-<td class="oil">${Number(record.mileage).toLocaleString()} km</td>
-</tr>
-`;
-});
-
-/* 給油単独行 */
-let fuelRecords=getFuelRecords();
-
-let monthlyFuelRecords=fuelRecords.filter(function(record){
-return record.date.startsWith(month);
-});
-
-monthlyFuelRecords.forEach(function(record){
-
-let economy=getFuelEconomy(record);
-
-let fuelText=
-Number(record.mileage).toLocaleString()+" km / "+
-Number(record.liters).toFixed(1)+" L";
-
-if(economy){
-fuelText+=" / "+economy.toFixed(1)+" km/L";
+if(rows===""){
+rows='<tr><td colspan="9">この月の日報はありません</td></tr>';
 }
 
-rows+=`
-<tr>
-<td>${formatDateWithDay(record.date)}</td>
-<td>${record.driver||""}</td>
-<td>${record.car||""}</td>
-<td></td>
-<td></td>
-<td></td>
-<td class="left">給油</td>
-<td class="fuel">${fuelText}</td>
-<td></td>
-</tr>
-`;
-});
-
-if(monthlyReports.length===0&&monthlyOilRecords.length===0&&monthlyFuelRecords.length===0){
-rows=`
-<tr>
-<td colspan="9">この月の日報はありません</td>
-</tr>
-`;
-}
+let year=month.substring(0,4);
+let monthNumber=Number(month.substring(5,7));
 
 let printWindow=window.open("","_blank");
 
 if(!printWindow){
-alert(
-"ポップアップがブロックされています。\n"+
-"ブラウザのポップアップを許可してください。"
-);
+alert("ポップアップがブロックされています。ブラウザのポップアップを許可してください。");
 return;
 }
 
@@ -1799,10 +1795,10 @@ printWindow.document.write(`
 
 <style>
 
-/* A4横・余白を最小限に */
+/* A4横向き */
 @page{
 size:A4 landscape;
-margin:4mm;
+margin:5mm;
 }
 
 *{
@@ -1817,14 +1813,13 @@ color:#000;
 }
 
 body{
-font-size:9px;
+font-size:8px;
 }
 
-/* タイトル */
 h1{
 text-align:center;
-font-size:17px;
-margin:0 0 2mm 0;
+font-size:16px;
+margin:0 0 3mm;
 }
 
 /* 基本情報 */
@@ -1833,9 +1828,8 @@ display:flex;
 justify-content:space-between;
 border:1px solid #000;
 padding:2mm 3mm;
-margin-bottom:2mm;
+margin-bottom:3mm;
 font-size:10px;
-line-height:1.3;
 }
 
 /* 表 */
@@ -1843,47 +1837,42 @@ table{
 width:100%;
 table-layout:fixed;
 border-collapse:collapse;
-font-size:9px;
+font-size:8px;
 line-height:1.15;
 }
 
-/* 表のセル */
 th,td{
 border:1px solid #000;
-padding:2mm 1mm;
+padding:1mm 0.7mm;
 text-align:center;
 vertical-align:middle;
 overflow-wrap:anywhere;
 }
 
-/* 見出し */
 th{
 background:#eeeeee;
-font-size:9px;
+font-size:8px;
 font-weight:bold;
 }
 
-/* 運行内容 */
 .left{
 text-align:left;
 }
 
-/* 給油・オイル */
 .oil,.fuel{
 font-weight:bold;
 }
 
 /* 合計 */
 .total{
-margin-top:2mm;
-padding:2mm 3mm;
+margin-top:3mm;
+padding:2mm;
 text-align:right;
 font-size:11px;
 font-weight:bold;
-line-height:1.3;
 }
 
-/* ページ分割防止 */
+/* 行の分割防止 */
 tr{
 break-inside:avoid;
 page-break-inside:avoid;
@@ -1892,7 +1881,7 @@ page-break-inside:avoid;
 /* 印刷ボタン */
 .buttons{
 text-align:center;
-margin-top:10px;
+margin-top:15px;
 }
 
 button{
@@ -1901,47 +1890,21 @@ font-size:16px;
 margin:5px;
 }
 
-/* 印刷時 */
+/* 印刷設定 */
 @media print{
 
 html,body{
 width:100%;
-height:auto;
-}
-
-body{
-font-size:9px;
 }
 
 .buttons{
 display:none;
 }
 
-/* 印刷時に背景色を維持 */
 th{
 background:#eeeeee !important;
 -webkit-print-color-adjust:exact;
 print-color-adjust:exact;
-}
-
-/* 余計な余白を削除 */
-h1{
-margin-bottom:2mm;
-}
-
-.info{
-margin-bottom:2mm;
-}
-
-/* 表を用紙幅いっぱいに */
-table{
-width:100%;
-}
-
-/* 行を途中で分割しない */
-tr{
-break-inside:avoid;
-page-break-inside:avoid;
 }
 
 }
@@ -1964,12 +1927,12 @@ page-break-inside:avoid;
 <colgroup>
 <col style="width:11%">
 <col style="width:9%">
-<col style="width:8%">
+<col style="width:7%">
 <col style="width:9%">
 <col style="width:9%">
-<col style="width:10%">
+<col style="width:9%">
 <col style="width:24%">
-<col style="width:10%">
+<col style="width:12%">
 <col style="width:10%">
 </colgroup>
 
@@ -1998,11 +1961,12 @@ ${rows}
 ${totalDistance.toLocaleString()} km
 　｜　
 月間燃費：
-${monthlyFuelEconomy!==null?monthlyFuelEconomy.toFixed(1)+" km/L":"---"}
+${monthlyFuelEconomy!==null?
+monthlyFuelEconomy.toFixed(1)+" km/L":"---"}
 </div>
 
 <div class="buttons">
-<button onclick="window.print()">A4 PDFプレビュー</button>
+<button onclick="window.print()">PDF保存</button>
 <button onclick="window.close()">閉じる</button>
 </div>
 
