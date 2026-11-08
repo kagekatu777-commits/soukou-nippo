@@ -1645,7 +1645,7 @@ button.textContent="📕 月間日報一覧を閉じる";
 }
 
 /* =====================================
-   A4 PDF印刷・1枚固定版
+   A4 PDF印刷・縦向き1枚調整版
 ===================================== */
 
 function openMonthlyPrint(){
@@ -1777,6 +1777,10 @@ rows='<tr><td colspan="9">この月の日報はありません</td></tr>';
 let year=month.substring(0,4);
 let monthNumber=Number(month.substring(5,7));
 
+/* 行数に合わせて高さを計算 */
+let rowCount=Math.max(dates.length,1);
+let rowHeight=Math.max(4,(244-8)/rowCount);
+
 let printWindow=window.open("","_blank");
 
 if(!printWindow){
@@ -1793,9 +1797,9 @@ printWindow.document.write(`
 
 <style>
 
-/* A4横向き */
+/* A4縦向き */
 @page{
-size:A4 landscape;
+size:A4 portrait;
 margin:5mm;
 }
 
@@ -1812,45 +1816,40 @@ color:#000;
 }
 
 body{
-font-size:8px;
+font-size:9px;
 }
 
-/* 印刷用紙1枚 */
-
+/* 印刷用紙 */
 .print-page{
-position:relative;
 width:100%;
-height:200mm;
-max-height:200mm;
-overflow:hidden;
+height:287mm;
+max-height:287mm;
 display:flex;
 flex-direction:column;
+overflow:hidden;
 }
 
 /* タイトル */
-
 h1{
 text-align:center;
-font-size:16px;
-margin:0 0 2mm;
+font-size:18px;
+margin:0 0 3mm;
 flex-shrink:0;
 }
 
 /* 基本情報 */
-
 .info{
 display:flex;
 justify-content:space-between;
 border:1px solid #000;
-padding:2mm 3mm;
-margin-bottom:2mm;
-font-size:10px;
+padding:3mm;
+margin-bottom:3mm;
+font-size:11px;
 font-weight:bold;
 flex-shrink:0;
 }
 
 /* 表 */
-
 .table-area{
 flex:1;
 min-height:0;
@@ -1863,13 +1862,13 @@ width:100%;
 height:100%;
 table-layout:fixed;
 border-collapse:collapse;
-font-size:8px;
-line-height:1.05;
+font-size:9px;
+line-height:1.2;
 }
 
 th,td{
 border:1px solid #000;
-padding:0.6mm;
+padding:1mm;
 text-align:center;
 vertical-align:middle;
 overflow:hidden;
@@ -1879,8 +1878,13 @@ word-break:break-all;
 
 th{
 background:#eeeeee;
-font-size:8px;
+font-size:9px;
 font-weight:bold;
+height:8mm;
+}
+
+tbody tr{
+height:${rowHeight}mm;
 }
 
 .left{
@@ -1892,18 +1896,16 @@ font-weight:bold;
 }
 
 /* 合計 */
-
 .total{
-margin-top:2mm;
-padding:2mm;
+margin-top:3mm;
+padding:3mm 1mm;
 text-align:right;
-font-size:10px;
+font-size:11px;
 font-weight:bold;
 flex-shrink:0;
 }
 
-/* 印刷ボタン */
-
+/* ボタン */
 .buttons{
 text-align:center;
 margin-top:15px;
@@ -1916,29 +1918,26 @@ margin:5px;
 }
 
 /* 印刷時 */
-
 @media print{
 
 @page{
-size:A4 landscape;
+size:A4 portrait;
 margin:5mm;
 }
 
 html,body{
-width:287mm;
-height:200mm;
+width:200mm;
+height:287mm;
 margin:0;
 padding:0;
 overflow:hidden;
 }
 
 .print-page{
-width:287mm;
-height:200mm;
-max-height:200mm;
+width:200mm;
+height:287mm;
+max-height:287mm;
 overflow:hidden;
-break-after:avoid;
-page-break-after:avoid;
 }
 
 .table-area{
