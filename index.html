@@ -1,5 +1,4 @@
 HTML
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -177,8 +176,6 @@ border-radius:0;
 text-align:left;
 cursor:pointer
 }
-
-.saved-month-header:active{background:#bbdefb}
 
 .saved-month-content{
 display:none;
@@ -474,9 +471,6 @@ th,td{padding:5px}
 <label>運行内容</label>
 <input type="text" id="work" placeholder="運行内容を入力">
 
-<label>備考</label>
-<input type="text" id="memo" placeholder="備考を入力">
-
 <button id="saveButton" onclick="save()">日報を保存</button>
 
 <button id="cancelEditButton" class="cancel-button" onclick="cancelEdit()" style="display:none;">編集をキャンセル</button>
@@ -724,8 +718,7 @@ let draft={
 date:document.getElementById("date").value,
 start:document.getElementById("start").value,
 returnMileage:document.getElementById("returnMileage").value,
-work:document.getElementById("work").value,
-memo:document.getElementById("memo").value
+work:document.getElementById("work").value
 };
 
 localStorage.setItem("soukouDraft",JSON.stringify(draft));
@@ -754,7 +747,6 @@ document.getElementById("date").value=draft.date||today;
 document.getElementById("start").value=draft.start||"";
 document.getElementById("returnMileage").value=draft.returnMileage||"";
 document.getElementById("work").value=draft.work||"";
-document.getElementById("memo").value=draft.memo||"";
 
 if(!draft.start)loadPreviousMileage();
 calculateDistance();
@@ -776,7 +768,6 @@ document.getElementById("date").value=report.date;
 document.getElementById("start").value=report.start;
 document.getElementById("returnMileage").value=report.end;
 document.getElementById("work").value=report.work||"";
-document.getElementById("memo").value=report.memo||"";
 
 calculateDistance();
 
@@ -804,7 +795,6 @@ document.getElementById("start").value="";
 document.getElementById("returnMileage").value="";
 document.getElementById("distance").value="";
 document.getElementById("work").value="";
-document.getElementById("memo").value="";
 }
 
 /* 入力監視 */
@@ -821,7 +811,6 @@ updateOilManagement();
 });
 
 document.getElementById("work").addEventListener("input",saveDraft);
-document.getElementById("memo").addEventListener("input",saveDraft);
 
 document.getElementById("date").addEventListener("change",function(){
 if(editingIndex!==-1)return;
@@ -850,7 +839,6 @@ let date=document.getElementById("date").value;
 let start=Number(document.getElementById("start").value);
 let end=Number(document.getElementById("returnMileage").value);
 let work=document.getElementById("work").value;
-let memo=document.getElementById("memo").value;
 
 if(!date||!start||!end){
 alert("日付・出発時走行距離・帰社時走行距離を入力してください");
@@ -874,7 +862,7 @@ end:end,
 distance:distance,
 driver:settings.driver,
 work:work,
-memo:memo
+memo:""
 };
 
 if(editingIndex!==-1){
@@ -1016,13 +1004,6 @@ html+=`
 帰社：<strong>${report.end||""}</strong> km<br>
 <span class="saved-report-distance">走行距離：${report.distance||0} km</span><br>
 運行内容：${report.work||""}
-`;
-
-if(report.memo){
-html+=`<br>備考：${report.memo}`;
-}
-
-html+=`
 <div class="saved-report-actions">
 <button class="saved-edit-button" onclick="editReport(${index})">✏️ 編集</button>
 <button class="saved-delete-button" onclick="deleteReport(${index})">🗑️ 削除</button>
@@ -1103,8 +1084,6 @@ driver:settings.driver
 
 localStorage.setItem("soukouOilRecords",JSON.stringify(records));
 document.getElementById("oilChangeMileage").value="";
-document.getElementById("oilCurrentMileage").textContent=mileage.toLocaleString();
-
 updateOilManagement();
 
 if(document.getElementById("monthlyList").style.display==="block"){
@@ -1667,7 +1646,7 @@ button.textContent="📕 月間日報一覧を閉じる";
 
 /* =====================================
    A4 PDFプレビュー
-   A4横向き・1ページ用
+   A4横向き・1ページに調整
 ===================================== */
 
 function openMonthlyPrint(){
@@ -1730,7 +1709,6 @@ rows+=`
 <td>${report.end||""}</td>
 <td>${report.distance||0} km</td>
 <td class="left">${report.work||""}</td>
-<td class="left">${report.memo||""}</td>
 <td class="fuel">${fuelText}</td>
 <td class="oil">${oilText}</td>
 </tr>
@@ -1754,7 +1732,6 @@ rows+=`
 <td></td>
 <td></td>
 <td class="left">オイル交換</td>
-<td></td>
 <td></td>
 <td class="oil">${Number(record.mileage).toLocaleString()} km</td>
 </tr>
@@ -1789,7 +1766,6 @@ rows+=`
 <td></td>
 <td></td>
 <td class="left">給油</td>
-<td></td>
 <td class="fuel">${fuelText}</td>
 <td></td>
 </tr>
@@ -1799,7 +1775,7 @@ rows+=`
 if(monthlyReports.length===0&&monthlyOilRecords.length===0&&monthlyFuelRecords.length===0){
 rows=`
 <tr>
-<td colspan="10">この月の日報はありません</td>
+<td colspan="9">この月の日報はありません</td>
 </tr>
 `;
 }
@@ -1822,9 +1798,11 @@ printWindow.document.write(`
 <title>${year}年${monthNumber}月 走行日報</title>
 
 <style>
+
+/* A4横・余白を最小限に */
 @page{
 size:A4 landscape;
-margin:5mm;
+margin:4mm;
 }
 
 *{
@@ -1839,66 +1817,79 @@ color:#000;
 }
 
 body{
-font-size:7px;
+font-size:9px;
 }
 
+/* タイトル */
 h1{
 text-align:center;
-font-size:15px;
+font-size:17px;
 margin:0 0 2mm 0;
 }
 
+/* 基本情報 */
 .info{
 display:flex;
 justify-content:space-between;
 border:1px solid #000;
-padding:1.5mm 2mm;
+padding:2mm 3mm;
 margin-bottom:2mm;
-font-size:8px;
-line-height:1.2;
+font-size:10px;
+line-height:1.3;
 }
 
+/* 表 */
 table{
 width:100%;
 table-layout:fixed;
 border-collapse:collapse;
-font-size:6.5px;
-line-height:1.05;
+font-size:9px;
+line-height:1.15;
 }
 
+/* 表のセル */
 th,td{
 border:1px solid #000;
-padding:1mm 0.7mm;
+padding:2mm 1mm;
 text-align:center;
 vertical-align:middle;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
+overflow-wrap:anywhere;
 }
 
+/* 見出し */
 th{
 background:#eeeeee;
-font-size:6.5px;
-font-weight:bold;
-}
-
-.left{text-align:left}
-.oil,.fuel{font-weight:bold}
-
-.total{
-margin-top:2mm;
-padding:1.5mm 2mm;
-text-align:right;
 font-size:9px;
 font-weight:bold;
-line-height:1.2;
 }
 
+/* 運行内容 */
+.left{
+text-align:left;
+}
+
+/* 給油・オイル */
+.oil,.fuel{
+font-weight:bold;
+}
+
+/* 合計 */
+.total{
+margin-top:2mm;
+padding:2mm 3mm;
+text-align:right;
+font-size:11px;
+font-weight:bold;
+line-height:1.3;
+}
+
+/* ページ分割防止 */
 tr{
 break-inside:avoid;
 page-break-inside:avoid;
 }
 
+/* 印刷ボタン */
 .buttons{
 text-align:center;
 margin-top:10px;
@@ -1910,9 +1901,51 @@ font-size:16px;
 margin:5px;
 }
 
+/* 印刷時 */
 @media print{
-.buttons{display:none}
+
+html,body{
+width:100%;
+height:auto;
 }
+
+body{
+font-size:9px;
+}
+
+.buttons{
+display:none;
+}
+
+/* 印刷時に背景色を維持 */
+th{
+background:#eeeeee !important;
+-webkit-print-color-adjust:exact;
+print-color-adjust:exact;
+}
+
+/* 余計な余白を削除 */
+h1{
+margin-bottom:2mm;
+}
+
+.info{
+margin-bottom:2mm;
+}
+
+/* 表を用紙幅いっぱいに */
+table{
+width:100%;
+}
+
+/* 行を途中で分割しない */
+tr{
+break-inside:avoid;
+page-break-inside:avoid;
+}
+
+}
+
 </style>
 </head>
 
@@ -1929,16 +1962,15 @@ margin:5px;
 <table>
 
 <colgroup>
+<col style="width:11%">
 <col style="width:9%">
 <col style="width:8%">
-<col style="width:7%">
-<col style="width:8%">
-<col style="width:8%">
 <col style="width:9%">
-<col style="width:18%">
-<col style="width:18%">
-<col style="width:8%">
-<col style="width:7%">
+<col style="width:9%">
+<col style="width:10%">
+<col style="width:24%">
+<col style="width:10%">
+<col style="width:10%">
 </colgroup>
 
 <thead>
@@ -1950,7 +1982,6 @@ margin:5px;
 <th>帰社</th>
 <th>走行距離</th>
 <th>運行内容</th>
-<th>備考</th>
 <th>給油</th>
 <th>オイル交換</th>
 </tr>
