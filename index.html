@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1514,101 +1513,103 @@ if(totalLiters<=0)return null;
 return totalFuelDistance/totalLiters;
 }
 
-/* 月間一覧 */
+/* 月間一覧（日付ごとに1行にまとめる） */
 function showMonthlyList(){
 let month=document.getElementById("printMonth").value;
 if(!month)return;
 
 let reports=JSON.parse(localStorage.getItem("soukouReports"))||[];
+let oilRecords=getOilRecords();
+let fuelRecords=getFuelRecords();
 
 let monthlyReports=reports.filter(function(report){
-return report.date.startsWith(month);
+return report.date&&report.date.startsWith(month);
 });
 
-monthlyReports.sort(function(a,b){
-return a.date.localeCompare(b.date);
+let monthlyOilRecords=oilRecords.filter(function(record){
+return record.date&&record.date.startsWith(month);
+});
+
+let monthlyFuelRecords=fuelRecords.filter(function(record){
+return record.date&&record.date.startsWith(month);
 });
 
 let total=0;
 let body=document.getElementById("monthlyListBody");
 body.innerHTML="";
 
-monthlyReports.forEach(function(report){
-total+=Number(report.distance)||0;
+/* 日報・給油・オイル交換の日付をまとめる */
+let dates=[...new Set([
+...monthlyReports.map(function(record){return record.date;}),
+...monthlyOilRecords.map(function(record){return record.date;}),
+...monthlyFuelRecords.map(function(record){return record.date;})
+])].sort();
 
-let oilText=getOilText(report.date);
-let fuelText=getFuelText(report.date);
+dates.forEach(function(date){
+
+let dayReports=monthlyReports.filter(function(record){
+return record.date===date;
+});
+
+let dayOil=monthlyOilRecords.filter(function(record){
+return record.date===date;
+});
+
+let dayFuel=monthlyFuelRecords.filter(function(record){
+return record.date===date;
+});
+
+let report=dayReports[0]||{};
+let otherRecord=dayFuel[0]||dayOil[0]||{};
+
+let driver=report.driver||otherRecord.driver||"";
+let car=report.car||otherRecord.car||"";
+
+let start=dayReports.map(function(record){
+return record.start;
+}).filter(function(value){
+return value!==undefined&&value!==null&&value!=="";
+}).join(" / ");
+
+let end=dayReports.map(function(record){
+return record.end;
+}).filter(function(value){
+return value!==undefined&&value!==null&&value!=="";
+}).join(" / ");
+
+let distance=dayReports.map(function(record){
+return (Number(record.distance)||0)+" km";
+}).join(" / ");
+
+let work=dayReports.map(function(record){
+return record.work;
+}).filter(Boolean).join(" / ");
+
+/* 走行距離合計は日報分だけを加算 */
+dayReports.forEach(function(record){
+total+=Number(record.distance)||0;
+});
+
+/* 同じ日付の給油・オイル交換をまとめる */
+let fuelText=getFuelText(date);
+let oilText=getOilText(date);
 
 body.innerHTML+=`
 <tr>
-<td>${formatDateWithDay(report.date)}</td>
-<td>${report.driver||""}</td>
-<td>${report.car||""}</td>
-<td>${report.start||""}</td>
-<td>${report.end||""}</td>
-<td>${report.distance||0} km</td>
-<td>${report.work||""}</td>
+<td>${formatDateWithDay(date)}</td>
+<td>${driver}</td>
+<td>${car}</td>
+<td>${start}</td>
+<td>${end}</td>
+<td>${distance}</td>
+<td>${work}</td>
 <td class="fuel-mark">${fuelText}</td>
 <td class="oil-mark">${oilText}</td>
 </tr>
 `;
 });
 
-/* オイル交換単独行 */
-let oilRecords=getOilRecords();
-
-let monthlyOilRecords=oilRecords.filter(function(record){
-return record.date.startsWith(month);
-});
-
-monthlyOilRecords.forEach(function(record){
-body.innerHTML+=`
-<tr class="oil-row">
-<td>${formatDateWithDay(record.date)}</td>
-<td>${record.driver||""}</td>
-<td>${record.car||""}</td>
-<td colspan="3"></td>
-<td>🛢️ オイル交換</td>
-<td></td>
-<td class="oil-mark">${Number(record.mileage).toLocaleString()} km</td>
-</tr>
-`;
-});
-
-/* 給油単独行 */
-let fuelRecords=getFuelRecords();
-
-let monthlyFuelRecords=fuelRecords.filter(function(record){
-return record.date.startsWith(month);
-});
-
-monthlyFuelRecords.forEach(function(record){
-let economy=getFuelEconomy(record);
-
-let fuelText=Number(record.liters).toFixed(1)+" L";
-
-if(economy){
-fuelText+="<br>"+economy.toFixed(1)+" km/L";
-}
-
-body.innerHTML+=`
-<tr class="fuel-row">
-<td>${formatDateWithDay(record.date)}</td>
-<td>${record.driver||""}</td>
-<td>${record.car||""}</td>
-<td colspan="3"></td>
-<td>⛽ 給油</td>
-<td class="fuel-mark">
-${Number(record.mileage).toLocaleString()} km
-<br>
-${fuelText}
-</td>
-<td></td>
-</tr>
-`;
-});
-
-if(monthlyReports.length===0&&monthlyOilRecords.length===0&&monthlyFuelRecords.length===0){
+if(dates.length===0){
 body.innerHTML=`
 <tr>
 <td colspan="9">この月の日報はありません</td>
@@ -1774,12 +1775,13 @@ if(rows===""){
 rows='<tr><td colspan="9">この月の日報はありません</td></tr>';
 }
 
+/* 月の表示 */
 let year=month.substring(0,4);
 let monthNumber=Number(month.substring(5,7));
 
 /* 行数に合わせて高さを計算 */
 let rowCount=Math.max(dates.length,1);
-let rowHeight=Math.max(4,(244-8)/rowCount);
+let rowHeight=Math.max(4,Math.min(8,(244-8)/rowCount));
 
 let printWindow=window.open("","_blank");
 
